@@ -4,14 +4,6 @@
 // Moved from uWS.h as aligning switch places
 #include "Addon.h"
 
-class ConnectedWebSocket {
- public:
-  std::string serverID;
-  uWS::WebSocket<uWS::SERVER> *wsConnection;
-  ConnectedWebSocket(uWS::WebSocket<uWS::SERVER> *ws, std::string id)
-      : wsConnection(ws), serverID(id) {}
-};
-
 void runGlobalBroker(const FunctionCallbackInfo<Value> &args) {
   // Get params from passed arguments
   static int SERVER_PORT = args[0]->NumberValue();

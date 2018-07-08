@@ -10,23 +10,27 @@ socket.on('open', () => {
 socket.on('message', (message) => numbersOfMessages++);
 
 let t0;
-let socket2 = new uws('ws://localhost:3001');
 let numbersOfMessagesSend = 0;
-socket2.on('open', () => {
-  console.log('Socket 2 is connected');
-  // Register socket
-  socket2.send('id1');
-  t0 = new Date().getTime();
+t0 = new Date().getTime();
 
-  setInterval(() => {
-    numbersOfMessagesSend++;
-    socket2.send(Buffer.from('Message from id1'));
-  }, 5);
-});
+for (let i = 0; i < 10; i++) {
+  let socket2 = new uws('ws://localhost:3001');
 
-socket2.on('message', () => {
-  console.log('Some thing wrong')
-})
+  socket2.on('open', () => {
+    console.log('Socket 2 is connected');
+    // Register socket
+    socket2.send('id1');
+
+    setInterval(() => {
+      numbersOfMessagesSend++;
+      socket2.send(Buffer.from('Message from id1'));
+    }, 5);
+  });
+
+  socket2.on('message', () => {
+    console.log('Some thing wrong');
+  });
+}
 
 setInterval(() => {
   console.log(
