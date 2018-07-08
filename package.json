@@ -1,0 +1,19 @@
+{
+  "name": "clusterws-uws",
+  "version": "0.0.1",
+  "scripts": {
+    "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
+    "build": "node-gyp rebuild"
+  },
+  "description": "ClusterWS uws modified module WebSockets",
+  "engines": {
+    "node": ">=8"
+  },
+  "keywords": [
+    "tiny",
+    "websockets",
+    "clusterws",
+    "broker"
+  ],
+  "license": "MIT"
+}

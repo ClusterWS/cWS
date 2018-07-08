@@ -1,0 +1,7 @@
+build/
+targets/
+node_modules/
+
+build_log.txt
+
+pakage-lock.json
