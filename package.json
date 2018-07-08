@@ -15,5 +15,9 @@
     "clusterws",
     "broker"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "uws": "^10.148.1",
+    "ws": "^5.2.1"
+  }
 }

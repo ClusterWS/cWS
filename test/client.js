@@ -3,20 +3,34 @@ const uws = require('uws');
 let socket = new uws('ws://localhost:3001');
 let numbersOfMessages = 0;
 socket.on('open', () => {
-  console.log('Socket is connected ID: 1');
-  // Register socket
-  socket.send('id1');
+  console.log('Socket 1 is connected');
+  socket.send('id2');
 });
 
-// socket.on('message', (message) => {});
-setTimeout(() => {
-  setInterval(() => {
-    numbersOfMessages++;
-    socket.send(Buffer.from('Message from id1'));
-  }, 1);
-}, 1000)
+socket.on('message', (message) => numbersOfMessages++);
 
+let t0;
+let socket2 = new uws('ws://localhost:3001');
+let numbersOfMessagesSend = 0;
+socket2.on('open', () => {
+  console.log('Socket 2 is connected');
+  // Register socket
+  socket2.send('id1');
+  t0 = new Date().getTime();
+
+  setInterval(() => {
+    numbersOfMessagesSend++;
+    socket2.send(Buffer.from('Message from id1'));
+  }, 5);
+});
+
+socket2.on('message', () => {
+  console.log('Some thing wrong')
+})
 
 setInterval(() => {
-  console.log('Number of messages send: ' + numbersOfMessages);
+  console.log(
+    `Number of messages recieved: ${numbersOfMessages} / ${numbersOfMessagesSend} for ${(new Date().getTime() - t0) /
+      1000} ms`
+  );
 }, 10000);
