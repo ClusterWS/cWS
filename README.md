@@ -6,5 +6,5 @@
 </p>
 
 <p align="center">
-  <i>This module was specially designed for <strong>ClusterWS</strong> to create c++ Brokers (for higher performance and throughput) which is a critical module in ClusterWS for cross servers and internal communications.</i>
+  <i>This module is specially designed for <strong>ClusterWS</strong> to create c++ Brokers (for higher performance and throughput) which is a critical module in ClusterWS for cross servers and internal communications.</i>
 </p>
