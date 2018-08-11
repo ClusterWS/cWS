@@ -2,10 +2,10 @@
   "name": "clusterws-uws",
   "version": "0.0.1",
   "scripts": {
-    "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
-    "build": "node-gyp rebuild"
+    "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 1",
+    "build": "clusterws-builder -src=lib -type=node -npm"
   },
-  "description": "ClusterWS uws modified module WebSockets",
+  "description": "ClusterWS uWS modified module uWebSockets",
   "engines": {
     "node": ">=8"
   },
@@ -17,7 +17,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "uws": "^10.148.1",
-    "ws": "^5.2.1"
+    "clusterws-builder": "^0.1.1"
   }
 }
