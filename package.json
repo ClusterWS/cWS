@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 1",
-    "build": "clusterws-builder -src=lib -type=node -npm"
+    "build": "clusterws-builder -src=lib -type=node -min -npm"
   },
   "description": "ClusterWS uWS modified module uWebSockets",
   "engines": {

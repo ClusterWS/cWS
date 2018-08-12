@@ -1,12 +1,10 @@
-// import { Socket } from '../socket/socket';
-// import { logError, isFunction } from '../../utils/functions';
-// import { Listener, CustomObject, Message } from '../../utils/types';
+import { isFunction } from './utils';
 
 export class EventEmitter {
     private events: any = {};
 
     public on(event: string, listener: any): void {
-        // if (!isFunction(listener)) return logError('Listener must be a function');
+        if (!isFunction(listener)) return console.log('Listener should be a function');
         this.events[event] = listener;
     }
 

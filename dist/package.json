@@ -1,0 +1,15 @@
+{
+	"name": "clusterws-uws",
+	"version": "0.0.1",
+	"description": "ClusterWS uWS modified module uWebSockets",
+	"engines": {
+		"node": ">=8"
+	},
+	"keywords": [
+		"tiny",
+		"websockets",
+		"clusterws",
+		"broker"
+	],
+	"license": "MIT"
+}
