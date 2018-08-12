@@ -1,4 +1,4 @@
-const { uws } = require('../dist/index');
+const uws = require('../dist/index');
 
 let socket = new uws.WebSocket('ws://localhost:3000');
 

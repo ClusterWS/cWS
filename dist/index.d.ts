@@ -25,7 +25,11 @@ export class EventEmitter {
     removeEvents(): void;
 }
 
-export const uws: any;
+const _default: {
+    WebSocket: typeof WebSocket;
+    WebSocketServer: typeof WebSocketServer;
+};
+export default _default;
 
 export class WebSocketServer extends EventEmitter {
     constructor(configs: any, callback: any);

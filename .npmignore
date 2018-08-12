@@ -1,0 +1,10 @@
+.vscode/
+
+lib/
+test/
+build/
+targets/
+node_modules/
+
+build_log.txt
+package-lock.json
