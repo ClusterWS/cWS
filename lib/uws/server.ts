@@ -8,6 +8,7 @@ const native: any = require(`./uws_${process.platform}_${process.versions.module
 const APP_PONG_CODE: number = 65;
 const APP_PING_CODE: Buffer = Buffer.from('9');
 const PERMESSAGE_DEFLATE: number = 1;
+const SLIDING_DEFLATE_WINDOW: number = 16;
 const DEFAULT_PAYLOAD_LIMIT: number = 16777216;
 
 // tslint:disable-next-line
@@ -21,10 +22,16 @@ export class WebSocketServer extends EventEmitter {
     private upgradeReq: any;
     private serverGroup: any;
     private isAppLevelPing: boolean = false;
+    private lastUpgradeListener: boolean = true;
 
     constructor(configs: any, callback: any) {
         super();
         this.noDelay = !!configs.noDelay;
+
+        if (configs.path && configs.path[0] !== '/') {
+            configs.path = `/${configs.path}`;
+        }
+
         this.configureNative(configs);
         this.configureServer(configs);
         this.start(configs, callback);
@@ -55,7 +62,12 @@ export class WebSocketServer extends EventEmitter {
         // need to add path spcifications;
         this.httpServer = configs.server || HTTP.createServer((_: any, response: any) => response.end());
         this.httpServer.on('error', (err: Error) => this.emit('error', err));
+        this.httpServer.on('newListener', (eventName: string, _: any) => eventName === 'upgrade' ? this.lastUpgradeListener = false : null);
         this.httpServer.on('upgrade', (req: any, socket: any): void => {
+            if (configs.path && configs.path !== req.url.split('?')[0].split('#')[0]) {
+                return this.lastUpgradeListener ? this.dropConnection(socket, 400, 'URL not supported') : null;
+            }
+
             if (configs.verifyClient) {
                 const info: any = {
                     req,
@@ -72,10 +84,13 @@ export class WebSocketServer extends EventEmitter {
     }
 
     private configureNative(configs: any): void {
-        this.serverGroup = native.server.group.create(
-            configs.perMessageDeflate ? PERMESSAGE_DEFLATE : 0,
-            configs.maxPayload || DEFAULT_PAYLOAD_LIMIT
-        );
+        let nativeOptions: number = 0;
+        if (configs.perMessageDeflate) {
+            // tslint:disable-next-line
+            nativeOptions |= configs.perMessageDeflate.serverNoContextTakeover ? PERMESSAGE_DEFLATE : SLIDING_DEFLATE_WINDOW;
+        }
+
+        this.serverGroup = native.server.group.create(nativeOptions, configs.maxPayload || DEFAULT_PAYLOAD_LIMIT);
 
         native.server.group.onConnection(this.serverGroup, (external: any) => {
             const webSocket: WebSocket = new WebSocket(null, external, true);
