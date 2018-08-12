@@ -1,5 +1,9 @@
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+    value: !0
+});
+
 var HTTP = require("http");
 
 function isFunction(e) {
@@ -73,8 +77,8 @@ class WebSocket extends EventEmitter {
     }
     send(e, t, n, r) {
         if (!this.external) return n && n(new Error("Not opened"));
-        const i = t && t.binary || "string" != typeof e;
-        native[this.executeOn].send(this.external, e, i ? OPCODE_BINARY : OPCODE_TEXT, n ? () => process.nextTick(n) : null, r);
+        const s = t && t.binary || "string" != typeof e;
+        native[this.executeOn].send(this.external, e, s ? OPCODE_BINARY : OPCODE_TEXT, n ? () => process.nextTick(n) : null, r);
     }
     terminate() {
         this.external && (native[this.executeOn].terminate(this.external), this.external = null);
@@ -93,24 +97,27 @@ class WebSocketServer extends EventEmitter {
         super(), this.isAppLevelPing = !1, this.noDelay = !!e.noDelay, this.configureNative(e), 
         this.configureServer(e), this.start(e, t);
     }
+    startAutoPing(e, t) {
+        setTimeout(() => {
+            this.isAppLevelPing = t, native$1.server.group.forEach(this.serverGroup, e => e.isAlive ? (e.isAlive = !1, 
+            t ? e.send(APP_PING_CODE) : e.ping()) : e.terminate()), this.startAutoPing(e, t);
+        }, e);
+    }
     start(e, t) {
         e.port && this.httpServer.listen(e.port, e.host || null, () => {
             this.emit("listening"), t && t();
         });
-    }
-    emitConnection(e) {
-        this.emit("connection", e, this.upgradeReq);
     }
     configureServer(e) {
         this.httpServer = e.server || HTTP.createServer((e, t) => t.end()), this.httpServer.on("error", e => this.emit("error", e)), 
         this.httpServer.on("upgrade", (t, n) => {
             if (e.verifyClient) {
                 const r = {
+                    req: t,
                     origin: t.headers.origin,
-                    secure: !(!t.connection.authorized && !t.connection.encrypted),
-                    req: t
+                    secure: !(!t.connection.authorized && !t.connection.encrypted)
                 };
-                return e.verifyClient(r, (e, r, i) => e ? this.handleUpgrade(t, n) : this.dropConnection(n, r, i));
+                return e.verifyClient(r, (e, r, s) => e ? this.handleUpgrade(t, n) : this.dropConnection(n, r, s));
             }
             return this.handleUpgrade(t, n);
         });
@@ -119,7 +126,7 @@ class WebSocketServer extends EventEmitter {
         this.serverGroup = native$1.server.group.create(e.perMessageDeflate ? PERMESSAGE_DEFLATE : 0, e.maxPayload || DEFAULT_PAYLOAD_LIMIT$1), 
         native$1.server.group.onConnection(this.serverGroup, e => {
             const t = new WebSocket(null, e, !0);
-            native$1.setUserData(e, t), this.emitConnection(t), this.upgradeReq = null;
+            native$1.setUserData(e, t), t.emit("connection", t, this.upgradeReq), this.upgradeReq = null;
         }), native$1.server.group.onMessage(this.serverGroup, (e, t) => {
             if (this.isAppLevelPing && "string" != typeof e && (e = Buffer.from(e)) === APP_PONG_CODE && 1 === e.length) return t.emit("pong");
             t.emit("message", e);
@@ -134,27 +141,16 @@ class WebSocketServer extends EventEmitter {
         return e.end(`HTTP/1.1 ${t} ${n}\r\n\r\n`);
     }
     handleUpgrade(e, t) {
-        const n = e.headers["sec-websocket-key"], r = t.ssl ? t.ssl._external : null, i = t.ssl ? t._parent._handle : t._handle;
-        if (i && n && 24 === n.length) {
+        const n = e.headers["sec-websocket-key"], r = t.ssl ? t.ssl._external : null, s = t.ssl ? t._parent._handle : t._handle;
+        if (s && n && 24 === n.length) {
             t.setNoDelay(this.noDelay);
-            const s = native$1.transfer(-1 === i.fd ? i : i.fd, r);
+            const i = native$1.transfer(-1 === s.fd ? s : s.fd, r);
             t.on("close", (t, r) => {
-                this.serverGroup && (this.upgradeReq = e, native$1.upgrade(this.serverGroup, s, n, e.headers["sec-websocket-extensions"], e.headers["sec-websocket-protocol"]));
+                this.serverGroup && (this.upgradeReq = e, native$1.upgrade(this.serverGroup, i, n, e.headers["sec-websocket-extensions"], e.headers["sec-websocket-protocol"]));
             });
         }
         t.destroy();
     }
-    startAutoPing(e, t) {
-        setTimeout(() => {
-            this.isAppLevelPing = t, native$1.server.group.forEach(this.serverGroup, e => e.isAlive ? (e.isAlive = !1, 
-            t ? e.send(APP_PING_CODE) : e.ping()) : e.terminate()), this.startAutoPing(e, t);
-        }, e);
-    }
 }
 
-var index = {
-    WebSocket: WebSocket,
-    WebSocketServer: WebSocketServer
-};
-
-module.exports = index, module.exports.default = index;
+exports.WebSocket = WebSocket, exports.WebSocketServer = WebSocketServer;

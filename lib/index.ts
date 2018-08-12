@@ -1,7 +1,2 @@
-import { WebSocket } from './client';
-import { WebSocketServer } from './server';
-
-export default {
-    WebSocket,
-    WebSocketServer
-};
+export { WebSocket } from './uws/client';
+export { WebSocketServer } from './uws/server';

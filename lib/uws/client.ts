@@ -1,16 +1,14 @@
-/* tslint:disable */
-import { EventEmitter } from './emitter';
+import { EventEmitter } from '../utils/emitter';
 
+// tslint:disable-next-line
 const native: any = require(`./uws_${process.platform}_${process.versions.modules}`);
 
 const OPCODE_TEXT: number = 1;
 const OPCODE_PING: number = 9;
 const OPCODE_BINARY: number = 2;
-// const APP_PONG_CODE: number = 65;
-// const APP_PING_CODE: any = Buffer.from('9');
-// const PERMESSAGE_DEFLATE: number = 1;
 const DEFAULT_PAYLOAD_LIMIT: number = 16777216;
 
+// tslint:disable-next-line
 const noop: any = (): void => { };
 
 native.setNoop(noop);
@@ -28,11 +26,11 @@ native.client.group.onMessage(clientGroup, (message: any, webSocket: WebSocket):
 });
 
 native.client.group.onPing(clientGroup, (message: any, webSocket: WebSocket): void => {
-    webSocket.emit('ping', message)
+    webSocket.emit('ping', message);
 });
 
 native.client.group.onPong(clientGroup, (message: any, webSocket: WebSocket): void => {
-    webSocket.emit('pong', message)
+    webSocket.emit('pong', message);
 });
 
 native.client.group.onError(clientGroup, (webSocket: WebSocket): void => {
@@ -72,13 +70,13 @@ export class WebSocket extends EventEmitter {
         }
     }
 
-    public get _socket() {
-        const address = this.external ? native.getAddress(this.external) : new Array(3);
+    public get _socket(): any {
+        const address: any[] = this.external ? native.getAddress(this.external) : new Array(3);
         return {
             remotePort: address[0],
             remoteAddress: address[1],
             remoteFamily: address[2]
-        }
+        };
     }
 
     public get readyState(): number {
@@ -93,7 +91,7 @@ export class WebSocket extends EventEmitter {
     public send(message: any, options?: any, cb?: any, compress?: any): void {
         if (!this.external) return cb && cb(new Error('Not opened'));
         const binary: boolean = (options && options.binary) || typeof message !== 'string';
-        native[this.executeOn].send(this.external, message, binary ? OPCODE_BINARY : OPCODE_TEXT, cb ? () => process.nextTick(cb) : null, compress);
+        native[this.executeOn].send(this.external, message, binary ? OPCODE_BINARY : OPCODE_TEXT, cb ? (): void => process.nextTick(cb) : null, compress);
     }
 
     public terminate(): void {
