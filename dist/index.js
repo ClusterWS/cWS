@@ -6,16 +6,12 @@ Object.defineProperty(exports, "__esModule", {
 
 var HTTP = require("http");
 
-function isFunction(e) {
-    return "[object Function]" === {}.toString.call(e);
-}
-
 class EventEmitter {
     constructor() {
         this.events = {};
     }
     on(e, t) {
-        if (!isFunction(t)) return console.log("Listener should be a function");
+        if ("[object Function]" !== {}.toString.call(t)) return console.log("Listener should be a function");
         this.events[e] = t;
     }
     emit(e, ...t) {

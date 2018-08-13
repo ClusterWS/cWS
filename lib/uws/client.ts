@@ -1,4 +1,4 @@
-import { EventEmitter } from '../utils/emitter';
+import { EventEmitter } from '../emitter';
 
 // tslint:disable-next-line
 const native: any = require(`./uws_${process.platform}_${process.versions.modules}`);

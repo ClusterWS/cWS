@@ -1,6 +1,6 @@
 import * as HTTP from 'http';
 import { WebSocket } from './client';
-import { EventEmitter } from '../utils/emitter';
+import { EventEmitter } from '../emitter';
 
 // tslint:disable-next-line
 const native: any = require(`./uws_${process.platform}_${process.versions.modules}`);
@@ -59,7 +59,6 @@ export class WebSocketServer extends EventEmitter {
     }
 
     private configureServer(configs: any): void {
-        // need to add path spcifications;
         this.httpServer = configs.server || HTTP.createServer((_: any, response: any) => response.end());
         this.httpServer.on('error', (err: Error) => this.emit('error', err));
         this.httpServer.on('newListener', (eventName: string, _: any) => eventName === 'upgrade' ? this.lastUpgradeListener = false : null);

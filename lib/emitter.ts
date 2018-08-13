@@ -1,10 +1,9 @@
-import { isFunction } from './utils';
-
 export class EventEmitter {
     private events: any = {};
 
     public on(event: string, listener: any): void {
-        if (!isFunction(listener)) return console.log('Listener should be a function');
+        if ({}.toString.call(listener) !== '[object Function]')
+            return console.log('Listener should be a function');
         this.events[event] = listener;
     }
 

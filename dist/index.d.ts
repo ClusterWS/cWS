@@ -6,8 +6,6 @@ export class EventEmitter {
     removeEvents(): void;
 }
 
-export function isFunction<T>(fn: T): boolean;
-
 export class WebSocket extends EventEmitter {
     OPEN: number;
     CLOSED: number;
