@@ -1,10 +1,10 @@
 {
   "name": "clusterws-uws",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 1",
+    "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
     "build": "clusterws-builder -src=lib -type=node -npm -no_assets"
   },
   "description": "ClusterWS uWS modified module of uWebSockets",
