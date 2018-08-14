@@ -94,7 +94,7 @@ export class WebSocketServer extends EventEmitter {
         native.server.group.onConnection(this.serverGroup, (external: any) => {
             const webSocket: WebSocket = new WebSocket(null, external, true);
             native.setUserData(external, webSocket);
-            webSocket.emit('connection', webSocket, this.upgradeReq);
+            this.emit('connection', webSocket, this.upgradeReq);
             this.upgradeReq = null;
         });
 

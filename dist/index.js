@@ -127,7 +127,7 @@ class WebSocketServer extends EventEmitter {
         this.serverGroup = native$1.server.group.create(t, e.maxPayload || DEFAULT_PAYLOAD_LIMIT$1), 
         native$1.server.group.onConnection(this.serverGroup, e => {
             const t = new WebSocket(null, e, !0);
-            native$1.setUserData(e, t), t.emit("connection", t, this.upgradeReq), this.upgradeReq = null;
+            native$1.setUserData(e, t), this.emit("connection", t, this.upgradeReq), this.upgradeReq = null;
         }), native$1.server.group.onMessage(this.serverGroup, (e, t) => {
             if (this.isAppLevelPing && "string" != typeof e && (e = Buffer.from(e)) === APP_PONG_CODE && 1 === e.length) return t.emit("pong");
             t.emit("message", e);
