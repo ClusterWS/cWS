@@ -23,6 +23,7 @@ npm i clusterws-uws
 uWebSockets node was designed to mimic node js [ws](https://github.com/websockets/ws) module
 
 ```js
+// use WebSocketServer to create server
 const { WebSocketServer } = require('clusterws-uws');
 
 // Create websocket server 
@@ -64,5 +65,15 @@ server.startAutoPing(20000, false)
 // message: string | binary (node buffer)
 // options?: { binary: true | false }
 server.broadcast(message, options)
+
+```
+
+
+### Client example
+
+```js
+// use WebSocket to create client
+const { WebSocket } = require('clusterws-uws');
+
 
 ```
