@@ -6,7 +6,7 @@
 </p>
 
 
-<i>This module is modified version of the uWebsockets with some minor twiks in C++ code and complete rewrite of JS code.</i>
+<i>This module is modified version of the uWebsockets with some minor tweaks in C++ code and complete rewrite of JS code.</i>
 
 **Please consider to support ClusterWS development:**
 - [Become a Backer on Patreon](https://www.patreon.com/clusterws) 
