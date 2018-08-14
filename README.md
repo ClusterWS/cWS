@@ -29,7 +29,7 @@ const server = new WebSocketServer({ port: 3000 }, () => {
 
 // Accept ws connections
 server.on('connection', (socket) => {
-    // standard ws methods
+    // emitted  when recieve new message
     socket.on('message', (message) => { });
 
     // emitted when conection closes 
