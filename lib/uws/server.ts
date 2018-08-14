@@ -1,18 +1,7 @@
 import * as HTTP from 'http';
 import { WebSocket } from './client';
 import { EventEmitter } from '../emitter';
-
-// tslint:disable-next-line
-const native: any = require(`./uws_${process.platform}_${process.versions.modules}`);
-
-const APP_PONG_CODE: number = 65;
-const APP_PING_CODE: Buffer = Buffer.from('9');
-const PERMESSAGE_DEFLATE: number = 1;
-const SLIDING_DEFLATE_WINDOW: number = 16;
-const DEFAULT_PAYLOAD_LIMIT: number = 16777216;
-
-// tslint:disable-next-line
-const noop: any = (): void => { };
+import { native, noop, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_DEFLATE_WINDOW, DEFAULT_PAYLOAD_LIMIT, APP_PONG_CODE } from './shared';
 
 native.setNoop(noop);
 
@@ -35,6 +24,12 @@ export class WebSocketServer extends EventEmitter {
         this.configureNative(configs);
         this.configureServer(configs);
         this.start(configs, callback);
+    }
+
+    public broadcast(message: string | BinaryType, options: any): void {
+        if (this.serverGroup) {
+            native.server.group.broadcast(this.serverGroup, message, options && options.binary || false);
+        }
     }
 
     public startAutoPing(interval: string, appLevel?: boolean): void {
@@ -101,7 +96,7 @@ export class WebSocketServer extends EventEmitter {
         native.server.group.onMessage(this.serverGroup, (message: any, webSocket: WebSocket): any => {
             if (this.isAppLevelPing && typeof message !== 'string') {
                 message = Buffer.from(message);
-                if (message === APP_PONG_CODE && message.length === 1) {
+                if (message[0] === APP_PONG_CODE && message.length === 1) {
                     return webSocket.emit('pong');
                 }
             }

@@ -19,4 +19,4 @@ server.on('connection', (socket) => {
     })
 });
 
-server.startAutoPing(5000)
+server.startAutoPing(5000, true);

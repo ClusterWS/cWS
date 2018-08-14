@@ -23,6 +23,18 @@ export class WebSocket extends EventEmitter {
 
 export class WebSocketServer extends EventEmitter {
     constructor(configs: any, callback: any);
+    broadcast(message: string | BinaryType, options: any): void;
     startAutoPing(interval: string, appLevel?: boolean): void;
 }
+
+export const native: any;
+export const OPCODE_TEXT: number;
+export const OPCODE_PING: number;
+export const OPCODE_BINARY: number;
+export const APP_PONG_CODE: number;
+export const APP_PING_CODE: Buffer;
+export const PERMESSAGE_DEFLATE: number;
+export const SLIDING_DEFLATE_WINDOW: number;
+export const DEFAULT_PAYLOAD_LIMIT: number;
+export const noop: any;
 

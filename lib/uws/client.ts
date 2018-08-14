@@ -1,15 +1,5 @@
 import { EventEmitter } from '../emitter';
-
-// tslint:disable-next-line
-const native: any = require(`./uws_${process.platform}_${process.versions.modules}`);
-
-const OPCODE_TEXT: number = 1;
-const OPCODE_PING: number = 9;
-const OPCODE_BINARY: number = 2;
-const DEFAULT_PAYLOAD_LIMIT: number = 16777216;
-
-// tslint:disable-next-line
-const noop: any = (): void => { };
+import { native, noop, DEFAULT_PAYLOAD_LIMIT, OPCODE_PING, OPCODE_BINARY, OPCODE_TEXT } from './shared';
 
 native.setNoop(noop);
 

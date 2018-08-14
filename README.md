@@ -6,5 +6,5 @@
 </p>
 
 <p align="center">
-  <i>This modules is modified version of the uWebsockets with some minor twiks in C++ code and complete rewrite of JS code.</i>
+  <i>This module is modified version of the uWebsockets with some minor twiks in C++ code and complete rewrite of JS code.</i>
 </p>

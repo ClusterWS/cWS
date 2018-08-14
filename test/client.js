@@ -8,5 +8,12 @@ socket.on('open', () => {
 });
 
 socket.on('message', (message) => {
+    if (typeof message !== 'string') {
+        socket.send(Buffer.from('A'));
+    }
     console.log(message);
+})
+
+socket.on('ping', () => {
+    console.log('got ping');
 })
