@@ -5,9 +5,12 @@
  <img src="https://cdn.rawgit.com/goriunov/159120ca6a883d8d4e75543ec395d361/raw/d22028ecc726d7d3cc30a2a85cc7cc454b0afada/clusterws.svg" width="450">
 </p>
 
-<p align="center">
-  <i>This module is modified version of the uWebsockets with some minor twiks in C++ code and complete rewrite of JS code.</i>
-</p>
+
+<i>This module is modified version of the uWebsockets with some minor twiks in C++ code and complete rewrite of JS code.</i>
+
+**Please consider to support ClusterWS development:**
+- [Become a Backer on Patreon](https://www.patreon.com/clusterws) 
+- [One time Donation via PayPal](https://www.paypal.me/goriunov)
 
 ### Installation
 
@@ -28,7 +31,7 @@ const server = new WebSocketServer({ port: 3000 }, () => {
 });
 
 // Accept ws connections
-server.on('connection', (socket) => {
+server.on('connection', (socket, upgReq) => {
     // emitted  when recieve new message
     socket.on('message', (message) => { });
 
