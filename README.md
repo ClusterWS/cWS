@@ -8,3 +8,58 @@
 <p align="center">
   <i>This module is modified version of the uWebsockets with some minor twiks in C++ code and complete rewrite of JS code.</i>
 </p>
+
+### Installation
+
+```js
+npm i clusterws-uws
+```
+
+### Server example
+
+uWebSockets node was designed to mimic node js [ws](https://github.com/websockets/ws) module
+
+```js
+const { WebSocketServer } = require('clusterws-uws');
+
+// Create websocket server 
+const server = new WebSocketServer({ port: 3000 }, () => {
+    console.log('Server is running on port: ', 3000)
+});
+
+// Accept ws connections
+server.on('connection', (socket) => {
+    // standard ws methods
+    socket.on('message', (message) => { });
+
+    // emitted when conection closes 
+    socket.on('close', (code, reason) => { });
+
+    // emmited on error
+    socket.on('error', (err) => { });
+
+    // emmited when pong comes back from the client connection
+    socket.on('pong', () => { 
+      // make sure to add this line to this function 
+      // important for ping pong system 
+      socket.isAlive = true;
+    });
+
+    // this function accepts string or binary (node buffer)
+    socket.send(message)
+
+    // to manualy send ping
+    socket.ping()
+});
+
+// start autoping accepts interval in ms and type of ping
+// true means application level ping emitted throught messages (good for browser ping)
+// false is low level ping pong
+server.startAutoPing(20000, false)
+
+// broadcast to all connected clients
+// message: string | binary (node buffer)
+// options?: { binary: true | false }
+server.broadcast(message, options)
+
+```
