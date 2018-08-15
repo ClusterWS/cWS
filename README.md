@@ -33,7 +33,7 @@ const server = new WebSocketServer({ port: 3000 }, () => {
 
 // Accept ws connections
 server.on('connection', (socket, upgReq) => {
-    // emitted  when recieve new message
+    // emitted when recieve new message
     socket.on('message', (message) => { });
 
     // emitted when conection closes 
@@ -44,21 +44,20 @@ server.on('connection', (socket, upgReq) => {
 
     // emitted when pong comes back from the client connection
     socket.on('pong', () => { 
-      // make sure to add this line to this function 
-      // important for ping pong system 
+      // make sure to add below line (important to do not drop connections)
       socket.isAlive = true;
     });
 
     // this function accepts string or binary (node buffer)
     socket.send(message)
 
-    // to manualy send ping
+    // to manualy send ping to the client
     socket.ping()
 });
 
-// start autoping accepts interval in ms and type of ping
-// true means application level ping emitted throught messages (good for browser ping)
-// false is low level ping pong
+// Start auto ping (second parameter is type of ping `false` is low level)
+// use `false` most of the time except if you want to track ping pong on the client side 
+// which does not have onping & onpong methods (like browser webscoket)
 server.startAutoPing(20000, false)
 
 // broadcast to all connected clients
@@ -75,5 +74,18 @@ server.broadcast(message, options)
 // use WebSocket to create client
 const { WebSocket } = require('clusterws-uws');
 
+
+
+```
+
+
+## Handle AutoPing In Browser 
+```js
+
+socket.onmessage = function(message){
+  if(typeof message !== 'string'){
+    // ad explanation 
+  }
+}
 
 ```
