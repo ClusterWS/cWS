@@ -39,10 +39,10 @@ server.on('connection', (socket, upgReq) => {
     // emitted when conection closes 
     socket.on('close', (code, reason) => { });
 
-    // emmited on error
+    // emitted on error
     socket.on('error', (err) => { });
 
-    // emmited when pong comes back from the client connection
+    // emitted when pong comes back from the client connection
     socket.on('pong', () => { 
       // make sure to add this line to this function 
       // important for ping pong system 
