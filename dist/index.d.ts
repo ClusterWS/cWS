@@ -43,7 +43,7 @@ export class WebSocket extends EventEmitter {
     isAlive: boolean;
     external: any;
     executeOn: string;
-    constructor(url: string, external: any, isServer?: boolean);
+    constructor(url: string, external?: any, isServer?: boolean);
     readonly _socket: SocketAddress;
     readonly readyState: number;
     ping(message?: string | Buffer): void;

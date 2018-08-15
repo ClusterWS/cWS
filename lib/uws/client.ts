@@ -50,7 +50,7 @@ export class WebSocket extends EventEmitter {
     public external: any = noop;
     public executeOn: string;
 
-    constructor(url: string, external: any, isServer?: boolean) {
+    constructor(url: string, external?: any, isServer?: boolean) {
         super();
         this.on('pong', (): boolean => this.isAlive = true);
         this.external = external;
