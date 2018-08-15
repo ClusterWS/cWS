@@ -1,6 +1,6 @@
 {
   "name": "clusterws-uws",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -19,6 +19,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^10.7.0",
     "clusterws-builder": "^0.1.2"
   }
 }

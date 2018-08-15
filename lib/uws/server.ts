@@ -1,6 +1,7 @@
 import * as HTTP from 'http';
 import { WebSocket } from './client';
 import { EventEmitter } from '../emitter';
+import { Listener, ServerConfigs, BroadcastOptions } from '../types';
 import { native, noop, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_DEFLATE_WINDOW, DEFAULT_PAYLOAD_LIMIT, APP_PONG_CODE } from './shared';
 
 native.setNoop(noop);
@@ -13,7 +14,7 @@ export class WebSocketServer extends EventEmitter {
     private isAppLevelPing: boolean = false;
     private lastUpgradeListener: boolean = true;
 
-    constructor(configs: any, callback: any) {
+    constructor(configs: ServerConfigs, callback: Listener) {
         super();
         this.noDelay = !!configs.noDelay;
 
@@ -26,13 +27,13 @@ export class WebSocketServer extends EventEmitter {
         this.start(configs, callback);
     }
 
-    public broadcast(message: string | BinaryType, options: any): void {
+    public broadcast(message: string | Buffer, options: BroadcastOptions): void {
         if (this.serverGroup) {
             native.server.group.broadcast(this.serverGroup, message, options && options.binary || false);
         }
     }
 
-    public startAutoPing(interval: string, appLevel?: boolean): void {
+    public startAutoPing(interval: number, appLevel?: boolean): void {
         setTimeout(() => {
             this.isAppLevelPing = appLevel;
             native.server.group.forEach(this.serverGroup, (ws: WebSocket) => {
@@ -45,7 +46,7 @@ export class WebSocketServer extends EventEmitter {
         }, interval);
     }
 
-    private start(configs: any, callback: any): void {
+    private start(configs: ServerConfigs, callback: Listener): void {
         if (!configs.port) return;
         this.httpServer.listen(configs.port, configs.host || null, (): void => {
             this.emit('listening');
@@ -53,7 +54,7 @@ export class WebSocketServer extends EventEmitter {
         });
     }
 
-    private configureServer(configs: any): void {
+    private configureServer(configs: ServerConfigs): void {
         this.httpServer = configs.server || HTTP.createServer((_: any, response: any) => response.end());
         this.httpServer.on('error', (err: Error) => this.emit('error', err));
         this.httpServer.on('newListener', (eventName: string, _: any) => eventName === 'upgrade' ? this.lastUpgradeListener = false : null);
@@ -77,7 +78,7 @@ export class WebSocketServer extends EventEmitter {
         });
     }
 
-    private configureNative(configs: any): void {
+    private configureNative(configs: ServerConfigs): void {
         let nativeOptions: number = 0;
         if (configs.perMessageDeflate) {
             // tslint:disable-next-line
@@ -93,7 +94,7 @@ export class WebSocketServer extends EventEmitter {
             this.upgradeReq = null;
         });
 
-        native.server.group.onMessage(this.serverGroup, (message: any, webSocket: WebSocket): any => {
+        native.server.group.onMessage(this.serverGroup, (message: string | Buffer, webSocket: WebSocket): any => {
             if (this.isAppLevelPing && typeof message !== 'string') {
                 message = Buffer.from(message);
                 if (message[0] === APP_PONG_CODE && message.length === 1) {

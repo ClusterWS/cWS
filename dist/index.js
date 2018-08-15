@@ -71,10 +71,10 @@ class WebSocket extends EventEmitter {
     ping(e) {
         this.external && native[this.executeOn].send(this.external, e, OPCODE_PING);
     }
-    send(e, t, r, n) {
+    send(e, t, r) {
         if (!this.external) return r && r(new Error("Not opened"));
-        const s = t && t.binary || "string" != typeof e;
-        native[this.executeOn].send(this.external, e, s ? OPCODE_BINARY : OPCODE_TEXT, r ? () => process.nextTick(r) : null, n);
+        const n = t && t.binary || "string" != typeof e ? OPCODE_BINARY : OPCODE_TEXT;
+        native[this.executeOn].send(this.external, e, n, r ? () => process.nextTick(r) : null, t && t.compress);
     }
     terminate() {
         this.external && (native[this.executeOn].terminate(this.external), this.external = null);

@@ -1,4 +1,5 @@
 import { EventEmitter } from '../emitter';
+import { SendOptions, Listener, SocketAddress } from '../types';
 import { native, noop, DEFAULT_PAYLOAD_LIMIT, OPCODE_PING, OPCODE_BINARY, OPCODE_TEXT } from './shared';
 
 native.setNoop(noop);
@@ -11,15 +12,15 @@ native.client.group.onConnection(clientGroup, (newExternal: any): void => {
     webSocket.emit('open');
 });
 
-native.client.group.onMessage(clientGroup, (message: any, webSocket: WebSocket): void => {
+native.client.group.onMessage(clientGroup, (message: string | Buffer, webSocket: WebSocket): void => {
     webSocket.emit('message', message);
 });
 
-native.client.group.onPing(clientGroup, (message: any, webSocket: WebSocket): void => {
+native.client.group.onPing(clientGroup, (message: string | Buffer, webSocket: WebSocket): void => {
     webSocket.emit('ping', message);
 });
 
-native.client.group.onPong(clientGroup, (message: any, webSocket: WebSocket): void => {
+native.client.group.onPong(clientGroup, (message: string | Buffer, webSocket: WebSocket): void => {
     webSocket.emit('pong', message);
 });
 
@@ -60,7 +61,7 @@ export class WebSocket extends EventEmitter {
         }
     }
 
-    public get _socket(): any {
+    public get _socket(): SocketAddress {
         const address: any[] = this.external ? native.getAddress(this.external) : new Array(3);
         return {
             remotePort: address[0],
@@ -73,15 +74,15 @@ export class WebSocket extends EventEmitter {
         return this.external ? this.OPEN : this.CLOSED;
     }
 
-    public ping(message?: any): void {
+    public ping(message?: string | Buffer): void {
         if (!this.external) return;
         native[this.executeOn].send(this.external, message, OPCODE_PING);
     }
 
-    public send(message: any, options?: any, cb?: any, compress?: any): void {
+    public send(message: string | Buffer, options?: SendOptions, cb?: Listener): void {
         if (!this.external) return cb && cb(new Error('Not opened'));
-        const binary: boolean = (options && options.binary) || typeof message !== 'string';
-        native[this.executeOn].send(this.external, message, binary ? OPCODE_BINARY : OPCODE_TEXT, cb ? (): void => process.nextTick(cb) : null, compress);
+        const opCode: number = (options && options.binary) || typeof message !== 'string' ? OPCODE_BINARY : OPCODE_TEXT;
+        native[this.executeOn].send(this.external, message, opCode, cb ? (): void => process.nextTick(cb) : null, options && options.compress);
     }
 
     public terminate(): void {
