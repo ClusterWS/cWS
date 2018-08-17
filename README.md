@@ -83,9 +83,9 @@ const { WebSocket } = require('clusterws-uws');
 ### Handle AutoLevelPing In Browser Example
 This is just an example of handling app level ping pong from the client side which does not have `onping` and `onpong` methods available 
 
-**Note** if your client has `onping` and `onpong` methods (or similar) do not send `appLevel` ping from the server as it requires more work.
+**Note** if your clients have `onping` and `onpong` methods (or similar) do not send `appLevel` ping from the server as it requires more work.
 ```js
-socket.binaryType = 'arraybuffer' // Do not fored to set to `arraybuffer`
+socket.binaryType = 'arraybuffer' // Do not forget to set to `arraybuffer`
 socket.onmessage = function (message) {
     if (typeof message.data !== 'string') {
         let buffer = new Uint8Array(message.data);
