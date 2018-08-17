@@ -20,7 +20,7 @@ npm i clusterws-uws
 
 ### Server example
 
-uWebSockets node was designed to mimic node js [ws](https://github.com/websockets/ws) module
+uWebSockets node was designed to mimic node js [ws](https://github.com/websockets/ws) module there are some things which are not available in uWebSockets.
 
 ```js
 // use WebSocketServer to create server
@@ -58,6 +58,7 @@ server.on('connection', (socket, upgReq) => {
 // Start auto ping (second parameter is type of ping `false` is low level)
 // use `false` most of the time except if you want to track ping pong on the client side 
 // which does not have onping & onpong methods (like browser webscoket)
+// check Handle AutoLevelPing In Browser Example part below
 server.startAutoPing(20000, false)
 
 // broadcast to all connected clients
@@ -79,13 +80,21 @@ const { WebSocket } = require('clusterws-uws');
 ```
 
 
-## Handle AutoPing In Browser 
+### Handle AutoLevelPing In Browser Example
+This is just an example of handling app level ping pong from the client side which does not have `onping` and `onpong` methods available 
+
+**Note** if your client has `onping` and `onpong` methods (or similar) do not send `appLevel` ping from the server as it requires more work.
 ```js
+socket.binaryType = 'arraybuffer' // Do not fored to set to `arraybuffer`
+socket.onmessage = function (message) {
+    if (typeof message.data !== 'string') {
+        let buffer = new Uint8Array(message.data);
+        if (buffer[0] === 57) {
+            return socket.send(new Uint8Array(['A'.charCodeAt()]));
+        }
 
-socket.onmessage = function(message){
-  if(typeof message !== 'string'){
-    // ad explanation 
-  }
+        // process with your binary date 
+    }
+    // process with your string data
 }
-
 ```

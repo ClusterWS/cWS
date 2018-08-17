@@ -1,0 +1,16 @@
+<html>
+<script>
+    let socket = new WebSocket('ws://localhost:3000');
+    socket.binaryType = 'arraybuffer'
+    socket.onmessage = function (message) {
+        if (typeof message.data !== 'string') {
+            let buffer = new Uint8Array(message.data);
+            if (buffer[0] === 57) {
+                console.log('new incode')
+                socket.send(new Uint8Array(['A'.charCodeAt()]));
+            }
+        }
+    }
+</script>
+
+</html>
