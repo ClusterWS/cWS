@@ -93,7 +93,7 @@ socket.onmessage = function (message) {
             return socket.send(new Uint8Array(['A'.charCodeAt()]));
         }
 
-        // process with your binary date 
+        // process with your binary datas
     }
     // process with your string data
 }
