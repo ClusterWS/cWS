@@ -33,6 +33,8 @@ const server = new WebSocketServer({ port: 3000 }, () => {
 
 // Accept ws connections
 server.on('connection', (socket, upgReq) => {
+    // gives you remoteAddress info
+    let address = socket._socket 
     // emitted when recieve new message
     socket.on('message', (message) => { });
 
@@ -48,11 +50,23 @@ server.on('connection', (socket, upgReq) => {
       socket.isAlive = true;
     });
 
+    // emitted when get ping from the server (if you send)
+    socket.on('ping', () => {})
+
     // this function accepts string or binary (node buffer)
     socket.send(message)
 
+    // destroy connection
+    socket.terminate()
+
+    // close connection
+    socket.close(code, reason)
+
     // to manualy send ping to the client
     socket.ping()
+
+    // to manualy send pong to the client
+    socket.pong()
 });
 
 // Start auto ping (second parameter is type of ping `false` is low level)
@@ -72,10 +86,38 @@ server.broadcast(message, options)
 ### Client example
 
 ```js
+// Client part is pretty much the same as in server
 // use WebSocket to create client
 const { WebSocket } = require('clusterws-uws');
 
+const socket = new WebSocket('ws://url:port');
 
+// emitted when websocket is connected
+socket.on('open', () => {})
+
+// emitted when recieve new message
+socket.on('message', (message) => { });
+
+// emitted when error happens
+socket.on('error', (err) => {})
+
+// emitted on close websocket
+socket.on('close', (code, reason) => {})
+
+// emitted when get ping from the server (if you send)
+socket.on('ping', () => {})
+
+// emitted when get pong from the server (if you send)
+socket.on('pong', () => {})
+
+socket.ping() // manualy send ping to the server
+socket.pong() // manualy send pong to the server
+
+socket.send(msg) // send message to the server binary | string
+
+socket.terminate() // destroy connection
+
+socket.close(code, reason) // close connection
 
 ```
 
