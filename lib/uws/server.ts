@@ -14,7 +14,7 @@ export class WebSocketServer extends EventEmitter {
     private isAppLevelPing: boolean = false;
     private lastUpgradeListener: boolean = true;
 
-    constructor(configs: ServerConfigs, callback: Listener) {
+    constructor(configs: ServerConfigs, callback?: Listener) {
         super();
         this.noDelay = !!configs.noDelay;
 
@@ -66,7 +66,7 @@ export class WebSocketServer extends EventEmitter {
             if (configs.verifyClient) {
                 const info: any = {
                     req,
-                    origin: req.headers.origin,
+                    headers: req.headers,
                     secure: !!(req.connection.authorized || req.connection.encrypted)
                 };
 

@@ -1,6 +1,11 @@
 const uws = require('../dist/index');
 
-let server = new uws.WebSocketServer({ port: 3000 }, () => {
+let server = new uws.WebSocketServer({
+    port: 3000, verifyClient: (info, next) => {
+        console.log(info.headers)
+        next(true);
+    }
+}, () => {
     console.log('Server is running on port: ', 3000)
 });
 
