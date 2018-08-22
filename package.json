@@ -4,7 +4,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
+    "install": "node-gyp --arch=ia32 rebuild > build_log.txt 2>&1 || exit 0",
     "build": "clusterws-builder -src=lib -type=node -npm -no_assets"
   },
   "description": "ClusterWS uWS modified module of uWebSockets",
