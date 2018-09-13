@@ -95,10 +95,10 @@ class WebSocketServer extends EventEmitter {
     broadcast(e, t) {
         this.serverGroup && native.server.group.broadcast(this.serverGroup, e, t && t.binary || !1);
     }
-    startAutoPing(e, t) {
+    startAutoPing(e, t, r) {
         setTimeout(() => {
-            this.isAppLevelPing = t, native.server.group.forEach(this.serverGroup, e => e.isAlive ? (e.isAlive = !1, 
-            t ? e.send(APP_PING_CODE) : e.ping()) : e.terminate()), this.startAutoPing(e, t);
+            this.isAppLevelPing = t, native.server.group.forEach(this.serverGroup, e => !e.isAlive && r ? e.terminate() : (e.isAlive = !1, 
+            t ? e.send(APP_PING_CODE) : e.ping())), this.startAutoPing(e, t, r);
         }, e);
     }
     start(e, t) {

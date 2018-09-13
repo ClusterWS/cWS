@@ -73,7 +73,10 @@ server.on('connection', (socket, upgReq) => {
 // use `false` most of the time except if you want to track ping pong on the client side 
 // which does not have onping & onpong methods (like browser webscoket)
 // check Handle AutoLevelPing In Browser Example part below
-server.startAutoPing(20000, false)
+// third parameter is terminateOnMiss: 
+// changes default behaviour if true (no pong recieved it will terminate connection)
+// default is false
+server.startAutoPing(20000, false, true)
 
 // broadcast to all connected clients
 // message: string | binary (node buffer)
