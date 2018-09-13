@@ -5,7 +5,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
-    "build": "clusterws-builder -src=lib -type=node -npm -no_assets"
+    "build": "ts-builder -c ./tsbuild.json"
   },
   "description": "ClusterWS uWS modified module of uWebSockets",
   "engines": {
@@ -20,6 +20,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^10.7.0",
-    "clusterws-builder": "^0.1.2"
+    "ts-builder": "0.7.4"
   }
 }
