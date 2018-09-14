@@ -8,15 +8,20 @@ native.setNoop(noop);
 
 export class WebSocketServer extends EventEmitter {
   private noDelay: boolean;
-  private httpServer: any;
+  private httpServer: HTTP.Server;
   private upgradeReq: any;
   private serverGroup: any;
   private isAppLevelPing: boolean = false;
   private lastUpgradeListener: boolean = true;
+  private upgradeListener: Listener;
+  private newListenerListener: Listener;
+  private errorListener: Listener;
+  private passedServer: boolean = false;
 
   constructor(configs: ServerConfigs, callback?: Listener) {
     super();
     this.noDelay = !!configs.noDelay;
+    this.passedServer = !!configs.server;
 
     if (configs.path && configs.path[0] !== '/') {
       configs.path = `/${configs.path}`;
@@ -46,6 +51,31 @@ export class WebSocketServer extends EventEmitter {
     }, interval);
   }
 
+  public close(callback?: Listener): void {
+    if (this.httpServer) {
+      // Remove listeners attached to httpServer during configureServer()
+      if (this.errorListener) this.httpServer.removeListener('error', this.errorListener);
+      if (this.newListenerListener) this.httpServer.removeListener('newListener', this.newListenerListener);
+      if (this.upgradeListener) this.httpServer.removeListener('upgrade', this.upgradeListener);
+
+      if (!this.passedServer) {
+        this.httpServer.close((): void => this.closeContinuation(callback));
+      } else {
+        this.closeContinuation(callback);
+      }
+    }
+  }
+
+  private closeContinuation(callback?: Listener): void {
+    if (this.serverGroup) {
+      native.server.group.close(this.serverGroup);
+      this.serverGroup = null;
+    }
+
+    this.emit('close');
+    callback && callback();
+  }
+
   private start(configs: ServerConfigs, callback: Listener): void {
     if (!configs.port) return;
     this.httpServer.listen(configs.port, configs.host || null, (): void => {
@@ -56,9 +86,9 @@ export class WebSocketServer extends EventEmitter {
 
   private configureServer(configs: ServerConfigs): void {
     this.httpServer = configs.server || HTTP.createServer((_: any, response: any) => response.end());
-    this.httpServer.on('error', (err: Error) => this.emit('error', err));
-    this.httpServer.on('newListener', (eventName: string, _: any) => eventName === 'upgrade' ? this.lastUpgradeListener = false : null);
-    this.httpServer.on('upgrade', (req: any, socket: any): void => {
+    this.httpServer.on('error', this.errorListener = ((err: Error): void => this.emit('error', err)));
+    this.httpServer.on('newListener', this.newListenerListener = ((eventName: string, _: any): void => { eventName === 'upgrade' ? this.lastUpgradeListener = false : null; }));
+    this.httpServer.on('upgrade', this.upgradeListener = ((req: any, socket: any): void => {
       if (configs.path && configs.path !== req.url.split('?')[0].split('#')[0]) {
         return this.lastUpgradeListener ? this.dropConnection(socket, 400, 'URL not supported') : null;
       }
@@ -75,7 +105,7 @@ export class WebSocketServer extends EventEmitter {
       }
 
       return this.handleUpgrade(req, socket);
-    });
+    }));
   }
 
   private configureNative(configs: ServerConfigs): void {

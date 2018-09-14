@@ -56,6 +56,7 @@ export class WebSocketServer extends EventEmitter {
     constructor(configs: ServerConfigs, callback?: Listener);
     broadcast(message: string | Buffer, options: BroadcastOptions): void;
     startAutoPing(interval: number, appLevel?: boolean, terminateOnMiss?: boolean): void;
+    close(callback?: Listener): void;
 }
 
 export const native: any;
