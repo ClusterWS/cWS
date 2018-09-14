@@ -48,7 +48,7 @@ export class WebSocket extends EventEmitter {
     ping(message?: string | Buffer): void;
     send(message: string | Buffer, options?: SendOptions, cb?: Listener): void;
     terminate(): void;
-    close(code: number, reason: string): void;
+    close(code?: number, reason?: string): void;
 }
 
 export class WebSocketServer extends EventEmitter {

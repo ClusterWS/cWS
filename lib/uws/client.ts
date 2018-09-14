@@ -90,7 +90,7 @@ export class WebSocket extends EventEmitter {
     this.external = null;
   }
 
-  public close(code: number, reason: string): void {
+  public close(code?: number, reason?: string): void {
     if (!this.external) return;
     native[this.executeOn].close(this.external, code, reason);
     this.external = null;
