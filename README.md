@@ -122,7 +122,7 @@ socket.close(code, reason) // close connection
 ```
 
 
-### Handle AutoLevelPing In Browser Example
+### Handle AppLevelPing In Browser Example
 This is just an example of handling app level ping pong from the client side which does not have `onping` and `onpong` methods available 
 
 **Note** if your clients have `onping` and `onpong` methods (or similar) do not send `appLevel` ping from the server as it requires more work.
