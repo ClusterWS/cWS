@@ -137,7 +137,6 @@ export class WebSocketServer extends EventEmitter {
 
   private handleUpgrade(req: any, socket: any): void {
     const secKey: any = req.headers['sec-websocket-key'];
-    console.log(socket.ssl);
     const sslState: any = socket.ssl ? native.getSSLContext(socket.ssl) : null;
     const socketHandle: any = socket.ssl ? socket._parent._handle : socket._handle;
 
