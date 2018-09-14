@@ -7,7 +7,7 @@
     "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
     "build": "ts-builder -c ./tsbuild.json"
   },
-  "description": "ClusterWS uWS modified module of uWebSockets",
+  "description": "ClusterWS uWS modified verstion of uWebSockets",
   "engines": {
     "node": ">=8"
   },

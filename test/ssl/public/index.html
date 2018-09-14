@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ClusterWS Manual Tests</title>
+</head>
+
+<body>
+  <h1>Manual Tests</h1>
+  <button id="button">Send message</button>
+
+
+  <!-- <script src="https://rawgit.com/kawanet/msgpack-lite/master/dist/msgpack.min.js"></script> -->
+  <!-- <script src="js/ClusterWS.js"></script> -->
+  <script>
+    // var socket = new ClusterWS({
+    //   url: 'wss://localhost:8123',
+    //   autoReconnect: true,
+    // })
+
+    const socket = new WebSocket('wss://localhost:3000');
+    socket.onopen = function () {
+      console.log('Socket is connected');
+      socket.send(" Hello");
+    }
+
+    socket.onmessage = function (msg) {
+      console.log(msg.data);
+    }
+
+    socket.close = function () {
+      console.log("Socket is closed");
+    }
+    // socket.on('connect', function () {
+    //   console.log('Socket is connected')
+
+    //   socket.subscribe('Hello').watch((message) => {
+    //     console.log('Message :', message)
+    //   })
+    // })
+
+    // socket.on('error', (err) => {
+    //   console.log(err)
+    // })
+
+    // document.querySelector('#button').onclick = function () {
+    //   socket.getChannelByName('Hello').publish({ hello: 'hi' })
+    // }
+  </script>
+</body>
+
+</html>

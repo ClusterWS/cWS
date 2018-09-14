@@ -142,7 +142,9 @@ class WebSocketServer extends EventEmitter {
         return e.end(`HTTP/1.1 ${t} ${r}\r\n\r\n`);
     }
     handleUpgrade(e, t) {
-        const r = e.headers["sec-websocket-key"], s = t.ssl ? t.ssl._external : null, n = t.ssl ? t._parent._handle : t._handle;
+        const r = e.headers["sec-websocket-key"];
+        console.log(t.ssl);
+        const s = t.ssl ? native.getSSLContext(t.ssl) : null, n = t.ssl ? t._parent._handle : t._handle;
         if (n && r && 24 === r.length) {
             t.setNoDelay(this.noDelay);
             const i = native.transfer(-1 === n.fd ? n : n.fd, s);
