@@ -46,13 +46,12 @@ export class WebSocket extends EventEmitter {
   public OPEN: number = 1;
   public CLOSED: number = 0;
 
-  public isAlive: boolean = true;
   public external: any = noop;
   public executeOn: string;
 
   constructor(url: string, external?: any, isServer?: boolean) {
     super();
-    this.on('pong', (): boolean => this.isAlive = true);
+
     this.external = external;
     this.executeOn = isServer ? 'server' : 'client';
 

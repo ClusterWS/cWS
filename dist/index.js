@@ -23,7 +23,7 @@ class EventEmitter {
     }
 }
 
-const native = require(`./uws_${process.platform}_${process.versions.modules}`), OPCODE_TEXT = 1, OPCODE_PING = 9, OPCODE_BINARY = 2, APP_PONG_CODE = Buffer.from("A")[0], APP_PING_CODE = Buffer.from("9"), PERMESSAGE_DEFLATE = 1, SLIDING_DEFLATE_WINDOW = 16, DEFAULT_PAYLOAD_LIMIT = 16777216, noop = () => {};
+const native = require(`./uws_${process.platform}_${process.versions.modules}`), OPCODE_TEXT = 1, OPCODE_PING = 9, OPCODE_BINARY = 2, APP_PING_CODE = Buffer.from("9"), PERMESSAGE_DEFLATE = 1, SLIDING_DEFLATE_WINDOW = 16, DEFAULT_PAYLOAD_LIMIT = 16777216, noop = () => {};
 
 native.setNoop(noop);
 
@@ -53,9 +53,8 @@ native.client.group.onConnection(clientGroup, e => {
 
 class WebSocket extends EventEmitter {
     constructor(e, t, r) {
-        super(), this.OPEN = 1, this.CLOSED = 0, this.isAlive = !0, this.external = noop, 
-        this.on("pong", () => this.isAlive = !0), this.external = t, this.executeOn = r ? "server" : "client", 
-        r || native.connect(clientGroup, e, this);
+        super(), this.OPEN = 1, this.CLOSED = 0, this.external = noop, this.external = t, 
+        this.executeOn = r ? "server" : "client", r || native.connect(clientGroup, e, this);
     }
     get _socket() {
         const e = this.external ? native.getAddress(this.external) : new Array(3);
@@ -88,18 +87,14 @@ native.setNoop(noop);
 
 class WebSocketServer extends EventEmitter {
     constructor(e, t) {
-        super(), this.isAppLevelPing = !1, this.lastUpgradeListener = !0, this.noDelay = !!e.noDelay, 
-        e.path && "/" !== e.path[0] && (e.path = `/${e.path}`), this.configureNative(e), 
-        this.configureServer(e), this.start(e, t);
+        super(), this.lastUpgradeListener = !0, this.noDelay = !!e.noDelay, e.path && "/" !== e.path[0] && (e.path = `/${e.path}`), 
+        this.configureNative(e), this.configureServer(e), this.start(e, t);
     }
     broadcast(e, t) {
         this.serverGroup && native.server.group.broadcast(this.serverGroup, e, t && t.binary || !1);
     }
-    startAutoPing(e, t, r) {
-        setTimeout(() => {
-            this.isAppLevelPing = t, native.server.group.forEach(this.serverGroup, e => !e.isAlive && r ? e.terminate() : (e.isAlive = !1, 
-            t ? e.send(APP_PING_CODE) : e.ping())), this.startAutoPing(e, t, r);
-        }, e);
+    startAutoPing(e, t) {
+        this.serverGroup && native.server.group.startAutoPing(this.serverGroup, e, t ? APP_PING_CODE : null);
     }
     start(e, t) {
         e.port && this.httpServer.listen(e.port, e.host || null, () => {
@@ -130,7 +125,6 @@ class WebSocketServer extends EventEmitter {
             const t = new WebSocket(null, e, !0);
             native.setUserData(e, t), this.emit("connection", t, this.upgradeReq), this.upgradeReq = null;
         }), native.server.group.onMessage(this.serverGroup, (e, t) => {
-            if (this.isAppLevelPing && "string" != typeof e && (e = Buffer.from(e))[0] === APP_PONG_CODE && 1 === e.length) return t.emit("pong");
             t.emit("message", e);
         }), native.server.group.onDisconnection(this.serverGroup, (e, t, r, n) => {
             n.external = null, process.nextTick(() => {

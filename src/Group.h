@@ -28,7 +28,6 @@ protected:
     std::function<void(WebSocket<isServer> *, char *message, size_t length, OpCode opCode)> messageHandler;
     std::function<void(WebSocket<isServer> *, int code, char *message, size_t length)> disconnectionHandler;
     std::function<void(WebSocket<isServer> *, char *, size_t)> pingHandler;
-    std::function<void(WebSocket<isServer> *, char *, size_t)> pongHandler;
     std::function<void(HttpSocket<isServer> *)> httpConnectionHandler;
     std::function<void(HttpResponse *, HttpRequest, char *, size_t, size_t)> httpRequestHandler;
     std::function<void(HttpResponse *, char *, size_t, size_t)> httpDataHandler;
@@ -43,7 +42,9 @@ protected:
     Hub *hub;
     int extensionOptions;
     uS::Timer *timer = nullptr, *httpTimer = nullptr;
-    std::string userPingMessage;
+    const char *userPingMessage;
+    size_t userPingMessageLength;
+    OpCode pingMessageType;
     std::stack<uS::Poll *> iterators;
 
     // todo: cannot be named user, collides with parent!
@@ -64,6 +65,8 @@ protected:
     void stopListening();
 
 public:
+    std::function<void(WebSocket<isServer> *, char *, size_t)> pongHandler;
+
     void onConnection(std::function<void(WebSocket<isServer> *, HttpRequest)> handler);
     void onTransfer(std::function<void(WebSocket<isServer> *)> handler);
     void onMessage(std::function<void(WebSocket<isServer> *, char *, size_t, OpCode)> handler);
@@ -79,14 +82,14 @@ public:
     void onHttpUpgrade(std::function<void(HttpSocket<isServer> *, HttpRequest)> handler);
 
     // Thread safe
-    void broadcast(const char *message, size_t length, OpCode opCode);
+    void broadcast(const char *message, size_t length, OpCode opCode, bool isPing);
     void setUserData(void *user);
     void *getUserData();
 
     // Not thread safe
     void terminate();
     void close(int code = 1000, char *message = nullptr, size_t length = 0);
-    void startAutoPing(int intervalMs, std::string userMessage = "");
+    void startAutoPing(int intervalMs, const char *message, size_t length, OpCode opCode);
 
     // same as listen(TRANSFERS), backwards compatible API for now
     void addAsync() {

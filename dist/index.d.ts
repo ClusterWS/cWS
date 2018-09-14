@@ -40,7 +40,6 @@ export type SendOptions = {
 export class WebSocket extends EventEmitter {
     OPEN: number;
     CLOSED: number;
-    isAlive: boolean;
     external: any;
     executeOn: string;
     constructor(url: string, external?: any, isServer?: boolean);
@@ -55,14 +54,13 @@ export class WebSocket extends EventEmitter {
 export class WebSocketServer extends EventEmitter {
     constructor(configs: ServerConfigs, callback?: Listener);
     broadcast(message: string | Buffer, options: BroadcastOptions): void;
-    startAutoPing(interval: number, appLevel?: boolean, terminateOnMiss?: boolean): void;
+    startAutoPing(interval: number, appLevel?: boolean): void;
 }
 
 export const native: any;
 export const OPCODE_TEXT: number;
 export const OPCODE_PING: number;
 export const OPCODE_BINARY: number;
-export const APP_PONG_CODE: number;
 export const APP_PING_CODE: Buffer;
 export const PERMESSAGE_DEFLATE: number;
 export const SLIDING_DEFLATE_WINDOW: number;

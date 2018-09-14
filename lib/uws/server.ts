@@ -2,7 +2,7 @@ import * as HTTP from 'http';
 import { WebSocket } from './client';
 import { EventEmitter } from '../emitter';
 import { Listener, ServerConfigs, BroadcastOptions } from '../types';
-import { native, noop, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_DEFLATE_WINDOW, DEFAULT_PAYLOAD_LIMIT, APP_PONG_CODE } from './shared';
+import { native, noop, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_DEFLATE_WINDOW, DEFAULT_PAYLOAD_LIMIT } from './shared';
 
 native.setNoop(noop);
 
@@ -11,7 +11,6 @@ export class WebSocketServer extends EventEmitter {
   private httpServer: any;
   private upgradeReq: any;
   private serverGroup: any;
-  private isAppLevelPing: boolean = false;
   private lastUpgradeListener: boolean = true;
 
   constructor(configs: ServerConfigs, callback?: Listener) {
@@ -33,17 +32,10 @@ export class WebSocketServer extends EventEmitter {
     }
   }
 
-  public startAutoPing(interval: number, appLevel?: boolean, terminateOnMiss?: boolean): void {
-    setTimeout(() => {
-      this.isAppLevelPing = appLevel;
-      native.server.group.forEach(this.serverGroup, (ws: WebSocket) => {
-        if (!ws.isAlive && terminateOnMiss) return ws.terminate();
-        ws.isAlive = false;
-        // check logic if applevel is inside of this functioin
-        return appLevel ? ws.send(APP_PING_CODE) : ws.ping();
-      });
-      this.startAutoPing(interval, appLevel, terminateOnMiss);
-    }, interval);
+  public startAutoPing(interval: number, appLevel?: boolean): void {
+    if (this.serverGroup) {
+      native.server.group.startAutoPing(this.serverGroup, interval, appLevel ? APP_PING_CODE : null);
+    }
   }
 
   private start(configs: ServerConfigs, callback: Listener): void {
@@ -95,13 +87,6 @@ export class WebSocketServer extends EventEmitter {
     });
 
     native.server.group.onMessage(this.serverGroup, (message: string | Buffer, webSocket: WebSocket): any => {
-      if (this.isAppLevelPing && typeof message !== 'string') {
-        message = Buffer.from(message);
-        if (message[0] === APP_PONG_CODE && message.length === 1) {
-          return webSocket.emit('pong');
-        }
-      }
-
       webSocket.emit('message', message);
     });
 

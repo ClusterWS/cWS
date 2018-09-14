@@ -301,15 +301,21 @@ void onMessage(const FunctionCallbackInfo<Value> &args) {
 
   Isolate *isolate = args.GetIsolate();
   Persistent<Function> *messageCallback = &groupData->messageHandler;
+
   messageCallback->Reset(isolate, Local<Function>::Cast(args[1]));
-  group->onMessage([isolate, messageCallback](
+  group->onMessage([isolate, messageCallback, group](
                        uWS::WebSocket<isServer> *webSocket, const char *message,
                        size_t length, uWS::OpCode opCode) {
-    HandleScope hs(isolate);
-    Local<Value> argv[] = {wrapMessage(message, length, opCode, isolate),
-                           getDataV8(webSocket, isolate)};
-    Local<Function>::New(isolate, *messageCallback)
-        ->Call(isolate->GetCurrentContext()->Global(), 2, argv);
+    if(length == 1 && message[0] == 65) {
+      // emit pong event is we get pong from the client
+      group->pongHandler(webSocket, nullptr, 0);
+    } else {
+      HandleScope hs(isolate);
+      Local<Value> argv[] = {wrapMessage(message, length, opCode, isolate),
+                            getDataV8(webSocket, isolate)};
+      Local<Function>::New(isolate, *messageCallback)
+          ->Call(isolate->GetCurrentContext()->Global(), 2, argv);
+    }
   });
 }
 
@@ -434,7 +440,7 @@ void broadcast(const FunctionCallbackInfo<Value> &args) {
   uWS::OpCode opCode =
       args[2]->BooleanValue() ? uWS::OpCode::BINARY : uWS::OpCode::TEXT;
   NativeString nativeString(args[1]);
-  group->broadcast(nativeString.getData(), nativeString.getLength(), opCode);
+  group->broadcast(nativeString.getData(), nativeString.getLength(), opCode, false);
 }
 
 template <bool isServer>
@@ -485,10 +491,12 @@ void getSize(const FunctionCallbackInfo<Value> &args) {
 void startAutoPing(const FunctionCallbackInfo<Value> &args) {
   uWS::Group<uWS::SERVER> *group =
       (uWS::Group<uWS::SERVER> *)args[0].As<External>()->Value();
+
   NativeString nativeString(args[2]);
+
   group->startAutoPing(
       args[1]->IntegerValue(),
-      std::string(nativeString.getData(), nativeString.getLength()));
+      nativeString.getData(), nativeString.getLength(), uWS::OpCode::BINARY);
 }
 
 void setNoop(const FunctionCallbackInfo<Value> &args) {

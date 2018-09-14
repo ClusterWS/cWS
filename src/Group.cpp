@@ -16,28 +16,24 @@ void *Group<isServer>::getUserData() {
 template <bool isServer>
 void Group<isServer>::timerCallback(uS::Timer *timer) {
     Group<isServer> *group = (Group<isServer> *) timer->getData();
-
-    group->forEach([](uWS::WebSocket<isServer> *webSocket) {
-        if (webSocket->hasOutstandingPong) {
-            webSocket->terminate();
-        } else {
-            webSocket->hasOutstandingPong = true;
-        }
-    });
-
-    if (group->userPingMessage.length()) {
-        group->broadcast(group->userPingMessage.data(), group->userPingMessage.length(), OpCode::TEXT);
+    // finish bugs
+    if (group->userPingMessageLength > 0) {
+        group->broadcast(group->userPingMessage, group->userPingMessageLength, group->pingMessageType, true);
     } else {
-        group->broadcast(nullptr, 0, OpCode::PING);
+        group->broadcast(nullptr, 0, OpCode::PING, true);
     }
 }
 
 template <bool isServer>
-void Group<isServer>::startAutoPing(int intervalMs, std::string userMessage) {
+// const char *message, size_t length, OpCode opCode
+void Group<isServer>::startAutoPing(int intervalMs, const char *message, size_t length, OpCode opCode) {
     timer = new uS::Timer(loop);
     timer->setData(this);
     timer->start(timerCallback, intervalMs, intervalMs);
-    userPingMessage = userMessage;
+
+    userPingMessage = message;
+    userPingMessageLength = length;
+    pingMessageType = opCode;
 }
 
 template <bool isServer>
@@ -224,16 +220,27 @@ void Group<isServer>::onHttpUpgrade(std::function<void(HttpSocket<isServer> *, H
 }
 
 template <bool isServer>
-void Group<isServer>::broadcast(const char *message, size_t length, OpCode opCode) {
+void Group<isServer>::broadcast(const char *message, size_t length, OpCode opCode, bool isPing) {
 
 #ifdef UWS_THREADSAFE
     std::lock_guard<std::recursive_mutex> lockGuard(*asyncMutex);
 #endif
 
     typename WebSocket<isServer>::PreparedMessage *preparedMessage = WebSocket<isServer>::prepareMessage((char *) message, length, opCode, false);
-    forEach([preparedMessage](uWS::WebSocket<isServer> *ws) {
-        ws->sendPrepared(preparedMessage);
-    });
+      if(isPing) {
+        forEach([preparedMessage](uWS::WebSocket<isServer> *ws) {
+            if (ws->hasOutstandingPong) {
+                ws->terminate();
+            } else {
+                ws->hasOutstandingPong = true;
+                ws->sendPrepared(preparedMessage);
+            }
+        });
+      } else {
+        forEach([preparedMessage](uWS::WebSocket<isServer> *ws) {
+          ws->sendPrepared(preparedMessage);
+        });
+      }
     WebSocket<isServer>::finalizeMessage(preparedMessage);
 }
 

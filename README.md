@@ -64,19 +64,14 @@ server.on('connection', (socket, upgReq) => {
 
     // to manualy send ping to the client
     socket.ping()
-
-    // to manualy send pong to the client
-    socket.pong()
 });
 
 // Start auto ping (second parameter is type of ping `false` is low level)
 // use `false` most of the time except if you want to track ping pong on the client side 
 // which does not have onping & onpong methods (like browser webscoket)
 // check Handle AutoLevelPing In Browser Example part below
-// third parameter is terminateOnMiss: 
-// changes default behaviour if true (no pong recieved it will terminate connection)
-// default is false
-server.startAutoPing(20000, false, true)
+// event if you use app level ping server onPong will be called
+server.startAutoPing(20000, false)
 
 // broadcast to all connected clients
 // message: string | binary (node buffer)
@@ -114,7 +109,6 @@ socket.on('ping', () => {})
 socket.on('pong', () => {})
 
 socket.ping() // manualy send ping to the server
-socket.pong() // manualy send pong to the server
 
 socket.send(msg) // send message to the server binary | string
 
@@ -135,6 +129,7 @@ socket.onmessage = function (message) {
     if (typeof message.data !== 'string') {
         let buffer = new Uint8Array(message.data);
         if (buffer[0] === 57) {
+            // output should be an array with one bit and [0] is === 65
             return socket.send(new Uint8Array(['A'.charCodeAt()]));
         }
 
