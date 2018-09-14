@@ -78,6 +78,9 @@ server.startAutoPing(20000, false)
 // options?: { binary: true | false }
 server.broadcast(message, options)
 
+// destroy or close server
+server.close(callback)
+
 ```
 
 

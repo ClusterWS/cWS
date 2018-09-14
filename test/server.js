@@ -30,3 +30,5 @@ server.on('connection', (socket) => {
 });
 
 server.startAutoPing(5000, true);
+
+setTimeout(() => server.close(), 10000);
