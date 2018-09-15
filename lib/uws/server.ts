@@ -1,15 +1,17 @@
 import * as HTTP from 'http';
 import { WebSocket } from './client';
 import { EventEmitter } from '../emitter';
-import { Listener, ServerConfigs, BroadcastOptions } from '../types';
+import { Listener, ServerConfigs, BroadcastOptions, ConnectionInfo } from '../types';
 import { native, noop, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_DEFLATE_WINDOW, DEFAULT_PAYLOAD_LIMIT } from './shared';
+import { Socket } from 'net';
+import { TLSSocket } from 'tls';
 
 native.setNoop(noop);
 
 export class WebSocketServer extends EventEmitter {
   private noDelay: boolean;
-  private httpServer: any;
-  private upgradeReq: any;
+  private httpServer: HTTP.Server;
+  private upgradeReq: HTTP.IncomingMessage;
   private serverGroup: any;
   private upgradeListener: Listener;
   private serverIsProvided: boolean = false;
@@ -66,17 +68,17 @@ export class WebSocketServer extends EventEmitter {
 
   private configureServer(configs: ServerConfigs): void {
     this.serverIsProvided = !!configs.server;
-    this.httpServer = configs.server || HTTP.createServer((_: any, response: any) => response.end());
-    this.upgradeListener = (req: any, socket: any): void => {
+    this.httpServer = configs.server || HTTP.createServer((_: any, response: HTTP.ServerResponse) => response.end());
+    this.upgradeListener = (req: HTTP.IncomingMessage, socket: Socket): void => {
       if (configs.path && configs.path !== req.url.split('?')[0].split('#')[0]) {
         return this.lastUpgradeListener ? this.dropConnection(socket, 400, 'URL not supported') : null;
       }
 
       if (configs.verifyClient) {
-        const info: any = {
+        const info: ConnectionInfo = {
           req,
           headers: req.headers,
-          secure: !!(req.connection.authorized || req.connection.encrypted)
+          secure: !!(req.connection instanceof TLSSocket && (req.connection.authorized || req.connection.encrypted))
         };
 
         return configs.verifyClient(info, (result: any, code: number, name: string) =>
@@ -131,7 +133,7 @@ export class WebSocketServer extends EventEmitter {
     );
   }
 
-  private dropConnection(socket: any, code: number, name: string): void {
+  private dropConnection(socket: Socket, code: number, name: string): void {
     return socket.end(`HTTP/1.1 ${code} ${name}\r\n\r\n`);
   }
 

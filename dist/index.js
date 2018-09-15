@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: !0
 });
 
-var HTTP = require("http");
+var HTTP = require("http"), tls = require("tls");
 
 class EventEmitter {
     constructor() {
@@ -115,7 +115,7 @@ class WebSocketServer extends EventEmitter {
                 const s = {
                     req: t,
                     headers: t.headers,
-                    secure: !(!t.connection.authorized && !t.connection.encrypted)
+                    secure: !!(t.connection instanceof tls.TLSSocket && (t.connection.authorized || t.connection.encrypted))
                 };
                 return e.verifyClient(s, (e, s, n) => e ? this.handleUpgrade(t, r) : this.dropConnection(r, s, n));
             }
