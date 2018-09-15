@@ -1,7 +1,7 @@
 import { Listener } from './types';
 
 export class EventEmitter {
-  private events: any = {};
+  private events: {} | { key: Listener } = {};
 
   public on(event: string, listener: Listener): void {
     if ({}.toString.call(listener) !== '[object Function]')
