@@ -1,4 +1,5 @@
 import * as HTTP from 'http';
+import * as HTTPS from 'https';
 import { WebSocket } from './client';
 import { EventEmitter } from '../emitter';
 import { Listener, ServerConfigs, BroadcastOptions, ConnectionInfo } from '../types';
@@ -10,7 +11,7 @@ native.setNoop(noop);
 
 export class WebSocketServer extends EventEmitter {
   private noDelay: boolean;
-  private httpServer: HTTP.Server;
+  private httpServer: HTTP.Server | HTTPS.Server;
   private upgradeReq: HTTP.IncomingMessage;
   private serverGroup: any;
   private upgradeListener: Listener;
@@ -137,10 +138,12 @@ export class WebSocketServer extends EventEmitter {
     return socket.end(`HTTP/1.1 ${code} ${name}\r\n\r\n`);
   }
 
-  private handleUpgrade(req: any, socket: any): void {
+  private handleUpgrade(req: HTTP.IncomingMessage, socket: Socket): void {
     const secKey: any = req.headers['sec-websocket-key'];
-    const sslState: any = socket.ssl ? native.getSSLContext(socket.ssl) : null;
-    const socketHandle: any = socket.ssl ? socket._parent._handle : socket._handle;
+    // Cast socket as <any> so can get access to private properties to calculate a uws ticket.
+    const socketAsAny = socket as any;
+    const sslState: any = socketAsAny.ssl ? native.getSSLContext(socketAsAny.ssl) : null;
+    const socketHandle: any = socketAsAny.ssl ? socketAsAny._parent._handle : socketAsAny._handle;
 
     if (socketHandle && secKey && secKey.length === 24) {
       socket.setNoDelay(this.noDelay);
