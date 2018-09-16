@@ -141,7 +141,7 @@ export class WebSocketServer extends EventEmitter {
   private handleUpgrade(req: HTTP.IncomingMessage, socket: Socket): void {
     const secKey: any = req.headers['sec-websocket-key'];
     // Cast socket as <any> so can get access to private properties to calculate a uws ticket.
-    const socketAsAny = socket as any;
+    const socketAsAny: any = socket as any;
     const sslState: any = socketAsAny.ssl ? native.getSSLContext(socketAsAny.ssl) : null;
     const socketHandle: any = socketAsAny.ssl ? socketAsAny._parent._handle : socketAsAny._handle;
 

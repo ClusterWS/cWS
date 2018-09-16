@@ -1,4 +1,5 @@
 import * as HTTP from 'http';
+import * as HTTPS from 'https';
 
 export type Listener = (...args: any[]) => void;
 
@@ -22,7 +23,7 @@ export type ServerConfigs = {
   path?: string,
   port?: number,
   host?: string,
-  server?: HTTP.Server,
+  server?: HTTP.Server | HTTPS.Server,
   noDelay?: boolean,
   maxPayload?: number,
   perMessageDeflate?: { serverNoContextTakeover: boolean }
