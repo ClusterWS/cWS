@@ -1,3 +1,6 @@
+import * as HTTP from 'http';
+import * as HTTPS from 'https';
+
 export type Listener = (...args: any[]) => void;
 
 export type SocketAddress = {
@@ -7,8 +10,8 @@ export type SocketAddress = {
 };
 
 export type ConnectionInfo = {
-  req: any,
-  origin: string,
+  req: HTTP.IncomingMessage,
+  headers: HTTP.IncomingHttpHeaders,
   secure: boolean
 };
 
@@ -20,7 +23,7 @@ export type ServerConfigs = {
   path?: string,
   port?: number,
   host?: string,
-  server?: any,
+  server?: HTTP.Server | HTTPS.Server,
   noDelay?: boolean,
   maxPayload?: number,
   perMessageDeflate?: { serverNoContextTakeover: boolean }

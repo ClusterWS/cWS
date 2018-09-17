@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: !0
 });
 
-var HTTP = require("http");
+var HTTP = require("http"), tls = require("tls");
 
 class EventEmitter {
     constructor() {
@@ -115,7 +115,7 @@ class WebSocketServer extends EventEmitter {
                 const s = {
                     req: t,
                     headers: t.headers,
-                    secure: !(!t.connection.authorized && !t.connection.encrypted)
+                    secure: !!(t.connection instanceof tls.TLSSocket && (t.connection.authorized || t.connection.encrypted))
                 };
                 return e.verifyClient(s, (e, s, n) => e ? this.handleUpgrade(t, r) : this.dropConnection(r, s, n));
             }
@@ -142,12 +142,12 @@ class WebSocketServer extends EventEmitter {
         return e.end(`HTTP/1.1 ${t} ${r}\r\n\r\n`);
     }
     handleUpgrade(e, t) {
-        const r = e.headers["sec-websocket-key"], s = t.ssl ? native.getSSLContext(t.ssl) : null, n = t.ssl ? t._parent._handle : t._handle;
-        if (n && r && 24 === r.length) {
+        const r = e.headers["sec-websocket-key"], s = t, n = s.ssl ? native.getSSLContext(s.ssl) : null, i = s.ssl ? s._parent._handle : s._handle;
+        if (i && r && 24 === r.length) {
             t.setNoDelay(this.noDelay);
-            const i = native.transfer(-1 === n.fd ? n : n.fd, s);
-            t.on("close", (t, s) => {
-                this.serverGroup && (this.upgradeReq = e, native.upgrade(this.serverGroup, i, r, e.headers["sec-websocket-extensions"], e.headers["sec-websocket-protocol"]));
+            const s = native.transfer(-1 === i.fd ? i : i.fd, n);
+            t.on("close", (t, n) => {
+                this.serverGroup && (this.upgradeReq = e, native.upgrade(this.serverGroup, s, r, e.headers["sec-websocket-extensions"], e.headers["sec-websocket-protocol"]));
             });
         }
         t.destroy();
