@@ -15,7 +15,9 @@
     }
   },
   "external": [
-    "http"
+    "https",
+    "http",
+    "tls"
   ],
   "tsConfigs": {
     "compilerOptions": {

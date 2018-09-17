@@ -31,7 +31,7 @@ export class WebSocketServer extends EventEmitter {
     this.start(configs, callback);
   }
 
-  public broadcast(message: string | Buffer, options: BroadcastOptions): void {
+  public broadcast(message: string | Buffer, options?: BroadcastOptions): void {
     if (this.serverGroup) {
       native.server.group.broadcast(this.serverGroup, message, options && options.binary || false);
     }
