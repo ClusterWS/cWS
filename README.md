@@ -6,7 +6,7 @@
 </p>
 
 
-<i>This module is modified version of the uWebsockets with some minor tweaks in C++ code and complete rewrite of JS code.</i>
+<i>This module is modified version of the uWebSockets with some minor tweaks in C++ code and complete rewrite of JS code to TS.</i>
 
 **Please consider to support ClusterWS development:**
 - [Become a Backer on Patreon](https://www.patreon.com/clusterws) 
@@ -35,10 +35,10 @@ const server = new WebSocketServer({ port: 3000 }, () => {
 server.on('connection', (socket, upgReq) => {
     // gives you remoteAddress info
     let address = socket._socket 
-    // emitted when recieve new message
+    // emitted when receive new message
     socket.on('message', (message) => { });
 
-    // emitted when conection closes 
+    // emitted when connection closes 
     socket.on('close', (code, reason) => { });
 
     // emitted on error
@@ -62,13 +62,13 @@ server.on('connection', (socket, upgReq) => {
     // close connection
     socket.close(code, reason)
 
-    // to manualy send ping to the client
+    // to manually send ping to the client
     socket.ping()
 });
 
 // Start auto ping (second parameter is type of ping `false` is low level)
 // use `false` most of the time except if you want to track ping pong on the client side 
-// which does not have onping & onpong methods (like browser webscoket)
+// which does not have onping & onpong methods (like browser websocket)
 // check Handle AutoLevelPing In Browser Example part below
 // event if you use app level ping server onPong will be called
 server.startAutoPing(20000, false)
@@ -96,7 +96,7 @@ const socket = new WebSocket('ws://url:port');
 // emitted when websocket is connected
 socket.on('open', () => {})
 
-// emitted when recieve new message
+// emitted when receive new message
 socket.on('message', (message) => { });
 
 // emitted when error happens
@@ -111,7 +111,7 @@ socket.on('ping', () => {})
 // emitted when get pong from the server (if you send)
 socket.on('pong', () => {})
 
-socket.ping() // manualy send ping to the server
+socket.ping() // manually send ping to the server
 
 socket.send(msg) // send message to the server binary | string
 
@@ -136,7 +136,7 @@ socket.onmessage = function (message) {
             return socket.send(new Uint8Array(['A'.charCodeAt()]));
         }
 
-        // process with your binary datas
+        // process with your binary data
     }
     // process with your string data
 }
