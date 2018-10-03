@@ -29,6 +29,6 @@ server.on('connection', (socket) => {
   })
 });
 
-server.startAutoPing(5000, true);
+server.startAutoPing(5000, false);
 
-setTimeout(() => server.close(), 10000);
+// setTimeout(() => server.close(), 10000);

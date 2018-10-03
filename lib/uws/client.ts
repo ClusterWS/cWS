@@ -7,7 +7,7 @@ native.setNoop(noop);
 const clientGroup: any = native.client.group.create(0, DEFAULT_PAYLOAD_LIMIT);
 
 native.client.group.onConnection(clientGroup, (newExternal: any): void => {
-  const webSocket: any = native.getUserData(newExternal);
+  const webSocket: WebSocket = native.getUserData(newExternal);
   webSocket.external = newExternal;
   webSocket.emit('open');
 });
