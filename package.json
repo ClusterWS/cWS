@@ -1,21 +1,21 @@
 {
-  "name": "clusterws-uws",
-  "version": "0.4.6",
+  "name": "@clusterws/uws",
+  "version": "0.4.8",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "description": "ClusterWS uWS modified version of uWebSockets",
   "scripts": {
     "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
     "build": "ts-builder -c ./tsbuild.json"
   },
-  "description": "ClusterWS uWS modified verstion of uWebSockets",
   "engines": {
     "node": ">=8"
   },
   "keywords": [
     "tiny",
-    "websockets",
+    "websocket",
     "clusterws",
-    "broker"
+    "uws"
   ],
   "license": "MIT",
   "devDependencies": {
