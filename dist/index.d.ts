@@ -51,7 +51,8 @@ export class WebSocket extends EventEmitter {
     constructor(url: string, external?: any, isServer?: boolean);
     readonly _socket: SocketAddress;
     readonly readyState: number;
-    on(event: 'open', listener: Listener): void;
+    on(event: string, listener: Listener): void;
+    on(event: 'open', listener: () => {}): void;
     on(event: 'error', listener: (err: Error) => void): void;
     on(event: 'message', listener: (message: string | any[]) => void): void;
     on(event: 'close', listener: (code?: number, reason?: string) => void): void;
@@ -63,6 +64,7 @@ export class WebSocket extends EventEmitter {
 
 export class WebSocketServer extends EventEmitter {
     constructor(configs: ServerConfigs, callback?: Listener);
+    on(event: string, listener: Listener): void;
     on(event: 'connection', listener: (socket: WebSocket) => void): void;
     broadcast(message: string | Buffer, options?: BroadcastOptions): void;
     startAutoPing(interval: number, appLevel?: boolean): void;

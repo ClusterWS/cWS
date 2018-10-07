@@ -74,7 +74,8 @@ export class WebSocket extends EventEmitter {
   }
 
   // overload on function from super class
-  public on(event: 'open', listener: Listener): void;
+  public on(event: string, listener: Listener): void;
+  public on(event: 'open', listener: () => {}): void;
   public on(event: 'error', listener: (err: Error) => void): void;
   public on(event: 'message', listener: (message: string | any[]) => void): void;
   public on(event: 'close', listener: (code?: number, reason?: string) => void): void;

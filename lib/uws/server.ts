@@ -32,6 +32,7 @@ export class WebSocketServer extends EventEmitter {
   }
 
   // overload on function from super class
+  public on(event: string, listener: Listener): void;
   public on(event: 'connection', listener: (socket: WebSocket) => void): void;
   public on(event: string, listener: Listener): void {
     super.on(event, listener);
