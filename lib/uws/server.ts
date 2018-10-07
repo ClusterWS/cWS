@@ -31,6 +31,12 @@ export class WebSocketServer extends EventEmitter {
     this.start(configs, callback);
   }
 
+  // overload on function from super class
+  public on(event: 'connection', listener: (socket: WebSocket) => void): void;
+  public on(event: string, listener: Listener): void {
+    super.on(event, listener);
+  }
+
   public broadcast(message: string | Buffer, options?: BroadcastOptions): void {
     if (this.serverGroup) {
       native.server.group.broadcast(this.serverGroup, message, options && options.binary || false);
@@ -43,7 +49,7 @@ export class WebSocketServer extends EventEmitter {
     }
   }
 
-  public close(calback?: Listener): void {
+  public close(callback?: Listener): void {
     if (this.upgradeListener && this.httpServer) {
       this.httpServer.removeListener('upgrade', this.upgradeListener);
       if (!this.serverIsProvided) {
@@ -56,7 +62,7 @@ export class WebSocketServer extends EventEmitter {
       this.serverGroup = null;
     }
 
-    if (calback) setTimeout(calback, 20000);
+    if (callback) setTimeout(callback, 20000);
   }
 
   private start(configs: ServerConfigs, callback: Listener): void {

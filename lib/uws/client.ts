@@ -73,6 +73,15 @@ export class WebSocket extends EventEmitter {
     return this.external ? this.OPEN : this.CLOSED;
   }
 
+  // overload on function from super class
+  public on(event: 'open', listener: Listener): void;
+  public on(event: 'error', listener: (err: Error) => void): void;
+  public on(event: 'message', listener: (message: string | any[]) => void): void;
+  public on(event: 'close', listener: (code?: number, reason?: string) => void): void;
+  public on(event: string, listener: Listener): void {
+    super.on(event, listener);
+  }
+
   public ping(message?: string | Buffer): void {
     if (!this.external) return;
     native[this.executeOn].send(this.external, message, OPCODE_PING);
