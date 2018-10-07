@@ -20,6 +20,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^10.7.0",
-    "ts-builder": "0.7.4"
+    "ts-builder": "0.8.0"
   }
 }
