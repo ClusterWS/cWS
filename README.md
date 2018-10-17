@@ -6,11 +6,15 @@
 </p>
 
 
-<i>This module is modified version of the uWebSockets with some minor tweaks in C++ code and complete rewrite of JS code to TS.</i>
+<i>This module is modified version of the uWebSockets with some minor tweaks in C++ code and complete rewrite of JS code to TS. Original software is available in <a href="https://github.com/uNetworking/uWebSockets">uWebSockets</a> repository</i>
+
+This repository is based on the <a href="https://github.com/uNetworking/uWebSockets">uWebSockets</a> and therefore has a two licence [ClusterWS MIT](./LICENSE) and [Alex Hultman ZLIB](./src/LICENCE).
 
 **Please consider to support ClusterWS development:**
 - [Become a Backer on Patreon](https://www.patreon.com/clusterws) 
 - [One time Donation via PayPal](https://www.paypal.me/goriunov)
+
+
 
 ### Installation
 

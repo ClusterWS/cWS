@@ -1,11 +1,13 @@
 import * as HTTP from 'http';
 import * as HTTPS from 'https';
+
+import { Socket } from 'net';
+import { TLSSocket } from 'tls';
 import { WebSocket } from './client';
 import { EventEmitter } from '../emitter';
 import { Listener, ServerConfigs, BroadcastOptions, ConnectionInfo } from '../types';
 import { native, noop, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_DEFLATE_WINDOW, DEFAULT_PAYLOAD_LIMIT } from './shared';
-import { Socket } from 'net';
-import { TLSSocket } from 'tls';
+
 
 native.setNoop(noop);
 

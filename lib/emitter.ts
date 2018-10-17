@@ -1,5 +1,4 @@
 import { Listener } from './types';
-import { WebSocket } from './uws/client';
 
 export class EventEmitter {
   private events: { [key: string]: Listener } = {};
