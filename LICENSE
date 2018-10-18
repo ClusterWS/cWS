@@ -1,4 +1,5 @@
-This software is based on uWebSockets with ZLIB license make sure to check /src/LICENSE.
+This software is based on uWebSockets which has ZLIB license 
+make sure to check /src/LICENSE.
 
 For the code provided by ClusterWS:
 
