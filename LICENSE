@@ -1,9 +1,8 @@
-MIT + ZLIB License
+MIT
 
 Copyright (c) 2018 ClusterWS
 
-This software is based on uWebSockets with ZLIB license make sure to copy /src/LICENSE
-if you are planning to use this (modified) version of uWebSockets.
+This software is based on uWebSockets with ZLIB license make sure to check /src/LICENSE.
 
 For the code provided by ClusterWS:
 

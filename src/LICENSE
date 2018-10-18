@@ -1,3 +1,12 @@
+ClusterWS Note:
+
+This software is fork of uWebSockets and modified by ClusterWS
+the original software is available in uWebSockets(https://github.com/uNetworking/uWebSockets)
+repository.
+
+
+Original License:
+
 Copyright (c) 2016 Alex Hultman and contributors
 
 This software is provided 'as-is', without any express or implied
