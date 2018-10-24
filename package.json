@@ -1,6 +1,6 @@
 {
   "name": "@clusterws/uws",
-  "version": "0.4.8",
+  "version": "0.5.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "description": "ClusterWS uWS modified version of uWebSockets",

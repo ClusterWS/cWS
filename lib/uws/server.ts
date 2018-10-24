@@ -8,7 +8,6 @@ import { EventEmitter } from '../emitter';
 import { Listener, ServerConfigs, BroadcastOptions, ConnectionInfo } from '../types';
 import { native, noop, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_DEFLATE_WINDOW, DEFAULT_PAYLOAD_LIMIT } from './shared';
 
-
 native.setNoop(noop);
 
 export class WebSocketServer extends EventEmitter {
