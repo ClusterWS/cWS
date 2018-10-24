@@ -7,8 +7,8 @@
 
 #if NODE_MAJOR_VERSION>=10
 #define NODE_WANT_INTERNALS 1
-#include "node_10_headers/async_wrap.h"
-#include "node_10_headers/tls_wrap.h"
+#include "node_10+_headers/async_wrap.h"
+#include "node_10+_headers/tls_wrap.h"
 using BaseObject = node::BaseObject;
 using TLSWrap = node::TLSWrap;
 using SecureContext = node::crypto::SecureContext;
