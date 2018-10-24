@@ -5,7 +5,7 @@
 #include "uv.h"
 #include "v8.h"
 #include "util.h"
-#include "node_mutex.h"
+#include "../node_mutex.h"
 
 #include <set>
 #include <string>
