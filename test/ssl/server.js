@@ -16,6 +16,13 @@ let server = new uws.WebSocketServer({
   server: https_server
 });
 
+// comment this part to disable old uws
+// const uws_old = require('uws');
+// let server = new uws_old.Server({
+//   server: https_server
+// })
+/////////////////////////
+
 server.on("connection", (socket) => {
   console.log("Connected")
   socket.on('message', (message) => {
@@ -25,6 +32,8 @@ server.on("connection", (socket) => {
     console.log("Disconnected");
   })
 })
+
+// server.startAutoPing(10000, true);
 
 
 https_server.listen(3000, () => {
