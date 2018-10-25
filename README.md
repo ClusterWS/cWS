@@ -8,9 +8,9 @@
 
 <i>This module is modified version of the uWebSockets with some minor tweaks in C++ code and complete rewrite of JS code to TS. Original software is available in <a href="https://github.com/uNetworking/uWebSockets">uWebSockets</a> repository.</i>
 
-Big thanks to [SirAnthony](https://github.com/SirAnthony) for ssl workaround (has been taken from [SirAnthony's uWebSockets fork](https://github.com/hola/uWebSockets-bindings)).
-
 This repository is based on the <a href="https://github.com/uNetworking/uWebSockets">uWebSockets</a> therefore has two licence [ClusterWS MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [Alex Hultman ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE).
+
+Big thanks to [SirAnthony](https://github.com/SirAnthony) for ssl workaround (has been taken from [SirAnthony's uWebSockets fork](https://github.com/hola/uWebSockets-bindings)).
 
 **Please consider to support ClusterWS development:**
 - [Become a Backer on Patreon](https://www.patreon.com/clusterws) 
