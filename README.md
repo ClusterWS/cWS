@@ -74,6 +74,11 @@ server.on('connection', (socket, upgReq) => {
     socket.ping()
 });
 
+server.on('error', (err, socket) => {
+  // in some cases there is not socket param
+  // handle http errors, TLS errors, ... 
+})
+
 // Start auto ping (second parameter is type of ping `false` is low level)
 // use `false` most of the time except if you want to track ping pong on the client side 
 // which does not have onping & onpong methods (like browser websocket)
