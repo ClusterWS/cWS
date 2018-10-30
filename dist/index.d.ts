@@ -2,9 +2,11 @@
 // Dependencies for this module:
 //   ../../../http
 //   ../../../https
+//   ../../../net
 
 import * as HTTP from 'http';
 import * as HTTPS from 'https';
+import { Socket } from 'net';
 
 export class EventEmitter {
     on(event: string, listener: Listener): void;
@@ -65,6 +67,7 @@ export class WebSocket extends EventEmitter {
 export class WebSocketServer extends EventEmitter {
     constructor(configs: ServerConfigs, callback?: Listener);
     on(event: string, listener: Listener): void;
+    on(event: 'error', listener: (err: Error, socket?: Socket) => void): void;
     on(event: 'connection', listener: (socket: WebSocket) => void): void;
     broadcast(message: string | Buffer, options?: BroadcastOptions): void;
     startAutoPing(interval: number, appLevel?: boolean): void;

@@ -12,7 +12,3 @@ export const DEFAULT_PAYLOAD_LIMIT: number = 16777216;
 
 // tslint:disable-next-line
 export const noop: any = (): void => { };
-
-// this is how pong code looks like (just for reference as all logic is handled in c++)
-// export const APP_PONG_CODE: number = Buffer.from('A')[0];
-// export const OPCODE_PONG: number = 10;

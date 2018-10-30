@@ -34,6 +34,7 @@ export class WebSocketServer extends EventEmitter {
 
   // overload on function from super class
   public on(event: string, listener: Listener): void;
+  public on(event: 'error', listener: (err: Error, socket?: Socket) => void): void;
   public on(event: 'connection', listener: (socket: WebSocket) => void): void;
   public on(event: string, listener: Listener): void {
     super.on(event, listener);
@@ -79,6 +80,10 @@ export class WebSocketServer extends EventEmitter {
     this.serverIsProvided = !!configs.server;
     this.httpServer = configs.server || HTTP.createServer((_: any, response: HTTP.ServerResponse) => response.end());
     this.upgradeListener = (req: HTTP.IncomingMessage, socket: Socket): void => {
+      socket.on('error', (err: Error) => this.emit('error', err, socket));
+      // emit tlsError to the standard error event
+      socket.on('_tlsError', (err: Error) => this.emit('error', err, socket));
+
       if (configs.path && configs.path !== req.url.split('?')[0].split('#')[0]) {
         return this.lastUpgradeListener ? this.dropConnection(socket, 400, 'URL not supported') : null;
       }

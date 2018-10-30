@@ -14,7 +14,16 @@ using TLSWrap = node::TLSWrap;
 using SecureContext = node::crypto::SecureContext;
 class TLSWrapSSLGetter : public node::TLSWrap {
 public:
-    SSL* getSSL(){ return this->ssl_.get(); }
+    void setSSL(const v8::FunctionCallbackInfo<v8::Value> &info){
+        v8::Isolate* isolate = info.GetIsolate();
+        if (!ssl_){
+            info.GetReturnValue().Set(v8::Null(isolate));
+            return;
+        }
+        SSL* ptr = ssl_.get();
+        v8::Local<v8::External> ext = v8::External::New(isolate, ptr);
+        info.GetReturnValue().Set(ext);
+    }
 };
  #if defined(_MSC_VER)
 NO_RETURN void node::Assert(const char* const (*args)[4]) {
@@ -542,14 +551,12 @@ void getSSLContext(const FunctionCallbackInfo<Value> &args) {
     Local<Object> obj = args[0]->ToObject(context).ToLocalChecked();
 #if NODE_MAJOR_VERSION < 10
     Local<Value> ext = obj->Get(String::NewFromUtf8(isolate, "_external"));
-#else
-    TLSWrap* tw;
-    SecureContext* sc;
-    ASSIGN_OR_RETURN_UNWRAP(&tw, obj);
-    TLSWrapSSLGetter* twg = static_cast<TLSWrapSSLGetter*>(tw);
-    Local<External> ext = External::New(isolate, twg->getSSL());
-#endif
     args.GetReturnValue().Set(ext);
+#else
+    TLSWrapSSLGetter* tw;
+    ASSIGN_OR_RETURN_UNWRAP(&tw, obj);
+    tw->setSSL(args);
+#endif
 }
 
 void setNoop(const FunctionCallbackInfo<Value> &args) {
