@@ -65,7 +65,7 @@ export class WebSocketServer extends EventEmitter {
       this.serverGroup = null;
     }
 
-    if (callback) setTimeout(callback, 20000);
+    if (callback) callback();
   }
 
   private start(configs: ServerConfigs, callback: Listener): void {
