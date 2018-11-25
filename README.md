@@ -1,24 +1,22 @@
 <h1 align="center">ClusterWS/uWS Implementation</h1>
-<h6 align="center">Modified version of <a href="https://github.com/uNetworking/uWebSockets">uWebSockets</a></h6>
+<h6 align="center">Modified version of <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets</a></h6>
 
 <p align="center">
  <img src="https://cdn.rawgit.com/goriunov/159120ca6a883d8d4e75543ec395d361/raw/d22028ecc726d7d3cc30a2a85cc7cc454b0afada/clusterws.svg" width="450">
 </p>
 
-<i>This module is modified version of the uWebSockets with some minor tweaks in C++ code and complete rewrite of JS code to TS. Original software is available in <a href="https://github.com/uNetworking/uWebSockets">uWebSockets</a> repository.</i>
+<i>This module is modified version of the uWebSockets with some minor tweaks in C++ code and complete rewrite of JS code to TS. Original software is available in <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets</a> repository.</i>
 
 <a href="https://badge.fury.io/js/%40clusterws%2Fuws"><img src="https://badge.fury.io/js/%40clusterws%2Fuws.svg" alt="npm version" height="22"></a>
 
 
-This repository is based on the <a href="https://github.com/uNetworking/uWebSockets">uWebSockets</a> therefore has two licence [ClusterWS MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [Alex Hultman ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE).
+This repository is based on the <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets</a> therefore has two licence [ClusterWS MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [Alex Hultman ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE).
 
 Big thanks to [SirAnthony](https://github.com/SirAnthony) for ssl workaround (has been taken from [SirAnthony's uWebSockets fork](https://github.com/hola/uWebSockets-bindings)).
 
 **Please consider to support ClusterWS development:**
 - [Become a Backer on Patreon](https://www.patreon.com/clusterws) 
 - [One time Donation via PayPal](https://www.paypal.me/goriunov)
-
-
 
 ### Installation
 

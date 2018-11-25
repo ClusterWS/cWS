@@ -20,6 +20,6 @@ targets:
 	curl https://nodejs.org/dist/$(VER_64)/node-$(VER_64)-headers.tar.gz | tar xz -C targets
 	curl https://nodejs.org/dist/$(VER_67)/node-$(VER_67)-headers.tar.gz | tar xz -C targets
 Linux:
-	g++ $(CPP_SHARED) -static-libstdc++ -static-libgcc -I $$NODE/include/node -I $$NODE/src -I $$NODE/deps/uv/include -I $$NODE/deps/v8/include -I $$NODE/deps/openssl/openssl/include -I $$NODE/deps/zlib -s -o dist/uws_linux_$$ABI.node
+	g++ $(CPP_SHARED) -static-libstdc++ -static-libgcc -I $$NODE/include/node -I $$NODE/src -I $$NODE/deps/uv/include -I $$NODE/deps/v8/include -I $$NODE/deps/openssl/openssl/include -I $$NODE/deps/zlib -s -o dist/clusterws_uws_linux_$$ABI.node
 Darwin:
-	g++ $(CPP_SHARED) $(CPP_OSX) -I $$NODE/include/node -o dist/uws_darwin_$$ABI.node
+	g++ $(CPP_SHARED) $(CPP_OSX) -I $$NODE/include/node -o dist/clusterws_uws_darwin_$$ABI.node

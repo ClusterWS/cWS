@@ -57,7 +57,7 @@
                             'outputs': [
                                 'uws'
                             ],
-                            'action': ['cp', '<@(PRODUCT_DIR)/uws.node', 'dist/uws_<!@(node -p process.platform)_<!@(node -p process.versions.modules).node']
+                            'action': ['cp', '<@(PRODUCT_DIR)/uws.node', 'dist/clusterws_uws_<!@(node -p process.platform)_<!@(node -p process.versions.modules).node']
                         }
                     ]}
                  ],
@@ -71,7 +71,7 @@
                             'outputs': [
                                 'uws'
                             ],
-                            'action': ['copy', '<@(PRODUCT_DIR)/uws.node', 'dist/uws_<!@(node -p process.platform)_<!@(node -p process.versions.modules).node']
+                            'action': ['copy', '<@(PRODUCT_DIR)/uws.node', 'dist/clusterws_uws_<!@(node -p process.platform)_<!@(node -p process.versions.modules).node']
                         }
                     ]}
                  ]
