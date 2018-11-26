@@ -25,8 +25,6 @@ npm i @clusterws/cws
 
 ### Server example
 
-uWebSockets node was designed to mimic node js [ws](https://github.com/websockets/ws) module there are some things which are not available in uWebSockets.
-
 ```js
 // use WebSocketServer to create server
 const { WebSocketServer } = require('@clusterws/cws');
