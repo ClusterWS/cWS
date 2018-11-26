@@ -7,8 +7,7 @@
 
 <i>This module is modified version of the uWebSockets with some minor tweaks in C++ code and complete rewrite of JS code to TS. Original software is available in <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets</a> repository.</i>
 
-<a href="https://badge.fury.io/js/%40clusterws%2Fuws"><img src="https://badge.fury.io/js/%40clusterws%2Fuws.svg" alt="npm version" height="22"></a>
-
+<a href="https://badge.fury.io/js/%40clusterws%2Fcws"><img src="https://badge.fury.io/js/%40clusterws%2Fcws.svg" alt="npm version" height="22"></a>
 
 This repository is based on the <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets</a> therefore has two licence [ClusterWS MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [Alex Hultman ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE).
 
