@@ -1,20 +1,20 @@
 #include <string>
-#include "uWS.h"
+#include "cWS.h"
 #include "Addon.h"
 
 void Initialize(Local<Object> exports) {
   Isolate *isolate = exports->GetIsolate();
 
   exports->Set(String::NewFromUtf8(isolate, "server"),
-               Namespace<uWS::SERVER>(isolate).object);
+               Namespace<cWS::SERVER>(isolate).object);
   exports->Set(String::NewFromUtf8(isolate, "client"),
-               Namespace<uWS::CLIENT>(isolate).object);
+               Namespace<cWS::CLIENT>(isolate).object);
 
   NODE_SET_METHOD(exports, "getSSLContext", getSSLContext);
-  NODE_SET_METHOD(exports, "setUserData", setUserData<uWS::SERVER>);
-  NODE_SET_METHOD(exports, "getUserData", getUserData<uWS::SERVER>);
-  NODE_SET_METHOD(exports, "clearUserData", clearUserData<uWS::SERVER>);
-  NODE_SET_METHOD(exports, "getAddress", getAddress<uWS::SERVER>);
+  NODE_SET_METHOD(exports, "setUserData", setUserData<cWS::SERVER>);
+  NODE_SET_METHOD(exports, "getUserData", getUserData<cWS::SERVER>);
+  NODE_SET_METHOD(exports, "clearUserData", clearUserData<cWS::SERVER>);
+  NODE_SET_METHOD(exports, "getAddress", getAddress<cWS::SERVER>);
   
 
   NODE_SET_METHOD(exports, "transfer", transfer);

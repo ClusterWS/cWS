@@ -27,8 +27,8 @@ native.client.group.onPong(clientGroup, (message: string | Buffer, webSocket: We
 native.client.group.onError(clientGroup, (webSocket: WebSocket): void => {
   process.nextTick((): void => {
     webSocket.emit('error', {
-      message: 'uWs client connection error',
-      stack: 'uWs client connection error'
+      message: 'cWs client connection error',
+      stack: 'cWs client connection error'
     });
   });
 });

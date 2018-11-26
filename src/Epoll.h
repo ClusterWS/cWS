@@ -14,7 +14,7 @@ typedef int uv_os_sock_t;
 static const int UV_READABLE = EPOLLIN;
 static const int UV_WRITABLE = EPOLLOUT;
 
-namespace uS {
+namespace cS {
 
 struct Poll;
 struct Timer;

@@ -1,9 +1,9 @@
-#ifndef EXTENSIONS_UWS_H
-#define EXTENSIONS_UWS_H
+#ifndef EXTENSIONS_CWS_H
+#define EXTENSIONS_CWS_H
 
 #include <string>
 
-namespace uWS {
+namespace cWS {
 
 enum Options : unsigned int {
     NO_OPTIONS = 0,
@@ -27,4 +27,4 @@ public:
 
 }
 
-#endif // EXTENSIONS_UWS_H
+#endif // EXTENSIONS_CWS_H

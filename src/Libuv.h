@@ -4,7 +4,7 @@
 #include <uv.h>
 static_assert (UV_VERSION_MINOR >= 3, "µWebSockets requires libuv >=1.3.0");
 
-namespace uS {
+namespace cS {
 
 struct Loop : uv_loop_t {
     static Loop *createLoop(bool defaultLoop = true) {

@@ -48,7 +48,7 @@ NO_RETURN void node::Assert(const char* const (*args)[4]) {
 using namespace std;
 using namespace v8;
 
-uWS::Hub hub(0, true);
+cWS::Hub hub(0, true);
 uv_check_t check;
 Persistent<Function> noop;
 
@@ -118,7 +118,7 @@ struct GroupData {
 
 template <bool isServer>
 void createGroup(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<isServer> *group = hub.createGroup<isServer>(
+  cWS::Group<isServer> *group = hub.createGroup<isServer>(
       args[0]->IntegerValue(), args[1]->IntegerValue());
   group->setUserData(new GroupData);
   args.GetReturnValue().Set(External::New(args.GetIsolate(), group));
@@ -126,33 +126,33 @@ void createGroup(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void deleteGroup(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<isServer> *group =
-      (uWS::Group<isServer> *)args[0].As<External>()->Value();
+  cWS::Group<isServer> *group =
+      (cWS::Group<isServer> *)args[0].As<External>()->Value();
   delete (GroupData *)group->getUserData();
   delete group;
 }
 
 template <bool isServer>
-inline Local<External> wrapSocket(uWS::WebSocket<isServer> *webSocket,
+inline Local<External> wrapSocket(cWS::WebSocket<isServer> *webSocket,
                                   Isolate *isolate) {
   return External::New(isolate, webSocket);
 }
 
 template <bool isServer>
-inline uWS::WebSocket<isServer> *unwrapSocket(Local<External> external) {
-  return (uWS::WebSocket<isServer> *)external->Value();
+inline cWS::WebSocket<isServer> *unwrapSocket(Local<External> external) {
+  return (cWS::WebSocket<isServer> *)external->Value();
 }
 
 inline Local<Value> wrapMessage(const char *message, size_t length,
-                                uWS::OpCode opCode, Isolate *isolate) {
-  return opCode == uWS::OpCode::BINARY
+                                cWS::OpCode opCode, Isolate *isolate) {
+  return opCode == cWS::OpCode::BINARY
              ? (Local<Value>)ArrayBuffer::New(isolate, (char *)message, length)
              : (Local<Value>)String::NewFromUtf8(isolate, message,
                                                  String::kNormalString, length);
 }
 
 template <bool isServer>
-inline Local<Value> getDataV8(uWS::WebSocket<isServer> *webSocket,
+inline Local<Value> getDataV8(cWS::WebSocket<isServer> *webSocket,
                               Isolate *isolate) {
   return webSocket->getUserData()
              ? Local<Value>::New(isolate,
@@ -168,7 +168,7 @@ void getUserData(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void clearUserData(const FunctionCallbackInfo<Value> &args) {
-  uWS::WebSocket<isServer> *webSocket =
+  cWS::WebSocket<isServer> *webSocket =
       unwrapSocket<isServer>(args[0].As<External>());
   ((Persistent<Value> *)webSocket->getUserData())->Reset();
   delete (Persistent<Value> *)webSocket->getUserData();
@@ -176,7 +176,7 @@ void clearUserData(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void setUserData(const FunctionCallbackInfo<Value> &args) {
-  uWS::WebSocket<isServer> *webSocket =
+  cWS::WebSocket<isServer> *webSocket =
       unwrapSocket<isServer>(args[0].As<External>());
   if (webSocket->getUserData()) {
     ((Persistent<Value> *)webSocket->getUserData())
@@ -188,7 +188,7 @@ void setUserData(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void getAddress(const FunctionCallbackInfo<Value> &args) {
-  typename uWS::WebSocket<isServer>::Address address =
+  typename cWS::WebSocket<isServer>::Address address =
       unwrapSocket<isServer>(args[0].As<External>())->getAddress();
   Local<Array> array = Array::New(args.GetIsolate(), 3);
   array->Set(0, Integer::New(args.GetIsolate(), address.port));
@@ -214,7 +214,7 @@ struct SendCallbackData {
 };
 
 template <bool isServer>
-void sendCallback(uWS::WebSocket<isServer> *webSocket, void *data,
+void sendCallback(cWS::WebSocket<isServer> *webSocket, void *data,
                   bool cancelled, void *reserved) {
   SendCallbackData *sc = (SendCallbackData *)data;
   if (!cancelled) {
@@ -229,11 +229,11 @@ void sendCallback(uWS::WebSocket<isServer> *webSocket, void *data,
 
 template <bool isServer>
 void send(const FunctionCallbackInfo<Value> &args) {
-  uWS::OpCode opCode = (uWS::OpCode)args[2]->IntegerValue();
+  cWS::OpCode opCode = (cWS::OpCode)args[2]->IntegerValue();
   NativeString nativeString(args[1]);
 
   SendCallbackData *sc = nullptr;
-  void (*callback)(uWS::WebSocket<isServer> *, void *, bool, void *) = nullptr;
+  void (*callback)(cWS::WebSocket<isServer> *, void *, bool, void *) = nullptr;
 
   if (args[3]->IsFunction()) {
     callback = sendCallback;
@@ -250,8 +250,8 @@ void send(const FunctionCallbackInfo<Value> &args) {
 }
 
 void connect(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<uWS::CLIENT> *clientGroup =
-      (uWS::Group<uWS::CLIENT> *)args[0].As<External>()->Value();
+  cWS::Group<cWS::CLIENT> *clientGroup =
+      (cWS::Group<cWS::CLIENT> *)args[0].As<External>()->Value();
   NativeString uri(args[1]);
   hub.connect(std::string(uri.getData(), uri.getLength()),
               new Persistent<Value>(args.GetIsolate(), args[2]), {}, 5000,
@@ -264,8 +264,8 @@ struct Ticket {
 };
 
 void upgrade(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<uWS::SERVER> *serverGroup =
-      (uWS::Group<uWS::SERVER> *)args[0].As<External>()->Value();
+  cWS::Group<cWS::SERVER> *serverGroup =
+      (cWS::Group<cWS::SERVER> *)args[0].As<External>()->Value();
   Ticket *ticket = (Ticket *)args[1].As<External>()->Value();
   NativeString secKey(args[2]);
   NativeString extensions(args[3]);
@@ -314,8 +314,8 @@ void transfer(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void onConnection(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<isServer> *group =
-      (uWS::Group<isServer> *)args[0].As<External>()->Value();
+  cWS::Group<isServer> *group =
+      (cWS::Group<isServer> *)args[0].As<External>()->Value();
   GroupData *groupData = (GroupData *)group->getUserData();
 
   Isolate *isolate = args.GetIsolate();
@@ -323,7 +323,7 @@ void onConnection(const FunctionCallbackInfo<Value> &args) {
   connectionCallback->Reset(isolate, Local<Function>::Cast(args[1]));
   group->onConnection(
       [isolate, connectionCallback, groupData](
-          uWS::WebSocket<isServer> *webSocket, uWS::HttpRequest req) {
+          cWS::WebSocket<isServer> *webSocket, cWS::HttpRequest req) {
         groupData->size++;
         HandleScope hs(isolate);
         Local<Value> argv[] = {wrapSocket(webSocket, isolate)};
@@ -335,8 +335,8 @@ void onConnection(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void onMessage(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<isServer> *group =
-      (uWS::Group<isServer> *)args[0].As<External>()->Value();
+  cWS::Group<isServer> *group =
+      (cWS::Group<isServer> *)args[0].As<External>()->Value();
   GroupData *groupData = (GroupData *)group->getUserData();
 
   Isolate *isolate = args.GetIsolate();
@@ -344,8 +344,8 @@ void onMessage(const FunctionCallbackInfo<Value> &args) {
 
   messageCallback->Reset(isolate, Local<Function>::Cast(args[1]));
   group->onMessage([isolate, messageCallback, group](
-                       uWS::WebSocket<isServer> *webSocket, const char *message,
-                       size_t length, uWS::OpCode opCode) {
+                       cWS::WebSocket<isServer> *webSocket, const char *message,
+                       size_t length, cWS::OpCode opCode) {
     if(length == 1 && message[0] == 65) {
       // emit pong event is we get pong from the client
       group->pongHandler(webSocket, nullptr, 0);
@@ -361,18 +361,18 @@ void onMessage(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void onPing(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<isServer> *group =
-      (uWS::Group<isServer> *)args[0].As<External>()->Value();
+  cWS::Group<isServer> *group =
+      (cWS::Group<isServer> *)args[0].As<External>()->Value();
   GroupData *groupData = (GroupData *)group->getUserData();
 
   Isolate *isolate = args.GetIsolate();
   Persistent<Function> *pingCallback = &groupData->pingHandler;
   pingCallback->Reset(isolate, Local<Function>::Cast(args[1]));
-  group->onPing([isolate, pingCallback](uWS::WebSocket<isServer> *webSocket,
+  group->onPing([isolate, pingCallback](cWS::WebSocket<isServer> *webSocket,
                                         const char *message, size_t length) {
     HandleScope hs(isolate);
     Local<Value> argv[] = {
-        wrapMessage(message, length, uWS::OpCode::PING, isolate),
+        wrapMessage(message, length, cWS::OpCode::PING, isolate),
         getDataV8(webSocket, isolate)};
     node::MakeCallback(isolate, isolate->GetCurrentContext()->Global(),
                        Local<Function>::New(isolate, *pingCallback), 2, argv);
@@ -381,18 +381,18 @@ void onPing(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void onPong(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<isServer> *group =
-      (uWS::Group<isServer> *)args[0].As<External>()->Value();
+  cWS::Group<isServer> *group =
+      (cWS::Group<isServer> *)args[0].As<External>()->Value();
   GroupData *groupData = (GroupData *)group->getUserData();
 
   Isolate *isolate = args.GetIsolate();
   Persistent<Function> *pongCallback = &groupData->pongHandler;
   pongCallback->Reset(isolate, Local<Function>::Cast(args[1]));
-  group->onPong([isolate, pongCallback](uWS::WebSocket<isServer> *webSocket,
+  group->onPong([isolate, pongCallback](cWS::WebSocket<isServer> *webSocket,
                                         const char *message, size_t length) {
     HandleScope hs(isolate);
     Local<Value> argv[] = {
-        wrapMessage(message, length, uWS::OpCode::PONG, isolate),
+        wrapMessage(message, length, cWS::OpCode::PONG, isolate),
         getDataV8(webSocket, isolate)};
     node::MakeCallback(isolate, isolate->GetCurrentContext()->Global(),
                        Local<Function>::New(isolate, *pongCallback), 2, argv);
@@ -401,8 +401,8 @@ void onPong(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void onDisconnection(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<isServer> *group =
-      (uWS::Group<isServer> *)args[0].As<External>()->Value();
+  cWS::Group<isServer> *group =
+      (cWS::Group<isServer> *)args[0].As<External>()->Value();
   GroupData *groupData = (GroupData *)group->getUserData();
 
   Isolate *isolate = args.GetIsolate();
@@ -411,13 +411,13 @@ void onDisconnection(const FunctionCallbackInfo<Value> &args) {
   disconnectionCallback->Reset(isolate, Local<Function>::Cast(args[1]));
 
   group->onDisconnection([isolate, disconnectionCallback, groupData](
-                             uWS::WebSocket<isServer> *webSocket, int code,
+                             cWS::WebSocket<isServer> *webSocket, int code,
                              char *message, size_t length) {
     groupData->size--;
     HandleScope hs(isolate);
     Local<Value> argv[] = {
         wrapSocket(webSocket, isolate), Integer::New(isolate, code),
-        wrapMessage(message, length, uWS::OpCode::CLOSE, isolate),
+        wrapMessage(message, length, cWS::OpCode::CLOSE, isolate),
         getDataV8(webSocket, isolate)};
     node::MakeCallback(isolate, isolate->GetCurrentContext()->Global(),
                        Local<Function>::New(isolate, *disconnectionCallback), 4,
@@ -426,8 +426,8 @@ void onDisconnection(const FunctionCallbackInfo<Value> &args) {
 }
 
 void onError(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<uWS::CLIENT> *group =
-      (uWS::Group<uWS::CLIENT> *)args[0].As<External>()->Value();
+  cWS::Group<cWS::CLIENT> *group =
+      (cWS::Group<cWS::CLIENT> *)args[0].As<External>()->Value();
   GroupData *groupData = (GroupData *)group->getUserData();
 
   Isolate *isolate = args.GetIsolate();
@@ -462,34 +462,34 @@ void terminateSocket(const FunctionCallbackInfo<Value> &args) {
 template <bool isServer>
 void closeGroup(const FunctionCallbackInfo<Value> &args) {
   NativeString nativeString(args[2]);
-  uWS::Group<isServer> *group =
-      (uWS::Group<isServer> *)args[0].As<External>()->Value();
+  cWS::Group<isServer> *group =
+      (cWS::Group<isServer> *)args[0].As<External>()->Value();
   group->close(args[1]->IntegerValue(), nativeString.getData(),
                nativeString.getLength());
 }
 
 template <bool isServer>
 void terminateGroup(const FunctionCallbackInfo<Value> &args) {
-  ((uWS::Group<isServer> *)args[0].As<External>()->Value())->terminate();
+  ((cWS::Group<isServer> *)args[0].As<External>()->Value())->terminate();
 }
 
 template <bool isServer>
 void broadcast(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<isServer> *group =
-      (uWS::Group<isServer> *)args[0].As<External>()->Value();
-  uWS::OpCode opCode =
-      args[2]->BooleanValue() ? uWS::OpCode::BINARY : uWS::OpCode::TEXT;
+  cWS::Group<isServer> *group =
+      (cWS::Group<isServer> *)args[0].As<External>()->Value();
+  cWS::OpCode opCode =
+      args[2]->BooleanValue() ? cWS::OpCode::BINARY : cWS::OpCode::TEXT;
   NativeString nativeString(args[1]);
   group->broadcast(nativeString.getData(), nativeString.getLength(), opCode, false);
 }
 
 template <bool isServer>
 void prepareMessage(const FunctionCallbackInfo<Value> &args) {
-  uWS::OpCode opCode = (uWS::OpCode)args[1]->IntegerValue();
+  cWS::OpCode opCode = (cWS::OpCode)args[1]->IntegerValue();
   NativeString nativeString(args[0]);
   args.GetReturnValue().Set(External::New(
       args.GetIsolate(),
-      uWS::WebSocket<isServer>::prepareMessage(
+      cWS::WebSocket<isServer>::prepareMessage(
           nativeString.getData(), nativeString.getLength(), opCode, false)));
 }
 
@@ -497,46 +497,46 @@ template <bool isServer>
 void sendPrepared(const FunctionCallbackInfo<Value> &args) {
   unwrapSocket<isServer>(args[0].As<External>())
       ->sendPrepared(
-          (typename uWS::WebSocket<isServer>::PreparedMessage *)args[1]
+          (typename cWS::WebSocket<isServer>::PreparedMessage *)args[1]
               .As<External>()
               ->Value());
 }
 
 template <bool isServer>
 void finalizeMessage(const FunctionCallbackInfo<Value> &args) {
-  uWS::WebSocket<isServer>::finalizeMessage(
-      (typename uWS::WebSocket<isServer>::PreparedMessage *)args[0]
+  cWS::WebSocket<isServer>::finalizeMessage(
+      (typename cWS::WebSocket<isServer>::PreparedMessage *)args[0]
           .As<External>()
           ->Value());
 }
 
 void forEach(const FunctionCallbackInfo<Value> &args) {
   Isolate *isolate = args.GetIsolate();
-  uWS::Group<uWS::SERVER> *group =
-      (uWS::Group<uWS::SERVER> *)args[0].As<External>()->Value();
+  cWS::Group<cWS::SERVER> *group =
+      (cWS::Group<cWS::SERVER> *)args[0].As<External>()->Value();
   Local<Function> cb = Local<Function>::Cast(args[1]);
-  group->forEach([isolate, &cb](uWS::WebSocket<uWS::SERVER> *webSocket) {
+  group->forEach([isolate, &cb](cWS::WebSocket<cWS::SERVER> *webSocket) {
     Local<Value> argv[] = {getDataV8(webSocket, isolate)};
     cb->Call(Null(isolate), 1, argv);
   });
 }
 
 void getSize(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<uWS::SERVER> *group =
-      (uWS::Group<uWS::SERVER> *)args[0].As<External>()->Value();
+  cWS::Group<cWS::SERVER> *group =
+      (cWS::Group<cWS::SERVER> *)args[0].As<External>()->Value();
   GroupData *groupData = (GroupData *)group->getUserData();
   args.GetReturnValue().Set(Integer::New(args.GetIsolate(), groupData->size));
 }
 
 void startAutoPing(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<uWS::SERVER> *group =
-      (uWS::Group<uWS::SERVER> *)args[0].As<External>()->Value();
+  cWS::Group<cWS::SERVER> *group =
+      (cWS::Group<cWS::SERVER> *)args[0].As<External>()->Value();
 
   NativeString nativeString(args[2]);
 
   group->startAutoPing(
       args[1]->IntegerValue(),
-      nativeString.getData(), nativeString.getLength(), uWS::OpCode::BINARY);
+      nativeString.getData(), nativeString.getLength(), cWS::OpCode::BINARY);
 }
 
 
@@ -564,8 +564,8 @@ void setNoop(const FunctionCallbackInfo<Value> &args) {
 }
 
 void listen(const FunctionCallbackInfo<Value> &args) {
-  uWS::Group<uWS::SERVER> *group =
-      (uWS::Group<uWS::SERVER> *)args[0].As<External>()->Value();
+  cWS::Group<cWS::SERVER> *group =
+      (cWS::Group<cWS::SERVER> *)args[0].As<External>()->Value();
   hub.listen(args[1]->IntegerValue(), nullptr, 0, group);
 }
 

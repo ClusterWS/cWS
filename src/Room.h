@@ -7,20 +7,20 @@
 #include "WebSocket.h"
 #include <vector>
 
-namespace uS {
+namespace cS {
 struct Loop;
 }
 
-namespace uWS {
+namespace cWS {
 
 template <bool isServer>
 class Room {
 private:
-    std::vector<uWS::WebSocket<isServer> *> webSockets;
+    std::vector<cWS::WebSocket<isServer> *> webSockets;
 
     void flush();
 public:
-    Room(uS::Loop *loop);
+    Room(cS::Loop *loop);
     void add(WebSocket<isServer> *ws);
     void remove(WebSocket<isServer> *ws);
 

@@ -1,9 +1,9 @@
 #include "Room.h"
 
-namespace uWS {
+namespace cWS {
 
 template <bool isServer>
-Room<isServer>::Room(uS::Loop *loop) {
+Room<isServer>::Room(cS::Loop *loop) {
 
     // we need to hook into the loop's post and pre-callbacks
     // every loop can have many rooms
@@ -30,7 +30,7 @@ void Room<isServer>::send(const char *message, size_t length, OpCode opCode, Web
 
 }
 
-template class Room<uWS::SERVER>;
-template class Room<uWS::CLIENT>;
+template class Room<cWS::SERVER>;
+template class Room<cWS::CLIENT>;
 
 }

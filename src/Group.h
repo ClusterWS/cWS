@@ -1,5 +1,5 @@
-#ifndef GROUP_UWS_H
-#define GROUP_UWS_H
+#ifndef GROUP_CWS_H
+#define GROUP_CWS_H
 
 #include "WebSocket.h"
 #include "HTTPSocket.h"
@@ -7,7 +7,7 @@
 #include <functional>
 #include <stack>
 
-namespace uWS {
+namespace cWS {
 
 enum ListenOptions {
     TRANSFERS
@@ -16,7 +16,7 @@ enum ListenOptions {
 struct Hub;
 
 template <bool isServer>
-struct WIN32_EXPORT Group : protected uS::NodeData {
+struct WIN32_EXPORT Group : protected cS::NodeData {
 protected:
     friend struct Hub;
     friend struct WebSocket<isServer>;
@@ -41,15 +41,15 @@ protected:
     unsigned int maxPayload;
     Hub *hub;
     int extensionOptions;
-    uS::Timer *timer = nullptr, *httpTimer = nullptr;
+    cS::Timer *timer = nullptr, *httpTimer = nullptr;
     const char *userPingMessage;
     size_t userPingMessageLength;
     OpCode pingMessageType;
-    std::stack<uS::Poll *> iterators;
+    std::stack<cS::Poll *> iterators;
 
     // todo: cannot be named user, collides with parent!
     void *userData = nullptr;
-    static void timerCallback(uS::Timer *timer);
+    static void timerCallback(cS::Timer *timer);
 
     WebSocket<isServer> *webSocketHead = nullptr;
     HttpSocket<isServer> *httpSocketHead = nullptr;
@@ -61,7 +61,7 @@ protected:
     void addHttpSocket(HttpSocket<isServer> *httpSocket);
     void removeHttpSocket(HttpSocket<isServer> *httpSocket);
 
-    Group(int extensionOptions, unsigned int maxPayload, Hub *hub, uS::NodeData *nodeData);
+    Group(int extensionOptions, unsigned int maxPayload, Hub *hub, cS::NodeData *nodeData);
     void stopListening();
 
 public:
@@ -106,14 +106,14 @@ public:
 
     template <class F>
     void forEach(const F &cb) {
-        uS::Poll *iterator = webSocketHead;
+        cS::Poll *iterator = webSocketHead;
         iterators.push(iterator);
         while (iterator) {
-            uS::Poll *lastIterator = iterator;
+            cS::Poll *lastIterator = iterator;
             cb((WebSocket<isServer> *) iterator);
             iterator = iterators.top();
             if (lastIterator == iterator) {
-                iterator = ((uS::Socket *) iterator)->next;
+                iterator = ((cS::Socket *) iterator)->next;
                 iterators.top() = iterator;
             }
         }
@@ -123,25 +123,25 @@ public:
     // duplicated code for now!
     template <class F>
     void forEachHttpSocket(const F &cb) {
-        uS::Poll *iterator = httpSocketHead;
+        cS::Poll *iterator = httpSocketHead;
         iterators.push(iterator);
         while (iterator) {
-            uS::Poll *lastIterator = iterator;
+            cS::Poll *lastIterator = iterator;
             cb((HttpSocket<isServer> *) iterator);
             iterator = iterators.top();
             if (lastIterator == iterator) {
-                iterator = ((uS::Socket *) iterator)->next;
+                iterator = ((cS::Socket *) iterator)->next;
                 iterators.top() = iterator;
             }
         }
         iterators.pop();
     }
 
-    static Group<isServer> *from(uS::Socket *s) {
+    static Group<isServer> *from(cS::Socket *s) {
         return static_cast<Group<isServer> *>(s->getNodeData());
     }
 };
 
 }
 
-#endif // GROUP_UWS_H
+#endif // GROUP_CWS_H

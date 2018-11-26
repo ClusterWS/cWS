@@ -1,7 +1,7 @@
 {
     "targets": [
         {
-            "target_name": "uws",
+            "target_name": "cws",
             "sources": [
                 'src/Addon.h',
                 'src/Addon.cpp',
@@ -45,19 +45,19 @@
         {
             'target_name': 'action_after_build',
             'type': 'none',
-            'dependencies': ['uws'],
+            'dependencies': ['cws'],
             'conditions': [
                 ['OS!="win"', {
                     'actions': [
                         {
                             'action_name': 'move_lib',
                             'inputs': [
-                                '<@(PRODUCT_DIR)/uws.node'
+                                '<@(PRODUCT_DIR)/cws.node'
                             ],
                             'outputs': [
-                                'uws'
+                                'cws'
                             ],
-                            'action': ['cp', '<@(PRODUCT_DIR)/uws.node', 'dist/clusterws_uws_<!@(node -p process.platform)_<!@(node -p process.versions.modules).node']
+                            'action': ['cp', '<@(PRODUCT_DIR)/cws.node', 'dist/cws_<!@(node -p process.platform)_<!@(node -p process.versions.modules).node']
                         }
                     ]}
                  ],
@@ -66,12 +66,12 @@
                         {
                             'action_name': 'move_lib',
                             'inputs': [
-                                '<@(PRODUCT_DIR)/uws.node'
+                                '<@(PRODUCT_DIR)/cws.node'
                             ],
                             'outputs': [
-                                'uws'
+                                'cws'
                             ],
-                            'action': ['copy', '<@(PRODUCT_DIR)/uws.node', 'dist/clusterws_uws_<!@(node -p process.platform)_<!@(node -p process.versions.modules).node']
+                            'action': ['copy', '<@(PRODUCT_DIR)/cws.node', 'dist/cws_<!@(node -p process.platform)_<!@(node -p process.versions.modules).node']
                         }
                     ]}
                  ]

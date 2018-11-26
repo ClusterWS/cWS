@@ -1,6 +1,6 @@
 #include "Socket.h"
 
-namespace uS {
+namespace cS {
 
 Socket::Address Socket::getAddress()
 {

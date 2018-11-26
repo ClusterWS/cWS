@@ -7,7 +7,7 @@ typedef boost::asio::ip::tcp::socket::native_handle_type uv_os_sock_t;
 static const int UV_READABLE = 1;
 static const int UV_WRITABLE = 2;
 
-namespace uS {
+namespace cS {
 
 struct Loop : boost::asio::io_service {
 

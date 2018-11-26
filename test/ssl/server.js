@@ -1,4 +1,4 @@
-const uws = require('../../dist/index');
+const cws = require('../../dist/index');
 const https = require('https');
 const express = require('express');
 const fs = require('fs');
@@ -12,7 +12,7 @@ const https_server = https.createServer({
   cert: fs.readFileSync('./ssl/server-cert.pem'),
 }, app);
 
-let server = new uws.WebSocketServer({
+let server = new cws.WebSocketServer({
   server: https_server
 });
 

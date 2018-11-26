@@ -3,7 +3,7 @@
 #include <openssl/sha.h>
 #include <string>
 
-namespace uWS {
+namespace cWS {
 
 z_stream *Hub::allocateDefaultCompressor(z_stream *zStream) {
     deflateInit2(zStream, 1, Z_DEFLATED, -15, 8, Z_DEFAULT_STRATEGY);
@@ -88,7 +88,7 @@ char *Hub::inflate(char *data, size_t &length, size_t maxPayload) {
     return zlibBuffer;
 }
 
-void Hub::onServerAccept(uS::Socket *s) {
+void Hub::onServerAccept(cS::Socket *s) {
     HttpSocket<SERVER> *httpSocket = new HttpSocket<SERVER>(s);
     delete s;
 
@@ -99,7 +99,7 @@ void Hub::onServerAccept(uS::Socket *s) {
     Group<SERVER>::from(httpSocket)->httpConnectionHandler(httpSocket);
 }
 
-void Hub::onClientConnection(uS::Socket *s, bool error) {
+void Hub::onClientConnection(cS::Socket *s, bool error) {
     HttpSocket<CLIENT> *httpSocket = (HttpSocket<CLIENT> *) s;
 
     if (error) {
@@ -112,24 +112,24 @@ void Hub::onClientConnection(uS::Socket *s, bool error) {
     }
 }
 
-bool Hub::listen(const char *host, int port, uS::TLS::Context sslContext, int options, Group<SERVER> *eh) {
+bool Hub::listen(const char *host, int port, cS::TLS::Context sslContext, int options, Group<SERVER> *eh) {
     if (!eh) {
         eh = (Group<SERVER> *) this;
     }
 
-    if (uS::Node::listen<onServerAccept>(host, port, sslContext, options, (uS::NodeData *) eh, nullptr)) {
+    if (cS::Node::listen<onServerAccept>(host, port, sslContext, options, (cS::NodeData *) eh, nullptr)) {
         eh->errorHandler(port);
         return false;
     }
     return true;
 }
 
-bool Hub::listen(int port, uS::TLS::Context sslContext, int options, Group<SERVER> *eh) {
+bool Hub::listen(int port, cS::TLS::Context sslContext, int options, Group<SERVER> *eh) {
     return listen(nullptr, port, sslContext, options, eh);
 }
 
-uS::Socket *allocateHttpSocket(uS::Socket *s) {
-    return (uS::Socket *) new HttpSocket<CLIENT>(s);
+cS::Socket *allocateHttpSocket(cS::Socket *s) {
+    return (cS::Socket *) new HttpSocket<CLIENT>(s);
 }
 
 bool parseURI(std::string &uri, bool &secure, std::string &hostname, int &port, std::string &path) {
@@ -206,7 +206,7 @@ void Hub::connect(std::string uri, void *user, std::map<std::string, std::string
     if (!parseURI(uri, secure, hostname, port, path)) {
         eh->errorHandler(user);
     } else {
-        HttpSocket<CLIENT> *httpSocket = (HttpSocket<CLIENT> *) uS::Node::connect<allocateHttpSocket, onClientConnection>(hostname.c_str(), port, secure, eh);
+        HttpSocket<CLIENT> *httpSocket = (HttpSocket<CLIENT> *) cS::Node::connect<allocateHttpSocket, onClientConnection>(hostname.c_str(), port, secure, eh);
         if (httpSocket) {
             // startTimeout occupies the user
             httpSocket->startTimeout<HttpSocket<CLIENT>::onEnd>(timeoutMs);
@@ -240,7 +240,7 @@ void Hub::upgrade(uv_os_sock_t fd, const char *secKey, SSL *ssl, const char *ext
         serverGroup = &getDefaultGroup<SERVER>();
     }
 
-    uS::Socket s((uS::NodeData *) serverGroup, serverGroup->loop, fd, ssl);
+    cS::Socket s((cS::NodeData *) serverGroup, serverGroup->loop, fd, ssl);
     s.setNoDelay(true);
 
     // todo: skip httpSocket -> it cannot fail anyways!

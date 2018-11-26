@@ -1,8 +1,8 @@
 // the purpose of this header should be to provide SSL and networking wrapped in a common interface
 // it should allow cross-platform networking and SSL and also easy usage of mTCP and similar tech
 
-#ifndef NETWORKING_UWS_H
-#define NETWORKING_UWS_H
+#ifndef NETWORKING_CWS_H
+#define NETWORKING_CWS_H
 
 #include <openssl/opensslv.h>
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
@@ -75,7 +75,7 @@ inline SOCKET dup(SOCKET socket) {
 #include <algorithm>
 #include <memory>
 
-namespace uS {
+namespace cS {
 
 // todo: mark sockets nonblocking in these functions
 // todo: probably merge this Context with the TLS::Context for same interface for SSL and non-SSL!
@@ -201,7 +201,7 @@ struct WIN32_EXPORT NodeData {
     char *recvBuffer;
     int recvLength;
     Loop *loop;
-    uS::Context *netContext;
+    cS::Context *netContext;
     void *user = nullptr;
     static const int preAllocMaxSize = 1024;
     char **preAlloc;
@@ -256,4 +256,4 @@ public:
 
 }
 
-#endif // NETWORKING_UWS_H
+#endif // NETWORKING_CWS_H

@@ -1,11 +1,11 @@
-#ifndef HTTPSOCKET_UWS_H
-#define HTTPSOCKET_UWS_H
+#ifndef HTTPSOCKET_CWS_H
+#define HTTPSOCKET_CWS_H
 
 #include "Socket.h"
 #include <string>
 // #include <experimental/string_view>
 
-namespace uWS {
+namespace cWS {
 
 struct Header {
     char *key, *value;
@@ -106,7 +106,7 @@ struct HttpRequest {
 struct HttpResponse;
 
 template <const bool isServer>
-struct WIN32_EXPORT HttpSocket : uS::Socket {
+struct WIN32_EXPORT HttpSocket : cS::Socket {
     void *httpUser; // remove this later, setTimeout occupies user for now
     HttpResponse *outstandingResponsesHead = nullptr;
     HttpResponse *outstandingResponsesTail = nullptr;
@@ -116,7 +116,7 @@ struct WIN32_EXPORT HttpSocket : uS::Socket {
     size_t contentLength = 0;
     bool missedDeadline = false;
 
-    HttpSocket(uS::Socket *socket) : uS::Socket(std::move(*socket)) {}
+    HttpSocket(cS::Socket *socket) : cS::Socket(std::move(*socket)) {}
 
     void terminate() {
         onEnd(this);
@@ -127,11 +127,11 @@ struct WIN32_EXPORT HttpSocket : uS::Socket {
                  size_t subprotocolLength, bool *perMessageDeflate);
 
 protected:
-    friend struct uS::Socket;
+    friend struct cS::Socket;
     friend struct HttpResponse;
     friend struct Hub;
-    static uS::Socket *onData(uS::Socket *s, char *data, size_t length);
-    static void onEnd(uS::Socket *s);
+    static cS::Socket *onData(cS::Socket *s, char *data, size_t length);
+    static void onEnd(cS::Socket *s);
 };
 
 struct HttpResponse {
@@ -282,4 +282,4 @@ struct HttpResponse {
 
 }
 
-#endif // HTTPSOCKET_UWS_H
+#endif // HTTPSOCKET_CWS_H

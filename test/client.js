@@ -1,6 +1,6 @@
-const uws = require('../dist/index');
+const cws = require('../dist/index');
 
-let socket = new uws.WebSocket('ws://localhost:3000');
+let socket = new cws.WebSocket('ws://localhost:3000');
 socket.binaryType = 'arraybuffer'
 socket.on('open', () => {
   console.log("socket is open");

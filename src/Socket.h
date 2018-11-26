@@ -1,9 +1,9 @@
-#ifndef SOCKET_UWS_H
-#define SOCKET_UWS_H
+#ifndef SOCKET_CWS_H
+#define SOCKET_CWS_H
 
 #include "Networking.h"
 
-namespace uS {
+namespace cS {
 
 struct TransferData {
     // Connection state
@@ -354,7 +354,7 @@ protected:
         size_t estimatedLength = T::estimate(message, length) + sizeof(Queue::Message);
 
         if (hasEmptyQueue()) {
-            if (estimatedLength <= uS::NodeData::preAllocMaxSize) {
+            if (estimatedLength <= cS::NodeData::preAllocMaxSize) {
                 int memoryLength = (int) estimatedLength;
                 int memoryIndex = nodeData->getMemoryBlockIndex(memoryLength);
 
@@ -499,9 +499,9 @@ struct ListenSocket : Socket {
     }
 
     Timer *timer = nullptr;
-    uS::TLS::Context sslContext;
+    cS::TLS::Context sslContext;
 };
 
 }
 
-#endif // SOCKET_UWS_H
+#endif // SOCKET_CWS_H

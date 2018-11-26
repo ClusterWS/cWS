@@ -2,10 +2,10 @@
 #include "Group.h"
 #include "Hub.h"
 
-namespace uWS {
+namespace cWS {
 
 template <bool isServer>
-WebSocket<isServer>::WebSocket(bool perMessageDeflate, uS::Socket *socket) : uS::Socket(std::move(*socket)) {
+WebSocket<isServer>::WebSocket(bool perMessageDeflate, cS::Socket *socket) : cS::Socket(std::move(*socket)) {
     compressionStatus = perMessageDeflate ? CompressionStatus::ENABLED : CompressionStatus::DISABLED;
 
     // if we are created in a group with sliding deflate window allocate it here
@@ -26,7 +26,7 @@ WebSocket<isServer>::WebSocket(bool perMessageDeflate, uS::Socket *socket) : uS:
 template <bool isServer>
 void WebSocket<isServer>::send(const char *message, size_t length, OpCode opCode, void(*callback)(WebSocket<isServer> *webSocket, void *data, bool cancelled, void *reserved), void *callbackData, bool compress) {
 
-#ifdef UWS_THREADSAFE
+#ifdef CWS_THREADSAFE
     std::lock_guard<std::recursive_mutex> lockGuard(*nodeData->asyncMutex);
     if (isClosed()) {
         if (callback) {
@@ -188,7 +188,7 @@ void WebSocket<isServer>::finalizeMessage(typename WebSocket<isServer>::Prepared
 }
 
 template <bool isServer>
-uS::Socket *WebSocket<isServer>::onData(uS::Socket *s, char *data, size_t length) {
+cS::Socket *WebSocket<isServer>::onData(cS::Socket *s, char *data, size_t length) {
     WebSocket<isServer> *webSocket = static_cast<WebSocket<isServer> *>(s);
 
     webSocket->hasOutstandingPong = false;
@@ -212,7 +212,7 @@ uS::Socket *WebSocket<isServer>::onData(uS::Socket *s, char *data, size_t length
 template <bool isServer>
 void WebSocket<isServer>::terminate() {
 
-#ifdef UWS_THREADSAFE
+#ifdef CWS_THREADSAFE
     std::lock_guard<std::recursive_mutex> lockGuard(*nodeData->asyncMutex);
     if (isClosed()) {
         return;
@@ -225,7 +225,7 @@ void WebSocket<isServer>::terminate() {
 /*
  * Transfers this WebSocket from its current Group to specified Group.
  *
- * Receiving Group has to have called listen(uWS::TRANSFERS) prior.
+ * Receiving Group has to have called listen(cWS::TRANSFERS) prior.
  *
  * Hints: Useful to implement subprotocols on the same thread and Loop
  * or to transfer WebSockets between threads at any point (dynamic load balancing).
@@ -245,7 +245,7 @@ void WebSocket<isServer>::transfer(Group<isServer> *group) {
         Group<isServer>::from(this)->transferHandler(this);
     } else {
         // slow path
-        uS::Socket::transfer((uS::NodeData *) group, [](Poll *p) {
+        cS::Socket::transfer((cS::NodeData *) group, [](Poll *p) {
             WebSocket<isServer> *webSocket = (WebSocket<isServer> *) p;
             Group<isServer>::from(webSocket)->addWebSocket(webSocket);
             Group<isServer>::from(webSocket)->transferHandler(webSocket);
@@ -286,7 +286,7 @@ void WebSocket<isServer>::close(int code, const char *message, size_t length) {
 }
 
 template <bool isServer>
-void WebSocket<isServer>::onEnd(uS::Socket *s) {
+void WebSocket<isServer>::onEnd(cS::Socket *s) {
     WebSocket<isServer> *webSocket = static_cast<WebSocket<isServer> *>(s);
 
     if (!webSocket->isShuttingDown()) {

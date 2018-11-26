@@ -1,7 +1,7 @@
 #include "Group.h"
 #include "Hub.h"
 
-namespace uWS {
+namespace cWS {
 
 template <bool isServer>
 void Group<isServer>::setUserData(void *user) {
@@ -14,7 +14,7 @@ void *Group<isServer>::getUserData() {
 }
 
 template <bool isServer>
-void Group<isServer>::timerCallback(uS::Timer *timer) {
+void Group<isServer>::timerCallback(cS::Timer *timer) {
     Group<isServer> *group = (Group<isServer> *) timer->getData();
     // finish bugs
     if (group->userPingMessageLength > 0) {
@@ -27,7 +27,7 @@ void Group<isServer>::timerCallback(uS::Timer *timer) {
 template <bool isServer>
 // const char *message, size_t length, OpCode opCode
 void Group<isServer>::startAutoPing(int intervalMs, const char *message, size_t length, OpCode opCode) {
-    timer = new uS::Timer(loop);
+    timer = new cS::Timer(loop);
     timer->setData(this);
     timer->start(timerCallback, intervalMs, intervalMs);
 
@@ -44,9 +44,9 @@ void Group<isServer>::addHttpSocket(HttpSocket<isServer> *httpSocket) {
     } else {
         httpSocket->next = nullptr;
         // start timer
-        httpTimer = new uS::Timer(hub->getLoop());
+        httpTimer = new cS::Timer(hub->getLoop());
         httpTimer->setData(this);
-        httpTimer->start([](uS::Timer *httpTimer) {
+        httpTimer->start([](cS::Timer *httpTimer) {
             Group<isServer> *group = (Group<isServer> *) httpTimer->getData();
             group->forEachHttpSocket([](HttpSocket<isServer> *httpSocket) {
                 if (httpSocket->missedDeadline) {
@@ -114,7 +114,7 @@ void Group<isServer>::removeWebSocket(WebSocket<isServer> *webSocket) {
 }
 
 template <bool isServer>
-Group<isServer>::Group(int extensionOptions, unsigned int maxPayload, Hub *hub, uS::NodeData *nodeData) : uS::NodeData(*nodeData), maxPayload(maxPayload), hub(hub), extensionOptions(extensionOptions) {
+Group<isServer>::Group(int extensionOptions, unsigned int maxPayload, Hub *hub, cS::NodeData *nodeData) : cS::NodeData(*nodeData), maxPayload(maxPayload), hub(hub), extensionOptions(extensionOptions) {
     connectionHandler = [](WebSocket<isServer> *, HttpRequest) {};
     transferHandler = [](WebSocket<isServer> *) {};
     messageHandler = [](WebSocket<isServer> *, char *, size_t, OpCode) {};
@@ -135,14 +135,14 @@ void Group<isServer>::stopListening() {
     if (isServer) {
         if (user) {
             // todo: we should allow one group to listen to many ports!
-            uS::ListenSocket *listenSocket = (uS::ListenSocket *) user;
+            cS::ListenSocket *listenSocket = (cS::ListenSocket *) user;
 
             if (listenSocket->timer) {
                 listenSocket->timer->stop();
                 listenSocket->timer->close();
             }
 
-            listenSocket->closeSocket<uS::ListenSocket>();
+            listenSocket->closeSocket<cS::ListenSocket>();
 
             // mark as stopped listening (extra care?)
             user = nullptr;
@@ -222,13 +222,13 @@ void Group<isServer>::onHttpUpgrade(std::function<void(HttpSocket<isServer> *, H
 template <bool isServer>
 void Group<isServer>::broadcast(const char *message, size_t length, OpCode opCode, bool isPing) {
 
-#ifdef UWS_THREADSAFE
+#ifdef CWS_THREADSAFE
     std::lock_guard<std::recursive_mutex> lockGuard(*asyncMutex);
 #endif
 
     typename WebSocket<isServer>::PreparedMessage *preparedMessage = WebSocket<isServer>::prepareMessage((char *) message, length, opCode, false);
       if(isPing) {
-        forEach([preparedMessage](uWS::WebSocket<isServer> *ws) {
+        forEach([preparedMessage](cWS::WebSocket<isServer> *ws) {
             if (ws->hasOutstandingPong) {
                 ws->terminate();
             } else {
@@ -237,7 +237,7 @@ void Group<isServer>::broadcast(const char *message, size_t length, OpCode opCod
             }
         });
       } else {
-        forEach([preparedMessage](uWS::WebSocket<isServer> *ws) {
+        forEach([preparedMessage](cWS::WebSocket<isServer> *ws) {
           ws->sendPrepared(preparedMessage);
         });
       }
@@ -247,7 +247,7 @@ void Group<isServer>::broadcast(const char *message, size_t length, OpCode opCod
 template <bool isServer>
 void Group<isServer>::terminate() {
     stopListening();
-    forEach([](uWS::WebSocket<isServer> *ws) {
+    forEach([](cWS::WebSocket<isServer> *ws) {
         ws->terminate();
     });
     forEachHttpSocket([](HttpSocket<isServer> *httpSocket) {
@@ -258,7 +258,7 @@ void Group<isServer>::terminate() {
 template <bool isServer>
 void Group<isServer>::close(int code, char *message, size_t length) {
     stopListening();
-    forEach([code, message, length](uWS::WebSocket<isServer> *ws) {
+    forEach([code, message, length](cWS::WebSocket<isServer> *ws) {
         ws->close(code, message, length);
     });
     forEachHttpSocket([](HttpSocket<isServer> *httpSocket) {

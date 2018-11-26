@@ -1,6 +1,6 @@
-const uws = require('../dist/index');
+const cws = require('../dist/index');
 
-let server = new uws.WebSocketServer({
+let server = new cws.WebSocketServer({
   port: 3000, verifyClient: (info, next) => {
     console.log(info.headers)
     next(true);

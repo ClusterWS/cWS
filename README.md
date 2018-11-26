@@ -1,4 +1,4 @@
-<h1 align="center">ClusterWS/uWS Implementation</h1>
+<h1 align="center">ClusterWS/cWS Implementation</h1>
 <h6 align="center">Modified version of <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets</a></h6>
 
 <p align="center">
@@ -21,7 +21,7 @@ Big thanks to [SirAnthony](https://github.com/SirAnthony) for ssl workaround (ha
 ### Installation
 
 ```js
-npm i @clusterws/uws
+npm i @clusterws/cws
 ```
 
 ### Server example
@@ -30,7 +30,7 @@ uWebSockets node was designed to mimic node js [ws](https://github.com/websocket
 
 ```js
 // use WebSocketServer to create server
-const { WebSocketServer } = require('@clusterws/uws');
+const { WebSocketServer } = require('@clusterws/cws');
 
 // Create websocket server 
 const server = new WebSocketServer({ port: 3000 }, () => {
@@ -100,7 +100,7 @@ server.close(callback)
 ```js
 // Client part is pretty much the same as in server
 // use WebSocket to create client
-const { WebSocket } = require('@clusterws/uws');
+const { WebSocket } = require('@clusterws/cws');
 
 const socket = new WebSocket('ws://url:port');
 

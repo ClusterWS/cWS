@@ -1,10 +1,10 @@
-#ifndef WEBSOCKET_UWS_H
-#define WEBSOCKET_UWS_H
+#ifndef WEBSOCKET_CWS_H
+#define WEBSOCKET_CWS_H
 
 #include "WebSocketProtocol.h"
 #include "Socket.h"
 
-namespace uWS {
+namespace cWS {
 
 template <bool isServer>
 struct Group;
@@ -13,7 +13,7 @@ template <bool isServer>
 struct HttpSocket;
 
 template <const bool isServer>
-struct WIN32_EXPORT WebSocket : uS::Socket, WebSocketState<isServer> {
+struct WIN32_EXPORT WebSocket : cS::Socket, WebSocketState<isServer> {
 protected:
     std::string fragmentBuffer;
     enum CompressionStatus : char {
@@ -25,11 +25,11 @@ protected:
 
     void *slidingDeflateWindow = nullptr;
 
-    WebSocket(bool perMessageDeflate, uS::Socket *socket);
+    WebSocket(bool perMessageDeflate, cS::Socket *socket);
 
-    static uS::Socket *onData(uS::Socket *s, char *data, size_t length);
-    static void onEnd(uS::Socket *s);
-    using uS::Socket::closeSocket;
+    static cS::Socket *onData(cS::Socket *s, char *data, size_t length);
+    static void onEnd(cS::Socket *s);
+    using cS::Socket::closeSocket;
 
     static bool refusePayloadLength(uint64_t length, WebSocketState<isServer> *webSocketState) {
         WebSocket<isServer> *webSocket = static_cast<WebSocket<isServer> *>(webSocketState);
@@ -80,10 +80,10 @@ public:
     friend struct Hub;
     friend struct Group<isServer>;
     friend struct HttpSocket<isServer>;
-    friend struct uS::Socket;
+    friend struct cS::Socket;
     friend class WebSocketProtocol<isServer, WebSocket<isServer>>;
 };
 
 }
 
-#endif // WEBSOCKET_UWS_H
+#endif // WEBSOCKET_CWS_H

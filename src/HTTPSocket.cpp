@@ -7,7 +7,7 @@
 #define MAX_HEADER_BUFFER_SIZE 4096
 #define FORCE_SLOW_PATH false
 
-namespace uWS {
+namespace cWS {
 
 // UNSAFETY NOTE: assumes *end == '\r' (might unref end pointer)
 char *getHeaders(char *buffer, char *end, Header *headers, size_t maxHeaders) {
@@ -53,7 +53,7 @@ static void base64(unsigned char *src, char *dst) {
 }
 
 template <bool isServer>
-uS::Socket *HttpSocket<isServer>::onData(uS::Socket *s, char *data, size_t length) {
+cS::Socket *HttpSocket<isServer>::onData(cS::Socket *s, char *data, size_t length) {
     HttpSocket<isServer> *httpSocket = (HttpSocket<isServer> *) s;
 
     httpSocket->cork(true);
@@ -77,7 +77,7 @@ uS::Socket *HttpSocket<isServer>::onData(uS::Socket *s, char *data, size_t lengt
             return httpSocket;
         }
 
-        httpSocket->httpBuffer.reserve(httpSocket->httpBuffer.length() + length + WebSocketProtocol<uWS::CLIENT, WebSocket<uWS::CLIENT>>::CONSUME_POST_PADDING);
+        httpSocket->httpBuffer.reserve(httpSocket->httpBuffer.length() + length + WebSocketProtocol<cWS::CLIENT, WebSocket<cWS::CLIENT>>::CONSUME_POST_PADDING);
         httpSocket->httpBuffer.append(data, length);
         data = (char *) httpSocket->httpBuffer.data();
         length = httpSocket->httpBuffer.length();
@@ -210,7 +210,7 @@ void HttpSocket<isServer>::upgrade(const char *secKey, const char *extensions, s
         std::string extensionsResponse;
         if (extensionsLength) {
             Group<isServer> *group = Group<isServer>::from(this);
-            ExtensionsNegotiator<uWS::SERVER> extensionsNegotiator(group->extensionOptions);
+            ExtensionsNegotiator<cWS::SERVER> extensionsNegotiator(group->extensionOptions);
             extensionsNegotiator.readOffer(std::string(extensions, extensionsLength));
             extensionsResponse = extensionsNegotiator.generateOffer();
             if (extensionsNegotiator.getNegotiatedOptions() & PERMESSAGE_DEFLATE) {
@@ -247,7 +247,7 @@ void HttpSocket<isServer>::upgrade(const char *secKey, const char *extensions, s
             memcpy(upgradeBuffer + upgradeResponseLength + 24 + subprotocolLength, "\r\n", 2);
             upgradeResponseLength += 24 + subprotocolLength + 2;
         }
-        static char stamp[] = "Sec-WebSocket-Version: 13\r\nWebSocket-Server: uWebSockets\r\n\r\n";
+        static char stamp[] = "Sec-WebSocket-Version: 13\r\nWebSocket-Server: cWebSockets\r\n\r\n";
         memcpy(upgradeBuffer + upgradeResponseLength, stamp, sizeof(stamp) - 1);
         upgradeResponseLength += sizeof(stamp) - 1;
 
@@ -270,7 +270,7 @@ void HttpSocket<isServer>::upgrade(const char *secKey, const char *extensions, s
 }
 
 template <bool isServer>
-void HttpSocket<isServer>::onEnd(uS::Socket *s) {
+void HttpSocket<isServer>::onEnd(cS::Socket *s) {
     HttpSocket<isServer> *httpSocket = (HttpSocket<isServer> *) s;
 
     if (!httpSocket->isShuttingDown()) {
