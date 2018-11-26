@@ -15,7 +15,6 @@
     "tiny",
     "websocket",
     "clusterws",
-    "uws",
     "cws"
   ],
   "license": "MIT",
