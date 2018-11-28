@@ -11,7 +11,8 @@ class EventEmitter {
         this.events = {};
     }
     on(e, t) {
-        if ("[object Function]" !== {}.toString.call(t)) return console.log("Listener should be a function");
+        const r = {}.toString.call(t);
+        if ("[object Function]" !== r && "[object AsyncFunction]" !== r) return console.log("Listener should be a function");
         this.events[e] = t;
     }
     emit(e, ...t) {
