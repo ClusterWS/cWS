@@ -4,8 +4,7 @@ export class EventEmitter {
   private events: { [key: string]: Listener } = {};
 
   public on(event: string, listener: Listener): void {
-    const s: string = {}.toString.call(listener);
-    if (s !== '[object Function]' && s !== '[object AsyncFunction]')
+    if (typeof listener !== 'function')
       return console.log('Listener should be a function');
     this.events[event] = listener;
   }
