@@ -4,7 +4,7 @@ export class EventEmitter {
   private events: { [key: string]: Listener } = {};
 
   public on(event: string, listener: Listener): void {
-    if ({}.toString.call(listener) !== '[object Function]')
+    if (typeof listener !== 'function')
       return console.log('Listener should be a function');
     this.events[event] = listener;
   }
