@@ -67,6 +67,18 @@ class WebSocket extends EventEmitter {
     get readyState() {
         return this.external ? this.OPEN : this.CLOSED;
     }
+    set onopen(e) {
+        this.on("open", e);
+    }
+    set onclose(e) {
+        this.on("close", e);
+    }
+    set onerror(e) {
+        this.on("error", e);
+    }
+    set onmessage(e) {
+        this.on("message", e);
+    }
     on(e, t) {
         super.on(e, t);
     }
@@ -149,10 +161,10 @@ class WebSocketServer extends EventEmitter {
         return e.end(`HTTP/1.1 ${t} ${r}\r\n\r\n`);
     }
     handleUpgrade(e, t) {
-        const r = e.headers["sec-websocket-key"], s = t, n = s.ssl ? native.getSSLContext(s.ssl) : null, i = s.ssl ? s._parent._handle : s._handle;
-        if (i && r && 24 === r.length) {
+        const r = e.headers["sec-websocket-key"], s = t, n = s.ssl ? native.getSSLContext(s.ssl) : null, o = s.ssl ? s._parent._handle : s._handle;
+        if (o && r && 24 === r.length) {
             t.setNoDelay(this.noDelay);
-            const s = native.transfer(-1 === i.fd ? i : i.fd, n);
+            const s = native.transfer(-1 === o.fd ? o : o.fd, n);
             t.on("close", (t, n) => {
                 this.serverGroup && (this.upgradeReq = e, native.upgrade(this.serverGroup, s, r, e.headers["sec-websocket-extensions"], e.headers["sec-websocket-protocol"]));
             });

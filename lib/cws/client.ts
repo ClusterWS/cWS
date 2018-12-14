@@ -73,6 +73,23 @@ export class WebSocket extends EventEmitter {
     return this.external ? this.OPEN : this.CLOSED;
   }
 
+  // browser interface
+  public set onopen(listener: Listener) {
+    this.on('open', listener);
+  }
+
+  public set onclose(listener: Listener) {
+    this.on('close', listener);
+  }
+
+  public set onerror(listener: Listener) {
+    this.on('error', listener);
+  }
+
+  public set onmessage(listener: Listener) {
+    this.on('message', listener);
+  }
+
   // overload on function from super class
   public on(event: string, listener: Listener): void;
   public on(event: 'open', listener: () => {}): void;
