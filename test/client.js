@@ -1,3 +1,8 @@
+
+global.cws = {
+  EventEmitter: require('events').EventEmitter
+}
+
 const cws = require('../dist/index');
 
 let socket = new cws.WebSocket('ws://localhost:3000');

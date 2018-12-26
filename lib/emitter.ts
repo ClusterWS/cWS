@@ -1,6 +1,6 @@
 import { Listener } from './types';
 
-class EventEmitter {
+export class EventEmitter {
   private events: { [key: string]: Listener } = {};
 
   public on(event: string, listener: Listener): void {
@@ -19,7 +19,8 @@ class EventEmitter {
   }
 }
 
-export function getEmitter(): any {
+// try and load event emitter from global configs
+export function eventEmitter(): any {
   if (!global || !(global as any).cws || !(global as any).cws.EventEmitter) {
     return EventEmitter;
   }

@@ -55,7 +55,12 @@ export const SLIDING_DEFLATE_WINDOW: number;
 export const DEFAULT_PAYLOAD_LIMIT: number;
 export const noop: any;
 
-export function getEmitter(): any;
+export class EventEmitter {
+    on(event: string, listener: Listener): void;
+    emit(event: string, ...args: any[]): void;
+    removeEvents(): void;
+}
+export function eventEmitter(): any;
 
 export type Listener = (...args: any[]) => void;
 export type SocketAddress = {

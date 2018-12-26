@@ -23,7 +23,7 @@ class EventEmitter {
     }
 }
 
-function getEmitter() {
+function eventEmitter() {
     return global && global.cws && global.cws.EventEmitter ? global.cws.EventEmitter : EventEmitter;
 }
 
@@ -55,7 +55,7 @@ native.client.group.onConnection(clientGroup, e => {
     }), native.clearUserData(e);
 });
 
-class WebSocket extends(getEmitter()){
+class WebSocket extends(eventEmitter()){
     constructor(e, t, r) {
         super(), this.OPEN = 1, this.CLOSED = 0, this.external = noop, this.external = t, 
         this.executeOn = r ? "server" : "client", r || native.connect(clientGroup, e, this);
@@ -104,7 +104,7 @@ class WebSocket extends(getEmitter()){
 
 native.setNoop(noop);
 
-class WebSocketServer extends(getEmitter()){
+class WebSocketServer extends(eventEmitter()){
     constructor(e, t) {
         super(), this.serverIsProvided = !1, this.lastUpgradeListener = !0, this.noDelay = !!e.noDelay, 
         e.path && "/" !== e.path[0] && (e.path = `/${e.path}`), this.configureNative(e), 
