@@ -1,3 +1,9 @@
+// global.EventEmitter = require('events').EventEmitter;
+
+global.cws = {
+  EventEmitter: require('events').EventEmitter
+}
+// console.log(global.EventEmitter);
 const cws = require('../dist/index');
 
 let server = new cws.WebSocketServer({

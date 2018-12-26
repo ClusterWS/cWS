@@ -23,6 +23,10 @@ class EventEmitter {
     }
 }
 
+function getEmitter() {
+    return global && global.cws && global.cws.EventEmitter ? global.cws.EventEmitter : EventEmitter;
+}
+
 const native = require(`./cws_${process.platform}_${process.versions.modules}`), OPCODE_TEXT = 1, OPCODE_PING = 9, OPCODE_BINARY = 2, APP_PING_CODE = Buffer.from("9"), PERMESSAGE_DEFLATE = 1, SLIDING_DEFLATE_WINDOW = 16, DEFAULT_PAYLOAD_LIMIT = 16777216, noop = () => {};
 
 native.setNoop(noop);
@@ -51,7 +55,7 @@ native.client.group.onConnection(clientGroup, e => {
     }), native.clearUserData(e);
 });
 
-class WebSocket extends EventEmitter {
+class WebSocket extends(getEmitter()){
     constructor(e, t, r) {
         super(), this.OPEN = 1, this.CLOSED = 0, this.external = noop, this.external = t, 
         this.executeOn = r ? "server" : "client", r || native.connect(clientGroup, e, this);
@@ -100,7 +104,7 @@ class WebSocket extends EventEmitter {
 
 native.setNoop(noop);
 
-class WebSocketServer extends EventEmitter {
+class WebSocketServer extends(getEmitter()){
     constructor(e, t) {
         super(), this.serverIsProvided = !1, this.lastUpgradeListener = !0, this.noDelay = !!e.noDelay, 
         e.path && "/" !== e.path[0] && (e.path = `/${e.path}`), this.configureNative(e), 

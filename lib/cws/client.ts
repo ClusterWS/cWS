@@ -1,4 +1,4 @@
-import { EventEmitter } from '../emitter';
+import { getEmitter } from '../emitter';
 import { SendOptions, Listener, SocketAddress } from '../types';
 import { native, noop, DEFAULT_PAYLOAD_LIMIT, OPCODE_PING, OPCODE_BINARY, OPCODE_TEXT } from './shared';
 
@@ -42,7 +42,7 @@ native.client.group.onDisconnection(clientGroup, (newExternal: any, code: number
   native.clearUserData(newExternal);
 });
 
-export class WebSocket extends EventEmitter {
+export class WebSocket extends getEmitter() {
   public OPEN: number = 1;
   public CLOSED: number = 0;
 

@@ -129,6 +129,17 @@ socket.close(code, reason) // close connection
 
 ```
 
+### Replace EventEmitter 
+To replace custom event emitter you have to overwrite global `cws` parameter before importing `@clusterws/cws` ex:
+```js
+// this code uses default node js event emitter
+global.cws = {
+  EventEmitter: require('events').EventEmitter
+}
+
+// import cws
+const { WebSocket } = require('@clusterws/cws');
+```
 
 ### Handle AppLevelPing In Browser Example
 This is just an example of handling app level ping pong from the client side which does not have `onping` and `onpong` methods available 
