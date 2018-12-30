@@ -22,6 +22,13 @@
                     'ldflags!': ['-rdynamic'],
                     'ldflags': ['-s']
                 }],
+                ['OS=="freebsd"', {
+                    'cflags_cc': ['-std=c++11', '-DUSE_LIBUV'],
+                    'cflags_cc!': ['-fno-exceptions', '-std=gnu++11', '-fno-rtti'],
+                    'cflags!': ['-fno-omit-frame-pointer'],
+                    'ldflags!': ['-rdynamic'],
+                    'ldflags': ['-s']
+                }],
                 ['OS=="mac"', {
                     'xcode_settings': {
                         'MACOSX_DEPLOYMENT_TARGET': '10.7',
