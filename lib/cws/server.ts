@@ -167,7 +167,7 @@ export class WebSocketServer extends eventEmitter() {
         if (!this.serverGroup) return;
 
         this.upgradeReq = req;
-        this.upgradeCallback = callback ? callback : noop;
+        this.upgradeCallback = callback || noop;
 
         native.upgrade(
           this.serverGroup,
