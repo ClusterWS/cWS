@@ -18,6 +18,7 @@ export class WebSocketServer extends eventEmitter() {
   private upgradeListener: Listener;
   private serverIsProvided: boolean = false;
   private lastUpgradeListener: boolean = true;
+  private upgradeCallback: Function = noop;
 
   constructor(configs: ServerConfigs, callback?: Listener) {
     super();
@@ -26,8 +27,6 @@ export class WebSocketServer extends eventEmitter() {
     if (configs.path && configs.path[0] !== '/') {
       configs.path = `/${configs.path}`;
     }
-    
-    this._upgradeCallback = noop;
 
     this.configureNative(configs);
     this.configureServer(configs);
@@ -121,7 +120,7 @@ export class WebSocketServer extends eventEmitter() {
     native.server.group.onConnection(this.serverGroup, (external: any) => {
       const webSocket: WebSocket = new WebSocket(null, external, true);
       native.setUserData(external, webSocket);
-      this._upgradeCallback(webSocket);
+      this.upgradeCallback(webSocket);
       this.emit('connection', webSocket, this.upgradeReq);
       this.upgradeReq = null;
     });
@@ -154,7 +153,7 @@ export class WebSocketServer extends eventEmitter() {
     return socket.end(`HTTP/1.1 ${code} ${name}\r\n\r\n`);
   }
 
-  private handleUpgrade(req: HTTP.IncomingMessage, socket: Socket, upgradeHead, callback): void {
+  private handleUpgrade(req: HTTP.IncomingMessage, socket: Socket, upgradeHead: any, callback: Function): void {
     const secKey: any = req.headers['sec-websocket-key'];
     // Cast socket as <any> so can get access to private properties to calculate a cws ticket.
     const socketAsAny: any = socket as any;
@@ -168,7 +167,7 @@ export class WebSocketServer extends eventEmitter() {
         if (!this.serverGroup) return;
 
         this.upgradeReq = req;
-        this._upgradeCallback = callback ? callback : noop;
+        this.upgradeCallback = callback ? callback : noop;
 
         native.upgrade(
           this.serverGroup,
