@@ -68,7 +68,7 @@ export class WebSocket extends eventEmitter() {
       remoteFamily: address[2]
     };
   }
-  
+
   public get remoteAddress(): string {
     const address: any[] = this.external ? native.getAddress(this.external) : new Array(3);
     return address[1];
