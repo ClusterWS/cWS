@@ -68,6 +68,9 @@ class WebSocket extends(eventEmitter()){
             remoteFamily: e[2]
         };
     }
+    get remoteAddress() {
+        return (this.external ? native.getAddress(this.external) : new Array(3))[1];
+    }
     get readyState() {
         return this.external ? this.OPEN : this.CLOSED;
     }
