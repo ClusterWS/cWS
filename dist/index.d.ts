@@ -8,8 +8,8 @@ import { Socket } from 'net';
 import * as HTTP from 'http';
 import * as HTTPS from 'https';
 
-const WebSocket_base: any;
-export class WebSocket extends WebSocket_base {
+export const EventEmitterClient: any;
+export class WebSocket extends EventEmitterClient {
     OPEN: number;
     CLOSED: number;
     external: any;
@@ -32,10 +32,9 @@ export class WebSocket extends WebSocket_base {
     terminate(): void;
     close(code?: number, reason?: string): void;
 }
-export {};
 
-const WebSocketServer_base: any;
-export class WebSocketServer extends WebSocketServer_base {
+export const EventEmitterServer: any;
+export class WebSocketServer extends EventEmitterServer {
     constructor(configs: ServerConfigs, callback?: Listener);
     on(event: string, listener: Listener): void;
     on(event: 'error', listener: (err: Error, socket?: Socket) => void): void;
@@ -44,7 +43,6 @@ export class WebSocketServer extends WebSocketServer_base {
     startAutoPing(interval: number, appLevel?: boolean): void;
     close(callback?: Listener): void;
 }
-export {};
 
 export const native: any;
 export const OPCODE_TEXT: number;

@@ -10,7 +10,10 @@ import { native, noop, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_DEFLATE_WINDOW
 
 native.setNoop(noop);
 
-export class WebSocketServer extends eventEmitter() {
+// get event emitter instance
+export const EventEmitterServer: any = eventEmitter();
+
+export class WebSocketServer extends EventEmitterServer {
   private noDelay: boolean;
   private httpServer: HTTP.Server | HTTPS.Server;
   private upgradeReq: HTTP.IncomingMessage;

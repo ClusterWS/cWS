@@ -42,7 +42,10 @@ native.client.group.onDisconnection(clientGroup, (newExternal: any, code: number
   native.clearUserData(newExternal);
 });
 
-export class WebSocket extends eventEmitter() {
+// get event emitter instance
+export const EventEmitterClient: any = eventEmitter();
+
+export class WebSocket extends EventEmitterClient {
   public OPEN: number = 1;
   public CLOSED: number = 0;
 
