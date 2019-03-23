@@ -1,6 +1,4 @@
 const cws = require('../dist/index');
-// const uws = require('ws');
-
 const wss = new cws.WebSocketServer({ port: 3000 });
 
 setTimeout(() => {
