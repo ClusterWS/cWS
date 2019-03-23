@@ -36,6 +36,16 @@ native.client.group.onError(clientGroup, (webSocket: WebSocket): void => {
 native.client.group.onDisconnection(clientGroup, (newExternal: any, code: number, message: any, webSocket: WebSocket): void => {
   webSocket.external = null;
   process.nextTick((): void => {
+    if (!code) {
+      // if no code provided it is 100% error in parsing or in code
+      webSocket.emit('error', {
+        message: 'cWs invalid status code or invalid UTF-8 sequence',
+        stack: 'cWs invalid status code or invalid UTF-8 sequence'
+      });
+
+      webSocket.emit('close', 1006, '');
+      return webSocket = null;
+    }
     webSocket.emit('close', code, message);
     webSocket = null;
   });
@@ -125,7 +135,7 @@ export class WebSocket extends EventEmitterClient {
     this.external = null;
   }
 
-  public close(code?: number, reason?: string): void {
+  public close(code: number = 1000, reason?: string): void {
     if (!this.external) return;
     native[this.executeOn].close(this.external, code, reason);
     this.external = null;

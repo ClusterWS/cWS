@@ -263,7 +263,6 @@ void WebSocket<isServer>::transfer(Group<isServer> *group) {
  */
 template <bool isServer>
 void WebSocket<isServer>::close(int code, const char *message, size_t length) {
-
     // startTimeout is not thread safe
 
     static const int MAX_CLOSE_PAYLOAD = 123;

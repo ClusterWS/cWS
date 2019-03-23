@@ -133,6 +133,15 @@ export class WebSocketServer extends EventEmitterServer {
     native.server.group.onDisconnection(this.serverGroup, (external: any, code: number, message: string, webSocket: WebSocket): any => {
       webSocket.external = null;
       process.nextTick((): void => {
+        if (!code) {
+          // if no code provided it is 100% error in parsing or in code
+          webSocket.emit('error', {
+            message: 'cWs invalid status code or invalid UTF-8 sequence',
+            stack: 'cWs invalid status code or invalid UTF-8 sequence'
+          });
+          webSocket.emit('close', 1006, '');
+          return webSocket = null;
+        }
         webSocket.emit('close', code, message);
         webSocket = null;
       });

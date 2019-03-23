@@ -257,11 +257,25 @@ public:
         CloseFrame cf = {};
         if (length >= 2) {
             memcpy(&cf.code, src, 2);
-            cf = {ntohs(cf.code), src + 2, length - 2};
-            if (cf.code < 1000 || cf.code > 4999 || (cf.code > 1011 && cf.code < 4000) ||
-                (cf.code >= 1004 && cf.code <= 1006) || !isValidUtf8((unsigned char *) cf.message, cf.length)) {
-                return {};
+            cf = {ntohs(cf.code), src + 2, length - 2, };
+
+            if(!isValidUtf8((unsigned char *) cf.message, cf.length)){
+               // this actually should be an error
+              return {};
             }
+
+            if (!((cf.code >= 1000 && 
+                  cf.code <= 1013 && 
+                  cf.code != 1004 && 
+                  cf.code != 1005 && 
+                  cf.code != 1006) 
+              || (cf.code >= 3000 && cf.code <= 4999))) {
+                // this actually should be an error
+              return {};
+            }
+        } else {
+          // if there was no code then we assume it was not provided
+          cf = {code: 1005};
         }
         return cf;
     }

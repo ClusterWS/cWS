@@ -49,9 +49,13 @@ native.client.group.onConnection(clientGroup, e => {
             stack: "cWs client connection error"
         });
     });
-}), native.client.group.onDisconnection(clientGroup, (e, t, r, n) => {
-    n.external = null, process.nextTick(() => {
-        n.emit("close", t, r), n = null;
+}), native.client.group.onDisconnection(clientGroup, (e, t, r, s) => {
+    s.external = null, process.nextTick(() => {
+        if (!t) return s.emit("error", {
+            message: "cWs invalid status code or invalid UTF-8 sequence",
+            stack: "cWs invalid status code or invalid UTF-8 sequence"
+        }), s.emit("close", 1006, ""), s = null;
+        s.emit("close", t, r), s = null;
     }), native.clearUserData(e);
 });
 
@@ -96,13 +100,13 @@ class WebSocket extends EventEmitterClient {
     }
     send(e, t, r) {
         if (!this.external) return r && r(new Error("Not opened"));
-        const n = t && t.binary || "string" != typeof e ? OPCODE_BINARY : OPCODE_TEXT;
-        native[this.executeOn].send(this.external, e, n, r ? () => process.nextTick(r) : null, t && t.compress);
+        const s = t && t.binary || "string" != typeof e ? OPCODE_BINARY : OPCODE_TEXT;
+        native[this.executeOn].send(this.external, e, s, r ? () => process.nextTick(r) : null, t && t.compress);
     }
     terminate() {
         this.external && (native[this.executeOn].terminate(this.external), this.external = null);
     }
-    close(e, t) {
+    close(e = 1e3, t) {
         this.external && (native[this.executeOn].close(this.external, e, t), this.external = null);
     }
 }
@@ -142,12 +146,12 @@ class WebSocketServer extends EventEmitterServer {
             if (r.on("error", e => this.emit("error", e, r)), r.on("_tlsError", e => this.emit("error", e, r)), 
             e.path && e.path !== t.url.split("?")[0].split("#")[0]) return this.lastUpgradeListener ? this.dropConnection(r, 400, "URL not supported") : null;
             if (e.verifyClient) {
-                const n = {
+                const s = {
                     req: t,
                     headers: t.headers,
                     secure: !!(t.connection instanceof tls.TLSSocket && (t.connection.authorized || t.connection.encrypted))
                 };
-                return e.verifyClient(n, (e, n, s) => e ? this.handleUpgrade(t, r) : this.dropConnection(r, n, s));
+                return e.verifyClient(s, (e, s, n) => e ? this.handleUpgrade(t, r) : this.dropConnection(r, s, n));
             }
             return this.handleUpgrade(t, r);
         }), this.httpServer.on("error", e => this.emit("error", e)), this.httpServer.on("upgrade", this.upgradeListener), 
@@ -162,9 +166,13 @@ class WebSocketServer extends EventEmitterServer {
             native.setUserData(e, t), this.emit("connection", t, this.upgradeReq), this.upgradeReq = null;
         }), native.server.group.onMessage(this.serverGroup, (e, t) => {
             t.emit("message", e);
-        }), native.server.group.onDisconnection(this.serverGroup, (e, t, r, n) => {
-            n.external = null, process.nextTick(() => {
-                n.emit("close", t, r), n = null;
+        }), native.server.group.onDisconnection(this.serverGroup, (e, t, r, s) => {
+            s.external = null, process.nextTick(() => {
+                if (!t) return s.emit("error", {
+                    message: "cWs invalid status code or invalid UTF-8 sequence",
+                    stack: "cWs invalid status code or invalid UTF-8 sequence"
+                }), s.emit("close", 1006, ""), s = null;
+                s.emit("close", t, r), s = null;
             }), native.clearUserData(e);
         }), native.server.group.onPing(this.serverGroup, (e, t) => t.emit("ping", e)), native.server.group.onPong(this.serverGroup, (e, t) => t.emit("pong", e));
     }
@@ -172,12 +180,12 @@ class WebSocketServer extends EventEmitterServer {
         return e.end(`HTTP/1.1 ${t} ${r}\r\n\r\n`);
     }
     handleUpgrade(e, t) {
-        const r = e.headers["sec-websocket-key"], n = t, s = n.ssl ? native.getSSLContext(n.ssl) : null, i = n.ssl ? n._parent._handle : n._handle;
+        const r = e.headers["sec-websocket-key"], s = t, n = s.ssl ? native.getSSLContext(s.ssl) : null, i = s.ssl ? s._parent._handle : s._handle;
         if (i && r && 24 === r.length) {
             t.setNoDelay(this.noDelay);
-            const n = native.transfer(-1 === i.fd ? i : i.fd, s);
-            t.on("close", (t, s) => {
-                this.serverGroup && (this.upgradeReq = e, native.upgrade(this.serverGroup, n, r, e.headers["sec-websocket-extensions"], e.headers["sec-websocket-protocol"]));
+            const s = native.transfer(-1 === i.fd ? i : i.fd, n);
+            t.on("close", (t, n) => {
+                this.serverGroup && (this.upgradeReq = e, native.upgrade(this.serverGroup, s, r, e.headers["sec-websocket-extensions"], e.headers["sec-websocket-protocol"]));
             });
         }
         t.destroy();
