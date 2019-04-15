@@ -23,114 +23,185 @@ Big thanks to [SirAnthony](https://github.com/SirAnthony) for ssl workaround (ha
 npm i @clusterws/cws
 ```
 
-### Server example
 
-```js
-// use WebSocketServer to create server
+### WebSocket Server
+To find about what types and parameters are accepted please check `dist/index.d.ts` file.
+
+```js 
 const { WebSocketServer } = require('@clusterws/cws');
 
-// Create websocket server 
-const server = new WebSocketServer({ port: 3000 }, () => {
-    console.log('Server is running on port: ', 3000)
+const server = new WebSocketServer({
+  /**
+   *  Server options
+   * 
+   *  path?: string,
+   *  port?: number,
+   *  host?: string;
+   *  server?: HTTP.Server | HTTPS.Server,
+   *  noDelay?: boolean,
+   *  maxPayload?: number,
+   *  perMessageDeflate?: {
+   *     serverNoContextTakeover: boolean
+   *  };
+   *  verifyClient?: (info: ConnectionInfo, next: Listener) => void
+   * 
+   * For more type information check dist/index.d.ts file
+  */
 });
 
-// Accept ws connections
-server.on('connection', (socket, upgReq) => {
-    // gives you remoteAddress info
-    let address = socket._socket 
-    // emitted when receive new message
-    socket.on('message', (message) => { });
 
-    // emitted when connection closes 
+/**
+ * To accept WebSocket connections use on connection method
+ * 
+ * socket: WebSocket client
+ * upgReq: upgrade request
+*/
+server.on('connection', (socket, upgReq) => {
+    /** allow you to get remoteAddress info */ 
+    let address = socket._socket;
+
+    /**
+      * on 'message' will be called when new message arrives from this client
+      * 
+      * msg: string | binary
+    */
+    socket.on('message', (msg) => { });
+
+    /**
+      * on 'close' will be called when connections is closed
+      * 
+      * code?: number, 
+      * reason?: string
+    */
     socket.on('close', (code, reason) => { });
 
-    // emitted on error
+    /**
+      * on 'error' will be called websocket connection has some issue
+      * 
+      * err: Error 
+    */
     socket.on('error', (err) => { });
 
-    // emitted when pong comes back from the client connection
-    socket.on('pong', () => { 
-      // make sure to add below line (important to do not drop connections)
-      socket.isAlive = true;
-    });
+    /**
+      * on 'pong' will be called when client response with pong to the server's ping message
+    */
+    socket.on('pong', () => { });
 
-    // emitted when get ping from the server (if you send)
-    socket.on('ping', () => {})
+    /**
+      * on 'ping' will only when ping is received (on clint side)
+    */
+    socket.on('ping', () => { });
 
-    // this function accepts string or binary (node buffer)
-    socket.send(message)
+    /**
+      * 'send' method is used to send messages to the client / server
+      * 
+      * message can be string or binary
+    */
+    socket.send(message);
 
-    // destroy connection
-    socket.terminate()
 
-    // close connection
-    socket.close(code, reason)
+    /**
+      * 'ping' method is used to manually send ping to the client
+    */
+    socket.ping();
 
-    // to manually send ping to the client
-    socket.ping()
+    /**
+      * 'terminate' method is used to kill connection (usually to remove dead sockets)
+    */
+    socket.terminate();
+
+    /**
+      * 'close' method is used close connection clean way
+      * 
+      * code: number (close code)
+      * reason: string (the reason to close this socket)
+    */
+    socket.close(code, reason);
 });
 
-server.on('error', (err, socket) => {
-  // in some cases there is not socket param
-  // handle http errors, TLS errors, ... 
-})
 
-// Start auto ping (second parameter is type of ping `false` is low level)
-// use `false` most of the time except if you want to track ping pong on the client side 
-// which does not have onping & onpong methods (like browser websocket)
-// check Handle AutoLevelPing In Browser Example part below
-// event if you use app level ping server onPong will be called
-server.startAutoPing(20000, false)
 
-// broadcast to all connected clients
-// message: string | binary (node buffer)
-// options?: { binary: true | false }
-server.broadcast(message, options)
+/**
+  * 'startAutoPing' method is method which will start auto ping all connected clients 
+  * without any need for custom ping implementation
+  *  
+  * `startAutoPing` accepts 2 parameters
+  * interval: number
+  * appLevelPing: boolean (default false)
+  * 
+  * `interval` specifies how often ping should be send to each client 
+  * usually iyt would be around 20000 (in ms)
+  * 
+  * `appLevelPing` is a value which allows you to ping any client including 
+  * browser which do not expose `onping` and `onping` methods, for that to work you 
+  * have to implement custom handle in you client side 
+  * 
+  * Check `Handle AppLevelPing In Browser Example` at the end of readme for more information
+*/
+server.startAutoPing(interval, appLevelPing);
 
-// destroy or close server
-server.close(callback)
 
+/**
+ *  `broadcast` method will send your message to all connected clients
+ * accepts 2 parameters 
+ * message: string | binary,
+ * options?: { binary: true | false }
+*/
+server.broadcast(message, options);
+
+/** will close websocket server and call callback function after everything is done */
+server.close(callback);
+
+
+/** 
+ * this on error will be called when there are some issues with create server or
+ * upgrading socket connection properly
+ */
+server.on('error', (err, socket) => { })
 ```
 
 
-### Client example
+### WebSocket Client
+Websocket client pretty much has the same things as `socket` parameter passed in the server (above section) on new connection,
+below docs will cover mostly things which were not covered in above section.
 
 ```js
-// Client part is pretty much the same as in server
-// use WebSocket to create client
 const { WebSocket } = require('@clusterws/cws');
 
+/** this will connect to specify url */ 
 const socket = new WebSocket('ws://url:port');
 
-// emitted when websocket is connected
-socket.on('open', () => {})
+/** for more information about this listeners and functions check above section */ 
+socket.on('open', () => { })
+socket.on('message', (msg) => { });
+socket.on('error', (err) => { });
+socket.on('close', (code, reason) => { });
+socket.on('ping', () => { });
+socket.on('pong', () => { });
+socket.ping();
+socket.send(msg);
+socket.terminate();
+socket.close(code, reason);
 
-// emitted when receive new message
-socket.on('message', (message) => { });
-
-// emitted when error happens
-socket.on('error', (err) => {})
-
-// emitted on close websocket
-socket.on('close', (code, reason) => {})
-
-// emitted when get ping from the server (if you send)
-socket.on('ping', () => {})
-
-// emitted when get pong from the server (if you send)
-socket.on('pong', () => {})
-
-socket.ping() // manually send ping to the server
-
-socket.send(msg) // send message to the server binary | string
-
-socket.terminate() // destroy connection
-
-socket.close(code, reason) // close connection
-
+/** 
+ * also websocket client support browser websocket signature 
+ * 
+ * Note that there is no onping and onpong as browsers dont expose this
+ * functions to the users.
+ */ 
+socket.onopen = () => {};
+socket.onmessage = (msg) => {};
+socket.onerror = (error) => {};
+socket.onclose = (code, reason) => {};
 ```
 
+
+## Additional Configuration/Examples
+
 ### Replace EventEmitter 
-To replace custom event emitter you have to overwrite global `cws` parameter before importing `@clusterws/cws` ex:
+
+CWS uses custom lightweight version of EventEmitter which may not be suitable for some people, to replace 
+event emitter you can use global cws configuration object ex:
 ```js
 // this code uses default node js event emitter
 global.cws = {
@@ -142,21 +213,32 @@ const { WebSocket } = require('@clusterws/cws');
 ```
 
 ### Handle AppLevelPing In Browser Example
-This is just an example of handling app level ping pong from the client side which does not have `onping` and `onpong` methods available 
+This is just an example of handling app level `ping` `pong` from the client side which does not have `onping` and `onpong` methods available 
 
-**Note** if your clients have `onping` and `onpong` methods (or similar) do not send `appLevel` ping from the server as it requires more work.
+**Note** if your clients have `onping` and `onpong` methods (or similar) do not send `appLevel` ping from the server.
+
 ```js
+const ping = 57;
+const pongResponse = new Uint8Array(['A'.charCodeAt()]);
+
 socket.binaryType = 'arraybuffer' // Do not forget to set to `arraybuffer`
+
 socket.onmessage = function (message) {
+    // check if our message if not string 
     if (typeof message.data !== 'string') {
+        // transform it to Unit Array
         let buffer = new Uint8Array(message.data);
-        if (buffer[0] === 57) {
-            // output should be an array with one bit and [0] is === 65
-            return socket.send(new Uint8Array(['A'.charCodeAt()]));
+
+        // Check if it is actually ping from the server
+        if (buffer[0] === ping && buffer.length === 1) {
+            // you can also emit that ping has been received to you client :)
+            // if it is then send back to the server pong response
+            return socket.send(pongResponse);
         }
 
-        // process with your binary data
+      // process with your logic
     }
-    // process with your string data
+
+    // process with your logic
 }
 ```
