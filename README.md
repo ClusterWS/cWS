@@ -17,6 +17,8 @@ Big thanks to [SirAnthony](https://github.com/SirAnthony) for ssl workaround (ha
 - [Buy a coffee (via PayPal)](https://www.paypal.me/goriunov)
 - [Become a Backer on Patreon](https://www.patreon.com/clusterws) 
 
+## Documentation
+
 ### Installation
 
 ```js
