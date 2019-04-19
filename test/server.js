@@ -17,7 +17,7 @@ let server = new cws.WebSocketServer({
 
 server.on('connection', (socket) => {
   console.log('new conneteion');
-  socket.on('message', async (message) => {
+  socket.on('message', (message) => {
     console.log(message);
     // socket.send('Hi back');
     // socket.send(message);

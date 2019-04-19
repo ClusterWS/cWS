@@ -13,6 +13,9 @@ This repository is based on the <a href="https://github.com/uNetworking/uWebSock
 
 Big thanks to [SirAnthony](https://github.com/SirAnthony) for ssl workaround (has been taken from [SirAnthony's uWebSockets fork](https://github.com/hola/uWebSockets-bindings)).
 
+
+### All breaking changes from released version will be included in [CHANGELOG.md](./CHANGELOG.md)
+
 **Consider to support development:**
 - [Buy a coffee (via PayPal)](https://www.paypal.me/goriunov)
 - [Become a Backer on Patreon](https://www.patreon.com/clusterws) 

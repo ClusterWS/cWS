@@ -1,5 +1,11 @@
 // tslint:disable-next-line
-export const native: any = require(`./cws_${process.platform}_${process.versions.modules}`);
+export const native: any = (() => {
+    try {
+        return require(`./cws_${process.platform}_${process.versions.modules}`);
+    } catch (err) {
+        throw err;
+    }
+})();
 
 export const OPCODE_TEXT: number = 1;
 export const OPCODE_PING: number = 9;

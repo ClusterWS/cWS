@@ -27,7 +27,13 @@ function eventEmitter() {
     return global && global.cws && global.cws.EventEmitter ? global.cws.EventEmitter : EventEmitter;
 }
 
-const native = require(`./cws_${process.platform}_${process.versions.modules}`), OPCODE_TEXT = 1, OPCODE_PING = 9, OPCODE_BINARY = 2, APP_PING_CODE = Buffer.from("9"), PERMESSAGE_DEFLATE = 1, SLIDING_DEFLATE_WINDOW = 16, DEFAULT_PAYLOAD_LIMIT = 16777216, noop = () => {};
+const native = (() => {
+    try {
+        return require(`./cws_${process.platform}_${process.versions.modules}`);
+    } catch (e) {
+        throw e;
+    }
+})(), OPCODE_TEXT = 1, OPCODE_PING = 9, OPCODE_BINARY = 2, APP_PING_CODE = Buffer.from("9"), PERMESSAGE_DEFLATE = 1, SLIDING_DEFLATE_WINDOW = 16, DEFAULT_PAYLOAD_LIMIT = 16777216, noop = () => {};
 
 native.setNoop(noop);
 
