@@ -119,7 +119,7 @@ struct GroupData {
 template <bool isServer>
 void createGroup(const FunctionCallbackInfo<Value> &args) {
   cWS::Group<isServer> *group = hub.createGroup<isServer>(
-      args[0].As<Number>()->Value(), args[1].As<Number>()->Value());
+      args[0].As<Integer>()->Value(), args[1].As<Integer>()->Value());
   group->setUserData(new GroupData);
   args.GetReturnValue().Set(External::New(args.GetIsolate(), group));
 }
@@ -229,7 +229,7 @@ void sendCallback(cWS::WebSocket<isServer> *webSocket, void *data,
 
 template <bool isServer>
 void send(const FunctionCallbackInfo<Value> &args) {
-  cWS::OpCode opCode = (cWS::OpCode)args[2].As<Number>()->Value();
+  cWS::OpCode opCode = (cWS::OpCode)args[2].As<Integer>()->Value();
   NativeString nativeString(args.GetIsolate(), args[1]);
 
   SendCallbackData *sc = nullptr;
@@ -297,7 +297,7 @@ void transfer(const FunctionCallbackInfo<Value> &args) {
                    args[0]->ToObject(context).ToLocalChecked()->GetAlignedPointerFromInternalField(0))),
               (uv_os_fd_t *)&ticket->fd);
   } else {
-    ticket->fd = args[0].As<Number>()->Value();
+    ticket->fd = args[0].As<Integer>()->Value();
   }
 
   ticket->fd = dup(ticket->fd);
@@ -454,7 +454,7 @@ template <bool isServer>
 void closeSocket(const FunctionCallbackInfo<Value> &args) {
   NativeString nativeString(args.GetIsolate(), args[2]);
   unwrapSocket<isServer>(args[0].As<External>())
-      ->close(args[1].As<Number>()->Value(), nativeString.getData(),
+      ->close(args[1].As<Integer>()->Value(), nativeString.getData(),
               nativeString.getLength());
 }
 
@@ -468,7 +468,7 @@ void closeGroup(const FunctionCallbackInfo<Value> &args) {
   NativeString nativeString(args.GetIsolate(), args[2]);
   cWS::Group<isServer> *group =
       (cWS::Group<isServer> *)args[0].As<External>()->Value();
-  group->close(args[1].As<Number>()->Value(), nativeString.getData(),
+  group->close(args[1].As<Integer>()->Value(), nativeString.getData(),
                nativeString.getLength());
 }
 
@@ -489,7 +489,7 @@ void broadcast(const FunctionCallbackInfo<Value> &args) {
 
 template <bool isServer>
 void prepareMessage(const FunctionCallbackInfo<Value> &args) {
-  cWS::OpCode opCode = (cWS::OpCode)args[1].As<Number>()->Value();
+  cWS::OpCode opCode = (cWS::OpCode)args[1].As<Integer>()->Value();
   NativeString nativeString(args.GetIsolate(), args[0]);
   args.GetReturnValue().Set(External::New(
       args.GetIsolate(),
@@ -541,7 +541,7 @@ void startAutoPing(const FunctionCallbackInfo<Value> &args) {
   NativeString nativeString(args.GetIsolate(), args[2]);
 
   group->startAutoPing(
-      args[1].As<Number>()->Value(),
+      args[1].As<Integer>()->Value(),
       nativeString.getData(), nativeString.getLength(), cWS::OpCode::BINARY);
 }
 
@@ -572,7 +572,7 @@ void setNoop(const FunctionCallbackInfo<Value> &args) {
 void listen(const FunctionCallbackInfo<Value> &args) {
   cWS::Group<cWS::SERVER> *group =
       (cWS::Group<cWS::SERVER> *)args[0].As<External>()->Value();
-  hub.listen(args[1].As<Number>()->Value(), nullptr, 0, group);
+  hub.listen(args[1].As<Integer>()->Value(), nullptr, 0, group);
 }
 
 template <bool isServer>

@@ -9,7 +9,7 @@
     "build": "ts-builder -c ./tsbuild.json"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=8.12.0"
   },
   "keywords": [
     "tiny",

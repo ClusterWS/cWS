@@ -15,9 +15,9 @@ if not exist targets (
   curl https://nodejs.org/dist/%v64%/node-%v64%-headers.tar.gz | tar xz -C targets
   curl https://nodejs.org/dist/%v64%/win-x64/node.lib > targets/node-%v64%/node.lib
   curl https://nodejs.org/dist/%v67%/node-%v67%-headers.tar.gz | tar xz -C targets
-  curl https://nodejs.org/dist/%v67%/win-x67/node.lib > targets/node-%v67%/node.lib
+  curl https://nodejs.org/dist/%v67%/win-x64/node.lib > targets/node-%v67%/node.lib
   curl https://nodejs.org/dist/%v72%/node-%v72%-headers.tar.gz | tar xz -C targets
-  curl https://nodejs.org/dist/%v72%/win-x72/node.lib > targets/node-%v72%/node.lib
+  curl https://nodejs.org/dist/%v72%/win-x64/node.lib > targets/node-%v72%/node.lib
 )
 
 cl /I targets/node-%v57%/include/node /EHsc /Ox /LD /Fedist/cws_win32_57.node src/*.cpp targets/node-%v57%/node.lib
