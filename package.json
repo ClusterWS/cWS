@@ -1,6 +1,6 @@
 {
   "name": "@clusterws/cws",
-  "version": "0.12.2",
+  "version": "0.13.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "description": "ClusterWS cWS custom fork of uWebSockets 0.14",

@@ -450,18 +450,6 @@ inline bool IsBigEndian() {
   return GetEndianness() == kBigEndian;
 }
 
-class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
- public:
-  inline uint32_t* zero_fill_field() { return &zero_fill_field_; }
-
-  virtual void* Allocate(size_t size);  // Defined in src/node.cc
-  virtual void* AllocateUninitialized(size_t size)
-    { return node::UncheckedMalloc(size); }
-  virtual void Free(void* data, size_t) { free(data); }
-
- private:
-  uint32_t zero_fill_field_ = 1;  // Boolean but exposed as uint32 to JS land.
-};
 
 namespace Buffer {
 v8::MaybeLocal<v8::Object> Copy(Environment* env, const char* data, size_t len);

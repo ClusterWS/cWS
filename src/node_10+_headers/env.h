@@ -808,8 +808,6 @@ class Environment {
   inline HandleWrapQueue* handle_wrap_queue() { return &handle_wrap_queue_; }
   inline ReqWrapQueue* req_wrap_queue() { return &req_wrap_queue_; }
 
-  void AddPromiseHook(promise_hook_func fn, void* arg);
-  bool RemovePromiseHook(promise_hook_func fn, void* arg);
   inline bool EmitProcessEnvWarning() {
     bool current_value = emit_env_nonstring_warning_;
     emit_env_nonstring_warning_ = false;
@@ -937,12 +935,12 @@ class Environment {
 
   std::list<ExitCallback> at_exit_functions_;
 
-  struct PromiseHookCallback {
-    promise_hook_func cb_;
-    void* arg_;
-    size_t enable_count_;
-  };
-  std::vector<PromiseHookCallback> promise_hooks_;
+  // struct PromiseHookCallback {
+  //   promise_hook_func cb_;
+  //   void* arg_;
+  //   size_t enable_count_;
+  // };
+  // std::vector<PromiseHookCallback> promise_hooks_;
 
   struct NativeImmediateCallback {
     native_immediate_callback cb_;

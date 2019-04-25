@@ -14,6 +14,7 @@ socket.onopen = () => {
 }
 
 socket.onmessage = (message) => {
+  console.log(message);
   // if (typeof message !== 'string') {
   //     console.log(Buffer.from(message)[0]);
   //     socket.send(Buffer.from('A'));
@@ -39,6 +40,7 @@ socket.onclose = () => {
 
 //   // socket.send("");
 // })
+
 
 socket.on('ping', () => {
   console.log('got ping');
