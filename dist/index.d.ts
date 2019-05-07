@@ -69,7 +69,7 @@ export type SocketAddress = {
 };
 export type ConnectionInfo = {
     req: HTTP.IncomingMessage;
-    headers: HTTP.IncomingHttpHeaders;
+    origin: string;
     secure: boolean;
 };
 export type BroadcastOptions = {

@@ -94,7 +94,7 @@ export class WebSocketServer extends EventEmitterServer {
       if (configs.verifyClient) {
         const info: ConnectionInfo = {
           req,
-          headers: req.headers,
+          origin: (req.headers[`${+req.headers['sec-websocket-version'] === 8 ? 'sec-websocket-origin' : 'origin'}`] as string),
           secure: !!(req.connection instanceof TLSSocket && (req.connection.authorized || req.connection.encrypted))
         };
 

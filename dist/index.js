@@ -154,7 +154,7 @@ class WebSocketServer extends EventEmitterServer {
             if (e.verifyClient) {
                 const s = {
                     req: t,
-                    headers: t.headers,
+                    origin: t.headers[`${8 == +t.headers["sec-websocket-version"] ? "sec-websocket-origin" : "origin"}`],
                     secure: !!(t.connection instanceof tls.TLSSocket && (t.connection.authorized || t.connection.encrypted))
                 };
                 return e.verifyClient(s, (e, s, n) => e ? this.handleUpgrade(t, r) : this.dropConnection(r, s, n));

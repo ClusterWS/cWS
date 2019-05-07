@@ -1,3 +1,6 @@
+## Release 0.14.0
+* Adjust `verifyClient` to return the same `info` object as `ws` module instead of `headers` return origin as headers can be accessed from `req`
+
 ## Release 0.13.0
 
 #### Improvements
