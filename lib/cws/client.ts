@@ -125,7 +125,8 @@ export class WebSocket extends EventEmitterClient {
 
   public send(message: string | Buffer, options?: SendOptions, cb?: Listener): void {
     if (!this.external) return cb && cb(new Error('Not opened'));
-    const opCode: number = (options && options.binary) || typeof message !== 'string' ? OPCODE_BINARY : OPCODE_TEXT;
+    const useTextOpcode = options && options.binary === false || typeof message === 'string'
+    const opCode: number = useTextOpcode ? OPCODE_TEXT : OPCODE_BINARY;
     native[this.executeOn].send(this.external, message, opCode, cb ? (): void => process.nextTick(cb) : null, options && options.compress);
   }
 
