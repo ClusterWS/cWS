@@ -100,9 +100,14 @@ server.on('connection', (socket, upgReq) => {
     /**
       * 'send' method is used to send messages to the client / server
       * 
-      * message can be string or binary
+      * message: string | binary
+      * options?: { binary?: boolean, compress?: boolean }
+      * cb?: function 
+      * 
+      * binary or string type detected automatically except
+      * if you force string type with `{ binary: false }`
     */
-    socket.send(message);
+    socket.send(message, options, cb);
 
 
     /**
@@ -176,7 +181,9 @@ const { WebSocket } = require('@clusterws/cws');
 /** this will connect to specify url */ 
 const socket = new WebSocket('ws://url:port');
 
-/** for more information about this listeners and functions check above section */ 
+/** for more information about this listeners and functions check above section 
+ *  as client and server have similar signatures
+ */ 
 socket.on('open', () => { })
 socket.on('message', (msg) => { });
 socket.on('error', (err) => { });
