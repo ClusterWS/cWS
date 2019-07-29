@@ -5,14 +5,13 @@
  <img src="https://cdn.rawgit.com/goriunov/159120ca6a883d8d4e75543ec395d361/raw/d22028ecc726d7d3cc30a2a85cc7cc454b0afada/clusterws.svg" width="450">
 </p>
 
-<i>This module is modified version of the uWebSockets v0.14 with some minor tweaks in C++ code and complete rewrite of JS code to TypeScript. Original software is available in <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets v0.14</a> repository.</i>
+<i>This is modified version of the uWebSockets v0.14 with some minor tweaks in C++ code and complete rewrite of JS code to TypeScript. Original software is available in <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets v0.14</a> repository.</i>
 
 <a href="https://badge.fury.io/js/%40clusterws%2Fcws"><img src="https://badge.fury.io/js/%40clusterws%2Fcws.svg" alt="npm version" height="22"></a>
 
 This repository is based on the <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets v0.14</a> therefore has two licence [ClusterWS MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [Alex Hultman ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE).
 
 Big thanks to [SirAnthony](https://github.com/SirAnthony) for ssl workaround (has been taken from [SirAnthony's uWebSockets fork](https://github.com/hola/uWebSockets-bindings)).
-
 
 ### All breaking changes from released version will be included in [CHANGELOG.md](./CHANGELOG.md)
 
@@ -28,16 +27,15 @@ Big thanks to [SirAnthony](https://github.com/SirAnthony) for ssl workaround (ha
 npm i @clusterws/cws
 ```
 
-
 ### WebSocket Server
-To find about what types and parameters are accepted please check `dist/index.d.ts` file.
+To find about what types and parameters are accepted please check [index.d.ts](./dist/index.d.ts) file.
 
 ```js 
 const { WebSocketServer } = require('@clusterws/cws');
 
 const server = new WebSocketServer({
   /**
-   *  Server options
+   *  Available server configurations
    * 
    *  path?: string,
    *  port?: number,
@@ -50,23 +48,23 @@ const server = new WebSocketServer({
    *  };
    *  verifyClient?: (info: ConnectionInfo, next: Listener) => void
    * 
-   * For more type information check dist/index.d.ts file
+   * For more types check dist/index.d.ts file
   */
 });
 
 
 /**
- * To accept WebSocket connections use on connection method
+ * To accept WebSocket connections use on('connection') listener
  * 
  * socket: WebSocket client
  * upgReq: upgrade request
 */
 server.on('connection', (socket, upgReq) => {
-    /** allow you to get remoteAddress info */ 
+    /** get remoteAddress info */ 
     let address = socket._socket;
 
     /**
-      * on 'message' will be called when new message arrives from this client
+      * on 'message' will be called when this client sends new message
       * 
       * msg: string | binary
     */
@@ -81,7 +79,7 @@ server.on('connection', (socket, upgReq) => {
     socket.on('close', (code, reason) => { });
 
     /**
-      * on 'error' will be called websocket connection has some issue
+      * on 'error' will be called websocket connection has some problems
       * 
       * err: Error 
     */
@@ -93,7 +91,7 @@ server.on('connection', (socket, upgReq) => {
     socket.on('pong', () => { });
 
     /**
-      * on 'ping' will only when ping is received (on clint side)
+      * on 'ping' will only be called on clint side when ping is received
     */
     socket.on('ping', () => { });
 
@@ -104,24 +102,24 @@ server.on('connection', (socket, upgReq) => {
       * options?: { binary?: boolean, compress?: boolean }
       * cb?: function 
       * 
-      * binary or string type detected automatically except
+      * message type is detected automatically except
       * if you force string type with `{ binary: false }`
     */
     socket.send(message, options, cb);
 
 
     /**
-      * 'ping' method is used to manually send ping to the client
+      * 'ping' method is to to manually send ping to the client
     */
     socket.ping();
 
     /**
-      * 'terminate' method is used to kill connection (usually to remove dead sockets)
+      * 'terminate' method is to force close connection (usually to remove dead sockets)
     */
     socket.terminate();
 
     /**
-      * 'close' method is used close connection clean way
+      * 'close' method is to close connection in clean / correct way
       * 
       * code: number (close code)
       * reason: string (the reason to close this socket)
@@ -132,28 +130,26 @@ server.on('connection', (socket, upgReq) => {
 
 
 /**
-  * 'startAutoPing' method is method which will start auto ping all connected clients 
+  * 'startAutoPing' will enable auto ping for all connected clients 
   * without any need for custom ping implementation
-  *  
-  * `startAutoPing` accepts 2 parameters
+  * 
   * interval: number
   * appLevelPing: boolean (default false)
   * 
-  * `interval` specifies how often ping should be send to each client 
-  * usually iyt would be around 20000 (in ms)
+  * `interval` specifies how often ping should be send 
+  * usually it should be around 20000 ms (20s)
   * 
-  * `appLevelPing` is a value which allows you to ping any client including 
-  * browser which do not expose `onping` and `onping` methods, for that to work you 
-  * have to implement custom handle in you client side 
-  * 
-  * Check `Handle AppLevelPing In Browser Example` at the end of readme for more information
+  * `appLevelPing` if true will enable ping in application level usually used for clients like
+  * browsers which do not expose `onping` and `onping` listeners and you need to track if server connection
+  * is still active, to make it work correctly you required to implement custom handle in you client side
+  * check `Handle AppLevelPing In Browser Example` at the end of readme for more information
 */
 server.startAutoPing(interval, appLevelPing);
 
 
 /**
- *  `broadcast` method will send your message to all connected clients
- * accepts 2 parameters 
+ * `broadcast` method will send your message to all connected clients
+ * 
  * message: string | binary,
  * options?: { binary: true | false }
 */
@@ -164,7 +160,7 @@ server.close(callback);
 
 
 /** 
- * this on error will be called when there are some issues with create server or
+ * on error listener will be called when there is some issue with server creation or
  * upgrading socket connection properly
  */
 server.on('error', (err, socket) => { })
@@ -200,6 +196,11 @@ socket.close(code, reason);
  * 
  * Note that there is no onping and onpong as browsers dont expose this
  * functions to the users.
+ * 
+ * to use onping and onpong use:
+ * 
+ * socket.on('pong', () => { });
+ * socket.on('ping', () => { });
  */ 
 socket.onopen = () => {};
 socket.onmessage = (msg) => {};
@@ -212,43 +213,42 @@ socket.onclose = (code, reason) => {};
 
 ### Replace EventEmitter 
 
-CWS uses custom lightweight version of EventEmitter which may not be suitable for some people, to replace 
-event emitter you can use global cws configuration object ex:
+CWS uses custom lightweight version of EventEmitter which may not be suitable for everyone, to replace 
+event emitter you can use global cws configuration:
 ```js
-// this code uses default node js event emitter
+// replace cws EventEmitter with Node.js default one
 global.cws = {
   EventEmitter: require('events').EventEmitter
 }
 
-// import cws
+// It is important to import cws after!
 const { WebSocket } = require('@clusterws/cws');
 ```
 
 ### Handle AppLevelPing In Browser Example
-This is just an example of handling app level `ping` `pong` from the client side which does not have `onping` and `onpong` methods available 
+This is just an example of handling app level `ping`, `pong` from the client side which does not have `onping` and `onpong` listeners available
+such as browsers.
 
-**Note** if your clients have `onping` and `onpong` methods (or similar) do not send `appLevel` ping from the server.
+**Note** if your clients have `onping` and `onpong` listeners (or similar) do not send `appLevelPing` ping from the server.
 
 ```js
-const ping = 57;
-const pongResponse = new Uint8Array(['A'.charCodeAt()]);
+const PING = 57;
+const PONG = new Uint8Array(['A'.charCodeAt()]);
 
 socket.binaryType = 'arraybuffer' // Do not forget to set to `arraybuffer`
 
 socket.onmessage = function (message) {
-    // check if our message if not string 
+    // check if message is not string 
     if (typeof message.data !== 'string') {
         // transform it to Unit Array
         let buffer = new Uint8Array(message.data);
 
         // Check if it is actually ping from the server
-        if (buffer[0] === ping && buffer.length === 1) {
+        if ( buffer.length === 1 && buffer[0] === PING) {
             // you can also emit that ping has been received to you client :)
             // if it is then send back to the server pong response
-            return socket.send(pongResponse);
+            return socket.send(PONG);
         }
-
-      // process with your logic
     }
 
     // process with your logic
