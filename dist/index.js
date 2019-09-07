@@ -31,7 +31,8 @@ const native = (() => {
     try {
         return require(`./cws_${process.platform}_${process.versions.modules}`);
     } catch (e) {
-        throw e;
+        throw e.message = e.message + " check './node_modules/@clusterws/cws/build_log.txt' for post install build logs", 
+        e;
     }
 })(), OPCODE_TEXT = 1, OPCODE_PING = 9, OPCODE_BINARY = 2, APP_PING_CODE = Buffer.from("9"), PERMESSAGE_DEFLATE = 1, SLIDING_DEFLATE_WINDOW = 16, DEFAULT_PAYLOAD_LIMIT = 16777216, noop = () => {};
 
