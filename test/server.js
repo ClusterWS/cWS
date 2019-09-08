@@ -31,11 +31,15 @@ server.on('connection', (socket) => {
   //     console.log('got pong');
   // });
 
-  socket.on('close', () => {
-    console.log('Socket is closed');
+  // socket.on('error', (err) => {
+  //   console.log(err);
+  // })
+
+  socket.on('close', (code, stuff) => {
+    console.log('Socket is closed', code, stuff);
   })
 });
 
-server.startAutoPing(5000, false);
+// server.startAutoPing(5000, false);
 
 // setTimeout(() => server.close(), 10000);

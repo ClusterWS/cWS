@@ -274,9 +274,10 @@ public:
               return {};
             }
         } else {
-          // if there was no code then we assume it was not provided
-          cf = {1005};
+            // if code is not proveded we closed with default 1000
+            cf = {1000};
         }
+
         return cf;
     }
 
