@@ -98,7 +98,7 @@ export class WebSocketServer extends EventEmitterServer {
           secure: !!(req.connection instanceof TLSSocket && (req.connection.authorized || req.connection.encrypted))
         };
 
-        return configs.verifyClient(info, (clientVerified: boolean, code: number = 500, name: string = 'Client verification failed') =>
+        return configs.verifyClient(info, (clientVerified: boolean, code: number = 401, name: string = 'Client verification failed') =>
           clientVerified ? this.handleUpgrade(req, socket) : this.dropConnection(socket, code, name));
       }
 
