@@ -75,6 +75,7 @@ export type ConnectionInfo = {
 export type BroadcastOptions = {
     binary?: boolean;
 };
+export type VerifyClientNext = (clientVerified: boolean, code?: number, name?: string) => void;
 export type ServerConfigs = {
     path?: string;
     port?: number;
@@ -85,7 +86,7 @@ export type ServerConfigs = {
     perMessageDeflate?: {
         serverNoContextTakeover: boolean;
     };
-    verifyClient?: (info: ConnectionInfo, next: Listener) => void;
+    verifyClient?: (info: ConnectionInfo, next: VerifyClientNext) => void;
 };
 export type SendOptions = {
     binary?: boolean;
