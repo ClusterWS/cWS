@@ -39,6 +39,7 @@ export class WebSocketServer extends EventEmitterServer {
     on(event: string, listener: Listener): void;
     on(event: 'error', listener: (err: Error, socket?: Socket) => void): void;
     on(event: 'connection', listener: (socket: WebSocket, upgradeRequest: HTTP.IncomingMessage) => void): void;
+    on(event: 'connection', listener: (socket: WebSocket) => void): void;
     broadcast(message: string | Buffer, options?: BroadcastOptions): void;
     startAutoPing(interval: number, appLevel?: boolean): void;
     close(callback?: Listener): void;

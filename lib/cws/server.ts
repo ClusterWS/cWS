@@ -39,6 +39,7 @@ export class WebSocketServer extends EventEmitterServer {
   public on(event: string, listener: Listener): void;
   public on(event: 'error', listener: (err: Error, socket?: Socket) => void): void;
   public on(event: 'connection', listener: (socket: WebSocket, upgradeRequest: HTTP.IncomingMessage) => void): void;
+  public on(event: 'connection', listener: (socket: WebSocket) => void): void;
   public on(event: string, listener: Listener): void {
     super.on(event, listener);
   }
