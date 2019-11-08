@@ -1,8 +1,8 @@
 ## Release 0.16.0
 
-* Improved typings for `on('connection')` handler [#25]
-* Improved typings for `verifyClient` [#24]
-* By default on `verifyClient` return code 401 [#24]
+* Improved typings for `on('connection')` handler #25
+* Improved typings for `verifyClient` #24
+* On `verifyClient` fail by default return code `401` #24
 
 ## Release 0.15.0
 #### Improvements
