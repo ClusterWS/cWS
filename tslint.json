@@ -48,6 +48,7 @@
     "max-line-length": [
       true,
       180
-    ]
+    ],
+    "unified-signatures": false
   }
 }
