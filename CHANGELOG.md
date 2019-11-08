@@ -1,3 +1,9 @@
+## Release 0.16.0
+
+* Improved typings for `on('connection')` handler [#25]
+* Improved typings for `verifyClient` [#24]
+* By default on `verifyClient` return code 401 [#24]
+
 ## Release 0.15.0
 #### Improvements
 * `socket.send(buffer, { binary: false })` will force text `opCode`
