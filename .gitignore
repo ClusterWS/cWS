@@ -3,6 +3,7 @@
 build/
 targets/
 node_modules/
+excludes/
 
 build_log.txt
 package-lock.json
