@@ -27,7 +27,12 @@
 #include "node_persistent.h"
 #include "v8.h"
 
-#include <assert.h>
+#if NODE_MAJOR_VERSION>10
+  #include <cassert> 
+#else
+  #include <assert.h>
+#endif
+
 #include <signal.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -85,7 +90,20 @@ void LowMemoryNotification();
 // The slightly odd function signature for Assert() is to ease
 // instruction cache pressure in calls from CHECK.
 NO_RETURN void Abort();
-NO_RETURN void Assert(const char* const (*args)[4]);
+
+#if NODE_MAJOR_VERSION>10
+  // The reason that Assert() takes a struct argument instead of individual
+  // const char*s is to ease instruction cache pressure in calls from CHECK.
+  struct AssertionInfo {
+    const char* file_line;  // filename:line
+    const char* message;
+    const char* function;
+  };
+  NO_RETURN void Assert(const AssertionInfo& info);
+#else
+  NO_RETURN void Assert(const char* const (*args)[4]);
+#endif
+
 void DumpBacktrace(FILE* fp);
 
 #define FIXED_ONE_BYTE_STRING(isolate, string)                                \
@@ -119,14 +137,28 @@ void DumpBacktrace(FILE* fp);
 #define STRINGIFY_(x) #x
 #define STRINGIFY(x) STRINGIFY_(x)
 
-#define CHECK(expr)                                                           \
-  do {                                                                        \
-    if (UNLIKELY(!(expr))) {                                                  \
-      static const char* const args[] = { __FILE__, STRINGIFY(__LINE__),      \
-                                          #expr, PRETTY_FUNCTION_NAME };      \
-      node::Assert(&args);                                                    \
-    }                                                                         \
-  } while (0)
+#if NODE_MAJOR_VERSION>10
+  #define CHECK(expr)                                                           \
+    do {                                                                        \
+      if (UNLIKELY(!(expr))) {                                                  \
+        /* Make sure that this struct does not end up in inline code, but    */ \
+        /* rather in a read-only data section when modifying this code.      */ \
+        static const node::AssertionInfo args = {                               \
+          __FILE__ ":" STRINGIFY(__LINE__), #expr, PRETTY_FUNCTION_NAME         \
+        };                                                                      \
+        node::Assert(args);                                                     \
+      }                                                                         \
+    } while (0)
+#else
+  #define CHECK(expr)                                                           \
+    do {                                                                        \
+      if (UNLIKELY(!(expr))) {                                                  \
+        static const char* const args[] = { __FILE__, STRINGIFY(__LINE__),      \
+                                            #expr, PRETTY_FUNCTION_NAME };      \
+        node::Assert(&args);                                                    \
+      }                                                                         \
+    } while (0)
+#endif
 
 #define CHECK_EQ(a, b) CHECK((a) == (b))
 #define CHECK_GE(a, b) CHECK((a) >= (b))

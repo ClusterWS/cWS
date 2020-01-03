@@ -6,42 +6,54 @@
 #include <cstring>
 
 #if NODE_MAJOR_VERSION>=10
-#define NODE_WANT_INTERNALS 1
-#include "node_10+_headers/async_wrap.h"
-#include "node_10+_headers/tls_wrap.h"
-using BaseObject = node::BaseObject;
-using TLSWrap = node::TLSWrap;
-using SecureContext = node::crypto::SecureContext;
-class TLSWrapSSLGetter : public node::TLSWrap {
-public:
-    void setSSL(const v8::FunctionCallbackInfo<v8::Value> &info){
-        v8::Isolate* isolate = info.GetIsolate();
-        if (!ssl_){
-            info.GetReturnValue().Set(v8::Null(isolate));
-            return;
+  #define NODE_WANT_INTERNALS 1
+  #include "node_10+_headers/async_wrap.h"
+  #include "node_10+_headers/tls_wrap.h"
+  using BaseObject = node::BaseObject;
+  using TLSWrap = node::TLSWrap;
+  using SecureContext = node::crypto::SecureContext;
+  class TLSWrapSSLGetter : public node::TLSWrap {
+    public:
+        void setSSL(const v8::FunctionCallbackInfo<v8::Value> &info){
+            v8::Isolate* isolate = info.GetIsolate();
+            if (!ssl_){
+                info.GetReturnValue().Set(v8::Null(isolate));
+                return;
+            }
+            SSL* ptr = ssl_.get();
+            v8::Local<v8::External> ext = v8::External::New(isolate, ptr);
+            info.GetReturnValue().Set(ext);
         }
-        SSL* ptr = ssl_.get();
-        v8::Local<v8::External> ext = v8::External::New(isolate, ptr);
-        info.GetReturnValue().Set(ext);
-    }
-};
- #if defined(_MSC_VER)
-NO_RETURN void node::Assert(const char* const (*args)[4]) {
-  auto filename = (*args)[0];
-  auto linenum = (*args)[1];
-  auto message = (*args)[2];
-  auto function = (*args)[3];
-   char name[1024];
-  char title[1024] = "Node.js";
-  uv_get_process_title(title, sizeof(title));
-  snprintf(name, sizeof(name), "%s[%d]", title, uv_os_getpid());
-   fprintf(stderr, "%s: %s:%s:%s%s Assertion `%s' failed.\n",
-          name, filename, linenum, function, *function ? ":" : "", message);
-  fflush(stderr);
-  ABORT_NO_BACKTRACE();
-}
-#endif
- #undef NODE_WANT_INTERNALS
+  };
+  #if defined(_MSC_VER)
+    #if NODE_MAJOR_VERSION>10
+     NO_RETURN void node::Assert(const node::AssertionInfo& info) {
+        char name[1024];
+        char title[1024] = "Node.js";
+        uv_get_process_title(title, sizeof(title));
+        snprintf(name, sizeof(name), "%s[%d]", title, uv_os_getpid());
+        fprintf(stderr, "%s: Assertion failed.\n", name);
+        fflush(stderr);
+        ABORT_NO_BACKTRACE();
+      }
+    #else
+      NO_RETURN void node::Assert(const char* const (*args)[4]) {
+        auto filename = (*args)[0];
+        auto linenum = (*args)[1];
+        auto message = (*args)[2];
+        auto function = (*args)[3];
+        char name[1024];
+        char title[1024] = "Node.js";
+        uv_get_process_title(title, sizeof(title));
+        snprintf(name, sizeof(name), "%s[%d]", title, uv_os_getpid());
+        fprintf(stderr, "%s: %s:%s:%s%s Assertion `%s' failed.\n",
+                name, filename, linenum, function, *function ? ":" : "", message);
+        fflush(stderr);
+        ABORT_NO_BACKTRACE();
+      }
+    #endif
+  #endif
+  #undef NODE_WANT_INTERNALS
 #endif
 
 
