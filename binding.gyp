@@ -16,15 +16,15 @@
             ],
             'conditions': [
                 ['OS=="linux"', {
-                    'cflags_cc': ['-std=c++11', '-DUSE_LIBUV'],
-                    'cflags_cc!': ['-fno-exceptions', '-std=gnu++11', '-fno-rtti'],
+                    'cflags_cc': ['-std=c++17', '-DUSE_LIBUV'],
+                    'cflags_cc!': ['-fno-exceptions', '-std=gnu++17', '-fno-rtti'],
                     'cflags!': ['-fno-omit-frame-pointer'],
                     'ldflags!': ['-rdynamic'],
                     'ldflags': ['-s']
                 }],
                 ['OS=="freebsd"', {
-                    'cflags_cc': ['-std=c++11', '-DUSE_LIBUV'],
-                    'cflags_cc!': ['-fno-exceptions', '-std=gnu++11', '-fno-rtti'],
+                    'cflags_cc': ['-std=c++17', '-DUSE_LIBUV'],
+                    'cflags_cc!': ['-fno-exceptions', '-std=gnu++17', '-fno-rtti'],
                     'cflags!': ['-fno-omit-frame-pointer'],
                     'ldflags!': ['-rdynamic'],
                     'ldflags': ['-s']
@@ -32,7 +32,7 @@
                 ['OS=="mac"', {
                     'xcode_settings': {
                         'MACOSX_DEPLOYMENT_TARGET': '10.7',
-                        'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
+                        'CLANG_CXX_LANGUAGE_STANDARD': 'c++17',
                         'CLANG_CXX_LIBRARY': 'libc++',
                         'GCC_GENERATE_DEBUGGING_SYMBOLS': 'NO',
                         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',

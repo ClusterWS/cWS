@@ -133,4 +133,15 @@ describe('Start server and receive messages', () => {
       clientGotPing = true;
     });
   });
+
+  it('remoteAddress should exists', (done: any) => {
+    this.wsServer.on('connection', (connection: WebSocket) => {
+      expect(connection.remoteAddress).to.exist;
+
+      this.wsServer.close();
+      done();
+    });
+
+    const socket: WebSocket = new WebSocket('ws://localhost:3000');
+  });
 });

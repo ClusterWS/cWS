@@ -5,58 +5,6 @@
 #include <uv.h>
 #include <cstring>
 
-#if NODE_MAJOR_VERSION>=10
-  #define NODE_WANT_INTERNALS 1
-  #include "node_10+_headers/async_wrap.h"
-  #include "node_10+_headers/tls_wrap.h"
-  using BaseObject = node::BaseObject;
-  using TLSWrap = node::TLSWrap;
-  using SecureContext = node::crypto::SecureContext;
-  class TLSWrapSSLGetter : public node::TLSWrap {
-    public:
-        void setSSL(const v8::FunctionCallbackInfo<v8::Value> &info){
-            v8::Isolate* isolate = info.GetIsolate();
-            if (!ssl_){
-                info.GetReturnValue().Set(v8::Null(isolate));
-                return;
-            }
-            SSL* ptr = ssl_.get();
-            v8::Local<v8::External> ext = v8::External::New(isolate, ptr);
-            info.GetReturnValue().Set(ext);
-        }
-  };
-  #if defined(_MSC_VER)
-    #if NODE_MAJOR_VERSION>10
-     NO_RETURN void node::Assert(const node::AssertionInfo& info) {
-        char name[1024];
-        char title[1024] = "Node.js";
-        uv_get_process_title(title, sizeof(title));
-        snprintf(name, sizeof(name), "%s[%d]", title, uv_os_getpid());
-        fprintf(stderr, "%s: Assertion failed.\n", name);
-        fflush(stderr);
-        ABORT_NO_BACKTRACE();
-      }
-    #else
-      NO_RETURN void node::Assert(const char* const (*args)[4]) {
-        auto filename = (*args)[0];
-        auto linenum = (*args)[1];
-        auto message = (*args)[2];
-        auto function = (*args)[3];
-        char name[1024];
-        char title[1024] = "Node.js";
-        uv_get_process_title(title, sizeof(title));
-        snprintf(name, sizeof(name), "%s[%d]", title, uv_os_getpid());
-        fprintf(stderr, "%s: %s:%s:%s%s Assertion `%s' failed.\n",
-                name, filename, linenum, function, *function ? ":" : "", message);
-        fflush(stderr);
-        ABORT_NO_BACKTRACE();
-      }
-    #endif
-  #endif
-  #undef NODE_WANT_INTERNALS
-#endif
-
-
 using namespace std;
 using namespace v8;
 
@@ -157,10 +105,16 @@ inline cWS::WebSocket<isServer> *unwrapSocket(Local<External> external) {
 
 inline Local<Value> wrapMessage(const char *message, size_t length,
                                 cWS::OpCode opCode, Isolate *isolate) {
-  return opCode == cWS::OpCode::BINARY
-             ? (Local<Value>)ArrayBuffer::New(isolate, (char *)message, length)
-             : (Local<Value>)String::NewFromUtf8(isolate, message,
-                                                 String::kNormalString, length);
+
+  if (opCode == cWS::OpCode::BINARY) {
+    return (Local<Value>)ArrayBuffer::New(isolate, (char *)message, length);
+  }
+
+  #if NODE_MAJOR_VERSION >= 13
+    return (Local<Value>)String::NewFromUtf8(isolate, message, NewStringType::kNormal, length).ToLocalChecked();
+  #else
+    return (Local<Value>)String::NewFromUtf8(isolate, message, String::kNormalString, length);
+  #endif
 }
 
 template <bool isServer>
@@ -203,9 +157,17 @@ void getAddress(const FunctionCallbackInfo<Value> &args) {
   typename cWS::WebSocket<isServer>::Address address =
       unwrapSocket<isServer>(args[0].As<External>())->getAddress();
   Local<Array> array = Array::New(args.GetIsolate(), 3);
-  array->Set(0, Integer::New(args.GetIsolate(), address.port));
-  array->Set(1, String::NewFromUtf8(args.GetIsolate(), address.address));
-  array->Set(2, String::NewFromUtf8(args.GetIsolate(), address.family));
+
+  #if NODE_MAJOR_VERSION >= 13
+    array->Set(args.GetIsolate()->GetCurrentContext(), 0, Integer::New(args.GetIsolate(), address.port));
+    array->Set(args.GetIsolate()->GetCurrentContext(), 1, String::NewFromUtf8(args.GetIsolate(), address.address).ToLocalChecked());
+    array->Set(args.GetIsolate()->GetCurrentContext(), 2, String::NewFromUtf8(args.GetIsolate(), address.family).ToLocalChecked());
+  #else
+    array->Set(0, Integer::New(args.GetIsolate(), address.port));
+    array->Set(1, String::NewFromUtf8(args.GetIsolate(), address.address));
+    array->Set(2, String::NewFromUtf8(args.GetIsolate(), address.family));
+  #endif
+
   args.GetReturnValue().Set(array);
 }
 
@@ -363,7 +325,7 @@ void onMessage(const FunctionCallbackInfo<Value> &args) {
                        cWS::WebSocket<isServer> *webSocket, const char *message,
                        size_t length, cWS::OpCode opCode) {
     if(length == 1 && message[0] == 65) {
-      // emit pong event is we get pong from the client
+      // emit pong event if we get pong from the client
       group->pongHandler(webSocket, nullptr, 0);
     } else {
       HandleScope hs(isolate);
@@ -561,20 +523,31 @@ void startAutoPing(const FunctionCallbackInfo<Value> &args) {
 void getSSLContext(const FunctionCallbackInfo<Value> &args) {
     Isolate* isolate = args.GetIsolate();
     if(args.Length() < 1 || !args[0]->IsObject()){
-      isolate->ThrowException(Exception::TypeError(
-      String::NewFromUtf8(isolate, "Error: One object expected")));
+
+      #if NODE_MAJOR_VERSION >= 13
+        isolate->ThrowException(Exception::TypeError(
+          String::NewFromUtf8(isolate, "Error: One object expected").ToLocalChecked()));
+      #else
+        isolate->ThrowException(Exception::TypeError(
+          String::NewFromUtf8(isolate, "Error: One object expected")));
+      #endif
+
       return;
     }
+
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = args[0]->ToObject(context).ToLocalChecked();
-#if NODE_MAJOR_VERSION < 10
-    Local<Value> ext = obj->Get(String::NewFromUtf8(isolate, "_external"));
-    args.GetReturnValue().Set(ext);
-#else
-    TLSWrapSSLGetter* tw;
-    ASSIGN_OR_RETURN_UNWRAP(&tw, obj);
-    tw->setSSL(args);
-#endif
+
+    // SSL support has been removed for version 10+
+    // use some thing like ngix in front for ssl 
+    #if NODE_MAJOR_VERSION < 10
+      Local<Value> ext = obj->Get(String::NewFromUtf8(isolate, "_external"));
+      args.GetReturnValue().Set(ext);
+    // #else
+    //   TLSWrapSSLGetter* tw;
+    //   ASSIGN_OR_RETURN_UNWRAP(&tw, obj);
+    //   tw->setSSL(args);
+    #endif
 }
 
 void setNoop(const FunctionCallbackInfo<Value> &args) {
@@ -621,6 +594,10 @@ struct Namespace {
     NODE_SET_METHOD(group, "terminate", terminateGroup<isServer>);
     NODE_SET_METHOD(group, "broadcast", broadcast<isServer>);
 
-    object->Set(String::NewFromUtf8(isolate, "group"), group);
+    #if NODE_MAJOR_VERSION >= 13
+      object->Set(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, "group").ToLocalChecked(), group);
+    #else
+      object->Set(String::NewFromUtf8(isolate, "group"), group);
+    #endif
   }
 };
