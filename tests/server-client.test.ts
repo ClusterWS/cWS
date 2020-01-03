@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { WebSocketServer, WebSocket } from '../dist';
 
-describe('Start server and receive messages', () => {
+describe('Server & Client', () => {
   beforeEach((done: any) => {
     this.wsServer = new WebSocketServer({ port: 3000 }, (): void => {
       done();
@@ -142,5 +142,41 @@ describe('Start server and receive messages', () => {
     });
 
     const socket: WebSocket = new WebSocket('ws://localhost:3000');
+  });
+
+  it('Broadcast to all connected users', (done: any) => {
+    let connected: number = 0;
+    let firstReceived: boolean = false;
+    let messageToSend: string = 'Super cool message';
+
+    this.wsServer.on('connection', (connection: WebSocket) => {
+      connected++;
+      if (connected > 1) {
+        this.wsServer.broadcast(messageToSend);
+      }
+    });
+
+    const socket: WebSocket = new WebSocket('ws://localhost:3000');
+    const socket2: WebSocket = new WebSocket('ws://localhost:3000');
+
+    socket.on('message', (message: any) => {
+      if (!firstReceived) {
+        firstReceived = true;
+      } else {
+        expect(message).to.be.eql(messageToSend);
+        done();
+        this.wsServer.close();
+      }
+    });
+
+    socket2.on('message', (message: any) => {
+      if (!firstReceived) {
+        firstReceived = true;
+      } else {
+        expect(message).to.be.eql(messageToSend);
+        done();
+        this.wsServer.close();
+      }
+    });
   });
 });
