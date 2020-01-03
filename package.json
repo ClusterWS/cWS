@@ -5,7 +5,8 @@
   "types": "./dist/index.d.ts",
   "description": "ClusterWS cWS custom fork of uWebSockets 0.14",
   "scripts": {
-    "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
+    "install": "npm run build-bindings",
+    "build-bindings": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
     "test": "mocha -r ts-node/register './tests/**/*.test.ts' --exit",
     "build": "ts-builder -c ./tsbuild.json"
   },
