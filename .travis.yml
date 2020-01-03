@@ -12,6 +12,9 @@ node_js:
   - "13"
 before_script:
   - npm install
+  - npm run clean
+  - npm run build
+  - npm run build-bindings
 cache:
   directories:
     - "node_modules"
