@@ -134,10 +134,9 @@ describe('Start server and receive messages', () => {
     });
   });
 
-  it('remoteAddress should exists', (done: any) => {
+  it('remoteAddress should exist', (done: any) => {
     this.wsServer.on('connection', (connection: WebSocket) => {
       expect(connection.remoteAddress).to.exist;
-
       this.wsServer.close();
       done();
     });
