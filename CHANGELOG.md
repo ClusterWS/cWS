@@ -1,3 +1,8 @@
+## Release 0.17.0
+
+* Remove support for SSL from Node.js 10+ (use proxy instead like nginx)
+* Added support for Node.js 13
+
 ## Release 0.16.0
 
 * Improved typings for `on('connection')` handler [#25](https://github.com/ClusterWS/cWS/pull/25)

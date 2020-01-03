@@ -12,7 +12,7 @@
 This repository is based on the <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets v0.14</a> therefore has two licence [ClusterWS MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [Alex Hultman ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE).
 
 
-**From release 0.17 SSL Support will be removed for Node.js 10+ please use proxy in front like nginx if you would like to setup secure connection**
+**From release 0.17 SSL Support has been removed for Node.js 10+ please use proxy in front like nginx if you would like to setup secure connection**
 
 ### All breaking changes from released version will be included in [CHANGELOG.md](./CHANGELOG.md)
 
