@@ -13,8 +13,8 @@ node_js:
 before_script:
   - npm install
   - npm run clean
-  - npm run build
-  - npm run build-bindings
+  - npm run build-ts
+  - npm run build-cpp
 cache:
   directories:
     - "node_modules"
