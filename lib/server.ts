@@ -16,7 +16,7 @@ export class WebSocketServer {
 
   private httpServer: HTTP.Server | HTTPS.Server;
   private serverGroup: any;
-  private httpOnUpgradeRequest: any;
+  private onUpgradeRequest: any;
 
   constructor(private options: ServerConfigs, cb: () => void = noop) {
     let nativeOptions: number = 0;
@@ -44,7 +44,7 @@ export class WebSocketServer {
       return res.end(body);
     });
 
-    this.httpServer.on('upgrade', this.httpOnUpgradeRequest = ((req: HTTP.IncomingMessage, socket: Socket): void => {
+    this.httpServer.on('upgrade', this.onUpgradeRequest = ((req: HTTP.IncomingMessage, socket: Socket): void => {
       socket.on('error', () => {
         // this is how `ws` handles socket error
         socket.destroy();
@@ -135,7 +135,7 @@ export class WebSocketServer {
 
   public close(cb: () => void = noop): void {
     if (this.httpServer) {
-      this.httpServer.removeListener('upgrade', this.httpOnUpgradeRequest);
+      this.httpServer.removeListener('upgrade', this.onUpgradeRequest);
 
       if (!this.options.server) {
         this.httpServer.close();
