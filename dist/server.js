@@ -29,7 +29,7 @@ class WebSocketServer {
             });
             return res.end(body);
         });
-        this.httpServer.on('upgrade', this.httpOnUpgradeRequest = ((req, socket) => {
+        this.httpServer.on('upgrade', this.onUpgradeRequest = ((req, socket) => {
             socket.on('error', () => {
                 socket.destroy();
             });
@@ -101,7 +101,7 @@ class WebSocketServer {
     }
     close(cb = shared_1.noop) {
         if (this.httpServer) {
-            this.httpServer.removeListener('upgrade', this.httpOnUpgradeRequest);
+            this.httpServer.removeListener('upgrade', this.onUpgradeRequest);
             if (!this.options.server) {
                 this.httpServer.close();
             }

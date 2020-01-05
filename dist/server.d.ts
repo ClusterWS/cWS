@@ -10,7 +10,7 @@ export declare class WebSocketServer {
     registeredEvents: any;
     private httpServer;
     private serverGroup;
-    private httpOnUpgradeRequest;
+    private onUpgradeRequest;
     constructor(options: ServerConfigs, cb?: () => void);
     get clients(): {
         length: number;

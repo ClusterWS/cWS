@@ -4,6 +4,8 @@
     "tslint-eslint-rules"
   ],
   "rules": {
+    "unified-signatures": false,
+    "no-string-literal": false,
     "typedef": [
       true,
       "call-signature",
@@ -16,14 +18,23 @@
       "object-destructuring",
       "array-destructuring"
     ],
-    "no-string-literal": false,
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
     "object-literal-shorthand": true,
     "interface-over-type-literal": false,
     "no-unused-expression": false,
     "eofline": false,
     "object-literal-sort-keys": false,
     "ordered-imports": false,
-    "prefer-const": true,
+    "prefer-const": [
+      true,
+      {
+        "destructuring": "all"
+      }
+    ],
+    "forin": false,
     "no-var-keyword": true,
     "quotemark": [
       true,
@@ -38,7 +49,7 @@
       "always"
     ],
     "no-console": false,
-    "curly": false,
+    "curly": true,
     "brace-style": [
       true,
       "1tbs",
@@ -49,7 +60,6 @@
     "max-line-length": [
       true,
       180
-    ],
-    "unified-signatures": false
+    ]
   }
 }
