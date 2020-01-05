@@ -12,12 +12,12 @@ node_js:
   - "13"
 before_script:
   - npm install --ignore-scripts
+  - npm run build-ts
 cache:
   directories:
     - "node_modules"
 script:
   - npm test
   - npm run clean
-  - npm run build-ts
   - npm run build-cpp
   - npm test
