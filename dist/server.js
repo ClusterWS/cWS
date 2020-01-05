@@ -62,10 +62,14 @@ class WebSocketServer {
         };
     }
     on(event, listener) {
-        this.onConnectionListener = listener;
+        if (event === 'connection') {
+            this.onConnectionListener = listener;
+        }
     }
     emit(event, ...args) {
-        this.onConnectionListener(...args);
+        if (event === 'connection') {
+            this.onConnectionListener(...args);
+        }
     }
     broadcast(message, options) {
         if (this.serverGroup) {

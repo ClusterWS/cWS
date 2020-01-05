@@ -4,6 +4,7 @@
 * Remove `websocket.remoteAddress` as we can get it from `websocket._socket.remoteAddress` or `req.connection.remoteAddress`
 * Add `clients` handler on `WebSocketServer`
 * Change values of `OPEN` and `CLOSED` on `WebSocket` to 1 and 3 (make more standard compliant)
+* Do not emit `listening` event as callback should be enough (user can implement this event using callback)
 
 ## Release 0.17.0
 

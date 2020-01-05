@@ -15,7 +15,7 @@ export declare class WebSocketServer {
         length: number;
         forEach: (cb: (ws: WebSocket) => void) => void;
     };
-    on(event: 'connection', listener: (socket: WebSocket, upgradeRequest: HTTP.IncomingMessage) => void): void;
+    on(event: 'connection', listener: (socket: WebSocket, req: HTTP.IncomingMessage) => void): void;
     on(event: 'connection', listener: (socket: WebSocket) => void): void;
     emit(event: string, ...args: any[]): void;
     broadcast(message: string | Buffer, options?: {

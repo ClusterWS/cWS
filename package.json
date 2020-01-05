@@ -5,12 +5,12 @@
   "types": "./dist/index.d.ts",
   "description": "cWS fork of uWebSockets 0.14",
   "scripts": {
-    "install": "npm run build-cpp",
-    "build-cpp": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
-    "build-ts": "npm run lint && tsc",
-    "clean": "rimraf dist/bindings/*",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "test": "mocha -r ts-node/register './tests/**/*.test.ts' --exit",
-    "lint": "tslint -c tslint.json 'src/**/*.ts'"
+    "clean": "rimraf dist/bindings/*",
+    "install": "npm run build-cpp",
+    "build-ts": "rimraf dist/*.js && rimraf dist/*.ts && npm run lint && tsc",
+    "build-cpp": "node-gyp rebuild > build_log.txt 2>&1 || exit 0"
   },
   "engines": {
     "node": ">=8.12.0"

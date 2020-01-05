@@ -82,16 +82,18 @@ export class WebSocketServer {
   }
 
   // TODO: add overload
-  public on(event: 'connection', listener: (socket: WebSocket, upgradeRequest: HTTP.IncomingMessage) => void): void;
+  public on(event: 'connection', listener: (socket: WebSocket, req: HTTP.IncomingMessage) => void): void;
   public on(event: 'connection', listener: (socket: WebSocket) => void): void;
   public on(event: string, listener: (ws: WebSocket, req: HTTP.IncomingMessage) => void): void {
-    // TODO: add proper event handlers logic
-    this.onConnectionListener = listener;
+    if (event === 'connection') {
+      this.onConnectionListener = listener;
+    }
   }
 
   public emit(event: string, ...args: any[]): void {
-    // TODO: add proper event handlers logic
-    (this.onConnectionListener as any)(...args);
+    if (event === 'connection') {
+      (this.onConnectionListener as any)(...args);
+    }
   }
 
   public broadcast(message: string | Buffer, options?: { binary: boolean }): void {
@@ -118,6 +120,7 @@ export class WebSocketServer {
       // FIXME: at the moment it removes all listeners from upgrade event
       // we may want to remove only cws upgrade listener...
       this.httpServer.removeAllListeners('upgrade');
+
       if (!this.options.server) {
         this.httpServer.close();
       }

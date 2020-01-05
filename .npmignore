@@ -12,5 +12,4 @@ Makefile
 .gitignore
 build_log.txt
 package-lock.json
-tsbuild.json
 tslint.json
