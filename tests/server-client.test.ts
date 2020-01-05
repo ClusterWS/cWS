@@ -245,4 +245,18 @@ describe('Server & Client', () => {
     this.wsServer.close();
     done();
   });
+
+
+  it('Connect socket to provided `path`', (done: any) => {
+    this.wsServer.close();
+    this.wsServer = new WebSocket.Server({ port: 3000, path: '/socket/specific/path' });
+
+    this.wsServer.on('connection', (connection: WebSocket) => {
+      expect(connection._socket).to.exist;
+      this.wsServer.close();
+      done();
+    });
+
+    const socket: WebSocket = new WebSocket('ws://localhost:3000/socket/specific/path');
+  });
 });

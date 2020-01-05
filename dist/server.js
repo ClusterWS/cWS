@@ -30,6 +30,9 @@ class WebSocketServer {
             return res.end(body);
         });
         this.httpServer.on('upgrade', (req, socket) => {
+            socket.on('error', () => {
+                socket.destroy();
+            });
             if (this.options.path && this.options.path !== req.url.split('?')[0].split('#')[0]) {
                 return this.abortConnection(socket, 400, 'URL not supported');
             }
@@ -49,6 +52,9 @@ class WebSocketServer {
             else {
                 this.upgradeConnection(req, socket);
             }
+        });
+        this.httpServer.on('error', (err) => {
+            this.registeredEvents['error'](err);
         });
         if (this.options.port && !this.options.server) {
             this.httpServer.listen(this.options.port, this.options.host, cb);

@@ -44,7 +44,11 @@ export class WebSocketServer {
     });
 
     this.httpServer.on('upgrade', (req: HTTP.IncomingMessage, socket: Socket) => {
-      // TODO: handle on error event properly
+      socket.on('error', () => {
+        // this is how `ws` handles socket error
+        socket.destroy();
+      });
+
       if (this.options.path && this.options.path !== req.url.split('?')[0].split('#')[0]) {
         return this.abortConnection(socket, 400, 'URL not supported');
       }
@@ -68,6 +72,10 @@ export class WebSocketServer {
       }
     });
 
+    this.httpServer.on('error', (err: Error) => {
+      this.registeredEvents['error'](err);
+    });
+
     if (this.options.port && !this.options.server) {
       this.httpServer.listen(this.options.port, this.options.host, cb);
     }
@@ -84,10 +92,10 @@ export class WebSocketServer {
     };
   }
 
-  // TODO: add all overloads
-  public on(event: 'connection', listener: (socket: WebSocket, req: HTTP.IncomingMessage) => void): void;
+  public on(event: 'error', listener: (err: Error) => void): void;
   public on(event: 'connection', listener: (socket: WebSocket) => void): void;
-  public on(event: string, listener: (ws: WebSocket, req: HTTP.IncomingMessage) => void): void {
+  public on(event: 'connection', listener: (socket: WebSocket, req: HTTP.IncomingMessage) => void): void;
+  public on(event: string, listener: (...args: any[]) => void): void {
     if (typeof listener !== 'function') {
       throw new Error(`Could not set listener for '${event}' event, listener must be a function`);
     }
@@ -126,8 +134,8 @@ export class WebSocketServer {
 
   public close(cb: () => void = noop): void {
     if (this.httpServer) {
-      // FIXME: at the moment it removes all listeners from upgrade event
-      // we may want to remove only cws upgrade listener...
+      // FIXME: at the moment it removes all listeners from `upgrade`
+      // we may want to remove only cws internal listener...
       this.httpServer.removeAllListeners('upgrade');
 
       if (!this.options.server) {
