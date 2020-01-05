@@ -88,7 +88,14 @@ export class WebSocketServer {
   public on(event: 'connection', listener: (socket: WebSocket, req: HTTP.IncomingMessage) => void): void;
   public on(event: 'connection', listener: (socket: WebSocket) => void): void;
   public on(event: string, listener: (ws: WebSocket, req: HTTP.IncomingMessage) => void): void {
-    // TODO: add some validation
+    if (typeof listener !== 'function') {
+      throw new Error(`Could not set listener for '${event}' event, listener must be a function`);
+    }
+
+    if (this.registeredEvents[event] !== noop) {
+      throw new Error(`Can not set '${event}' event listener twice`);
+    }
+
     this.registeredEvents[event] = listener;
   }
 

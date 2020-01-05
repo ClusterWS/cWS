@@ -46,19 +46,19 @@ export class WebSocket {
     return this.external ? this.OPEN : this.CLOSED;
   }
 
-  public set onopen(listener: any) {
+  public set onopen(listener: () => void) {
     this.on('open', listener);
   }
 
-  public set onclose(listener: any) {
+  public set onclose(listener: (code?: number, reason?: string) => void) {
     this.on('close', listener);
   }
 
-  public set onerror(listener: any) {
+  public set onerror(listener: (err: Error) => void) {
     this.on('error', listener);
   }
 
-  public set onmessage(listener: any) {
+  public set onmessage(listener: (message: string | any) => void) {
     this.on('message', listener);
   }
 
@@ -69,7 +69,14 @@ export class WebSocket {
   public on(event: 'message', listener: (message: string | any) => void): void;
   public on(event: 'close', listener: (code?: number, reason?: string) => void): void;
   public on(event: string, listener: (...args: any[]) => void): void {
-    // TODO: add some validation
+    if (typeof listener !== 'function') {
+      throw new Error(`Could not set listener for '${event}' event, listener must be a function`);
+    }
+
+    if (this.registeredEvents[event] !== noop) {
+      throw new Error(`Can not set '${event}' event listener twice`);
+    }
+
     this.registeredEvents[event] = listener;
   }
 

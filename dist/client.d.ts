@@ -15,10 +15,10 @@ export declare class WebSocket {
     constructor(url: string, options?: any);
     get _socket(): SocketAddress;
     get readyState(): number;
-    set onopen(listener: any);
-    set onclose(listener: any);
-    set onerror(listener: any);
-    set onmessage(listener: any);
+    set onopen(listener: () => void);
+    set onclose(listener: (code?: number, reason?: string) => void);
+    set onerror(listener: (err: Error) => void);
+    set onmessage(listener: (message: string | any) => void);
     on(event: 'open', listener: () => void): void;
     on(event: 'ping', listener: () => void): void;
     on(event: 'pong', listener: () => void): void;

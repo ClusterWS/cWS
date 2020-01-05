@@ -51,6 +51,12 @@ class WebSocket {
         this.on('message', listener);
     }
     on(event, listener) {
+        if (typeof listener !== 'function') {
+            throw new Error(`Could not set listener for '${event}' event, listener must be a function`);
+        }
+        if (this.registeredEvents[event] !== shared_1.noop) {
+            throw new Error(`Can not set '${event}' event listener twice`);
+        }
         this.registeredEvents[event] = listener;
     }
     send(message, options, cb) {

@@ -196,11 +196,53 @@ describe('Server & Client', () => {
 
     internalWsServer.on('connection', (connection: WebSocket) => {
       internalWsServer.close();
+      server.close();
       done();
     });
 
     server.listen(3000, () => {
       const socket1: WebSocket = new WebSocket('ws://localhost:3000');
     });
+  });
+
+  it('Correctly validate listener', (done: any) => {
+    expect(() => {
+      this.wsServer.on('connection', (connection: WebSocket) => { /** */ });
+      this.wsServer.on('connection', (connection: WebSocket) => { /** */ });
+    }).to.throw(`Can not set 'connection' event listener twice`);
+
+    expect(() => {
+      this.wsServer.on('connection', '');
+    }).to.throw(`Could not set listener for 'connection' event, listener must be a function`);
+
+    expect(() => {
+      this.wsServer.close();
+      this.wsServer = new WebSocket.Server({ port: 3000 });
+      this.wsServer.on('connection', (connection: WebSocket) => { /** */ });
+      this.wsServer.close();
+      this.wsServer = new WebSocket.Server({ port: 3000 });
+      this.wsServer.on('connection', async (connection: WebSocket) => { /** */ });
+    }).to.not.throw();
+
+    expect(() => {
+      const socket: any = new WebSocket('ws://localhost:3000');
+      socket.on('open', '');
+    }).to.throw(`Could not set listener for 'open' event, listener must be a function`);
+
+    expect(() => {
+      const socket: any = new WebSocket('ws://localhost:3000');
+      socket.on('open', () => { /** */ });
+      socket.on('open', () => { /** */ });
+    }).to.throw(`Can not set 'open' event listener twice`);
+
+    expect(() => {
+      let socket: any = new WebSocket('ws://localhost:3000');
+      socket.on('open', () => { /** */ });
+      socket = new WebSocket('ws://localhost:3000');
+      socket.on('open', async () => { /** */ });
+    }).to.not.throw();
+
+    this.wsServer.close();
+    done();
   });
 });
