@@ -16,6 +16,7 @@ export class WebSocketServer {
 
   private httpServer: HTTP.Server | HTTPS.Server;
   private serverGroup: any;
+  private httpOnUpgradeRequest: any;
 
   constructor(private options: ServerConfigs, cb: () => void = noop) {
     let nativeOptions: number = 0;
@@ -43,7 +44,7 @@ export class WebSocketServer {
       return res.end(body);
     });
 
-    this.httpServer.on('upgrade', (req: HTTP.IncomingMessage, socket: Socket) => {
+    this.httpServer.on('upgrade', this.httpOnUpgradeRequest = ((req: HTTP.IncomingMessage, socket: Socket): void => {
       socket.on('error', () => {
         // this is how `ws` handles socket error
         socket.destroy();
@@ -70,7 +71,7 @@ export class WebSocketServer {
       } else {
         this.upgradeConnection(req, socket);
       }
-    });
+    }));
 
     this.httpServer.on('error', (err: Error) => {
       this.registeredEvents['error'](err);
@@ -134,9 +135,7 @@ export class WebSocketServer {
 
   public close(cb: () => void = noop): void {
     if (this.httpServer) {
-      // FIXME: at the moment it removes all listeners from `upgrade`
-      // we may want to remove only cws internal listener...
-      this.httpServer.removeAllListeners('upgrade');
+      this.httpServer.removeListener('upgrade', this.httpOnUpgradeRequest);
 
       if (!this.options.server) {
         this.httpServer.close();

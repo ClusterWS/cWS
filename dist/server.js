@@ -29,7 +29,7 @@ class WebSocketServer {
             });
             return res.end(body);
         });
-        this.httpServer.on('upgrade', (req, socket) => {
+        this.httpServer.on('upgrade', this.httpOnUpgradeRequest = ((req, socket) => {
             socket.on('error', () => {
                 socket.destroy();
             });
@@ -52,7 +52,7 @@ class WebSocketServer {
             else {
                 this.upgradeConnection(req, socket);
             }
-        });
+        }));
         this.httpServer.on('error', (err) => {
             this.registeredEvents['error'](err);
         });
@@ -101,7 +101,7 @@ class WebSocketServer {
     }
     close(cb = shared_1.noop) {
         if (this.httpServer) {
-            this.httpServer.removeAllListeners('upgrade');
+            this.httpServer.removeListener('upgrade', this.httpOnUpgradeRequest);
             if (!this.options.server) {
                 this.httpServer.close();
             }
