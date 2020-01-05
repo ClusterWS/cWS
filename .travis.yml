@@ -10,8 +10,8 @@ node_js:
   - "11"
   - "12"
   - "13"
+install: npm install --ignore-scripts
 before_script:
-  - npm install --ignore-scripts
   - npm run build-ts
 cache:
   directories:
