@@ -69,6 +69,7 @@ export class WebSocket {
   public on(event: 'message', listener: (message: string | any) => void): void;
   public on(event: 'close', listener: (code?: number, reason?: string) => void): void;
   public on(event: string, listener: (...args: any[]) => void): void {
+    // TODO: add some validation
     this.registeredEvents[event] = listener;
   }
 

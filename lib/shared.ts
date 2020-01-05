@@ -32,7 +32,7 @@ export function setupNative(group: any, type: string, wsServer?: WebSocketServer
       if (wsServer.upgradeCb) {
         wsServer.upgradeCb(socket);
       } else {
-        wsServer.onConnectionListener(socket, wsServer.upgradeReq);
+        wsServer.registeredEvents['connection'](socket, wsServer.upgradeReq);
       }
 
       wsServer.upgradeCb = null;

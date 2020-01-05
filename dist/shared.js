@@ -28,7 +28,7 @@ function setupNative(group, type, wsServer) {
                 wsServer.upgradeCb(socket);
             }
             else {
-                wsServer.onConnectionListener(socket, wsServer.upgradeReq);
+                wsServer.registeredEvents['connection'](socket, wsServer.upgradeReq);
             }
             wsServer.upgradeCb = null;
             wsServer.upgradeReq = null;

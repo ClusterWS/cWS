@@ -7,7 +7,7 @@ export declare class WebSocketServer {
     private options;
     upgradeCb: (ws: WebSocket) => void;
     upgradeReq: HTTP.IncomingMessage;
-    onConnectionListener: (ws: WebSocket, req: HTTP.IncomingMessage) => void;
+    registeredEvents: any;
     private httpServer;
     private serverGroup;
     constructor(options: ServerConfigs, cb?: () => void);

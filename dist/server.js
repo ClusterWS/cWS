@@ -5,7 +5,10 @@ const shared_1 = require("./shared");
 class WebSocketServer {
     constructor(options, cb = shared_1.noop) {
         this.options = options;
-        this.onConnectionListener = shared_1.noop;
+        this.registeredEvents = {
+            error: shared_1.noop,
+            connection: shared_1.noop
+        };
         let nativeOptions = 0;
         if (this.options.perMessageDeflate) {
             nativeOptions |= this.options.perMessageDeflate.serverNoContextTakeover ? shared_1.PERMESSAGE_DEFLATE : shared_1.SLIDING_DEFLATE_WINDOW;
@@ -62,13 +65,11 @@ class WebSocketServer {
         };
     }
     on(event, listener) {
-        if (event === 'connection') {
-            this.onConnectionListener = listener;
-        }
+        this.registeredEvents[event] = listener;
     }
     emit(event, ...args) {
-        if (event === 'connection') {
-            this.onConnectionListener(...args);
+        if (this.registeredEvents[event]) {
+            this.registeredEvents[event](...args);
         }
     }
     broadcast(message, options) {

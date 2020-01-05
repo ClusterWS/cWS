@@ -9,7 +9,10 @@ import { native, noop, setupNative, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_D
 export class WebSocketServer {
   public upgradeCb: (ws: WebSocket) => void;
   public upgradeReq: HTTP.IncomingMessage;
-  public onConnectionListener: (ws: WebSocket, req: HTTP.IncomingMessage) => void = noop;
+  public registeredEvents: any = {
+    error: noop,
+    connection: noop
+  };
 
   private httpServer: HTTP.Server | HTTPS.Server;
   private serverGroup: any;
@@ -81,18 +84,17 @@ export class WebSocketServer {
     };
   }
 
-  // TODO: add overload
+  // TODO: add all overloads
   public on(event: 'connection', listener: (socket: WebSocket, req: HTTP.IncomingMessage) => void): void;
   public on(event: 'connection', listener: (socket: WebSocket) => void): void;
   public on(event: string, listener: (ws: WebSocket, req: HTTP.IncomingMessage) => void): void {
-    if (event === 'connection') {
-      this.onConnectionListener = listener;
-    }
+    // TODO: add some validation
+    this.registeredEvents[event] = listener;
   }
 
   public emit(event: string, ...args: any[]): void {
-    if (event === 'connection') {
-      (this.onConnectionListener as any)(...args);
+    if (this.registeredEvents[event]) {
+      this.registeredEvents[event](...args);
     }
   }
 
