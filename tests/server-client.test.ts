@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { WebSocket, WebSocketServer } from '../dist';
 import { createServer } from 'http';
+import { WebSocket, WebSocketServer } from '../dist';
 
 describe('Server & Client', () => {
   beforeEach((done: any) => {
