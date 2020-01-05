@@ -1,8 +1,7 @@
 /// <reference types="node" />
-import { WebSocket } from './client';
-import { WebSocketServer } from './server';
 import * as HTTP from 'http';
 import * as HTTPS from 'https';
+export declare type VerifyClientNext = (verified: boolean, code?: number, message?: string) => void;
 export declare type SocketAddress = {
     remotePort?: number;
     remoteAddress?: string;
@@ -13,17 +12,18 @@ export declare type ConnectionInfo = {
     origin: string;
     secure: boolean;
 };
-export declare type VerifyClientNext = (clientVerified: boolean, code?: number, name?: string) => void;
 export declare type ServerConfigs = {
     path?: string;
     port?: number;
     host?: string;
     server?: HTTP.Server | HTTPS.Server;
     noDelay?: boolean;
+    noServer?: boolean;
     maxPayload?: number;
     perMessageDeflate?: {
         serverNoContextTakeover: boolean;
     };
     verifyClient?: (info: ConnectionInfo, next: VerifyClientNext) => void;
 };
-export { WebSocket, WebSocketServer };
+export { WebSocket } from './client';
+export { WebSocketServer } from './server';

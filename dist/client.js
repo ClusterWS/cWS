@@ -27,9 +27,6 @@ class WebSocket {
             shared_1.native.connect(clientGroup, url, this);
         }
     }
-    get readyState() {
-        return this.external ? this.OPEN : this.CLOSED;
-    }
     get _socket() {
         const address = this.external ? shared_1.native.getAddress(this.external) : new Array(3);
         return {
@@ -37,6 +34,9 @@ class WebSocket {
             remoteAddress: address[1],
             remoteFamily: address[2]
         };
+    }
+    get readyState() {
+        return this.external ? this.OPEN : this.CLOSED;
     }
     set onopen(listener) {
         this.on('open', listener);

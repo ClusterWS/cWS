@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { WebSocket } from '../dist';
+import { WebSocket, WebSocketServer } from '../dist';
+import { createServer } from 'http';
 
 describe('Server & Client', () => {
   beforeEach((done: any) => {
@@ -178,6 +179,28 @@ describe('Server & Client', () => {
         done();
         this.wsServer.close();
       }
+    });
+  });
+
+  it('Should properly handle noServer with handleUpgrade', (done: any) => {
+    this.wsServer.close();
+
+    const internalWsServer: WebSocketServer = new WebSocket.Server({ noServer: true });
+
+    const server: any = createServer((req: any) => { /** ignore */ });
+    server.on('upgrade', (request: any, socket: any, head: any) => {
+      internalWsServer.handleUpgrade(request, socket, head, (ws: any) => {
+        internalWsServer.emit('connection', ws, request);
+      });
+    });
+
+    internalWsServer.on('connection', (connection: WebSocket) => {
+      internalWsServer.close();
+      done();
+    });
+
+    server.listen(3000, () => {
+      const socket1: WebSocket = new WebSocket('ws://localhost:3000');
     });
   });
 });

@@ -1,8 +1,7 @@
-import { WebSocket } from './client';
-import { WebSocketServer } from './server';
-
 import * as HTTP from 'http';
 import * as HTTPS from 'https';
+
+export type VerifyClientNext = (verified: boolean, code?: number, message?: string) => void;
 
 export type SocketAddress = {
   remotePort?: number,
@@ -16,18 +15,17 @@ export type ConnectionInfo = {
   secure: boolean
 };
 
-export type VerifyClientNext = (clientVerified: boolean, code?: number, name?: string) => void;
-
 export type ServerConfigs = {
   path?: string,
   port?: number,
   host?: string,
   server?: HTTP.Server | HTTPS.Server,
   noDelay?: boolean,
+  noServer?: boolean,
   maxPayload?: number,
-  perMessageDeflate?: { serverNoContextTakeover: boolean }
+  perMessageDeflate?: { serverNoContextTakeover: boolean },
   verifyClient?: (info: ConnectionInfo, next: VerifyClientNext) => void
 };
 
-export { WebSocket, WebSocketServer };
-// put all types in here...
+export { WebSocket } from './client';
+export { WebSocketServer } from './server';

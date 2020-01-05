@@ -2,7 +2,7 @@
 import { WebSocketServer } from './server';
 import { SocketAddress, ServerConfigs } from './index';
 export declare class WebSocket {
-    private url;
+    url: string;
     private options;
     static OPEN: number;
     static CLOSED: number;
@@ -13,8 +13,8 @@ export declare class WebSocket {
     private external;
     private socketType;
     constructor(url: string, options?: any);
-    get readyState(): number;
     get _socket(): SocketAddress;
+    get readyState(): number;
     set onopen(listener: any);
     set onclose(listener: any);
     set onerror(listener: any);

@@ -24,7 +24,13 @@ function setupNative(group, type, wsServer) {
         if (type === 'server' && wsServer) {
             const socket = new client_1.WebSocket(null, { external });
             exports.native.setUserData(external, socket);
-            wsServer.onConnectionListener(socket, wsServer.upgradeReq);
+            if (wsServer.upgradeCb) {
+                wsServer.upgradeCb(socket);
+            }
+            else {
+                wsServer.onConnectionListener(socket, wsServer.upgradeReq);
+            }
+            wsServer.upgradeCb = null;
             wsServer.upgradeReq = null;
             return;
         }

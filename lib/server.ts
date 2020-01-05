@@ -7,6 +7,7 @@ import { ServerConfigs } from './index';
 import { native, noop, setupNative, APP_PING_CODE, PERMESSAGE_DEFLATE, SLIDING_DEFLATE_WINDOW, DEFAULT_PAYLOAD_LIMIT } from './shared';
 
 export class WebSocketServer {
+  public upgradeCb: (ws: WebSocket) => void;
   public upgradeReq: HTTP.IncomingMessage;
   public onConnectionListener: (ws: WebSocket, req: HTTP.IncomingMessage) => void = noop;
 
@@ -18,39 +19,41 @@ export class WebSocketServer {
       this.options.path = `/${this.options.path}`;
     }
 
-    this.httpServer = this.options.server || HTTP.createServer((_: any, res: HTTP.ServerResponse) => {
-      const body: string = HTTP.STATUS_CODES[426];
-      res.writeHead(426, {
-        'Content-Length': body.length,
-        'Content-Type': 'text/plain'
-      });
-      return res.end(body);
-    });
-
-    this.httpServer.on('upgrade', (req: HTTP.IncomingMessage, socket: Socket) => {
-      // TODO: handle on error event properly
-      if (this.options.path && this.options.path !== req.url.split('?')[0].split('#')[0]) {
-        return this.abortConnection(socket, 400, 'URL not supported');
-      }
-
-      if (this.options.verifyClient) {
-        const info: any = {
-          origin: req.headers.origin,
-          secure: !!((req.connection as any).authorized || (req.connection as any).encrypted),
-          req
-        };
-
-        this.options.verifyClient(info, (verified?: boolean, code?: number, message?: string) => {
-          if (!verified) {
-            return this.abortConnection(socket, code || 401, message || 'Client verification failed');
-          }
-
-          this.upgradeConnection(req, socket);
+    if (!this.options.noServer) {
+      this.httpServer = this.options.server || HTTP.createServer((_: any, res: HTTP.ServerResponse) => {
+        const body: string = HTTP.STATUS_CODES[426];
+        res.writeHead(426, {
+          'Content-Length': body.length,
+          'Content-Type': 'text/plain'
         });
-      } else {
-        this.upgradeConnection(req, socket);
-      }
-    });
+        return res.end(body);
+      });
+
+      this.httpServer.on('upgrade', (req: HTTP.IncomingMessage, socket: Socket) => {
+        // TODO: handle on error event properly
+        if (this.options.path && this.options.path !== req.url.split('?')[0].split('#')[0]) {
+          return this.abortConnection(socket, 400, 'URL not supported');
+        }
+
+        if (this.options.verifyClient) {
+          const info: any = {
+            origin: req.headers.origin,
+            secure: !!((req.connection as any).authorized || (req.connection as any).encrypted),
+            req
+          };
+
+          this.options.verifyClient(info, (verified?: boolean, code?: number, message?: string) => {
+            if (!verified) {
+              return this.abortConnection(socket, code || 401, message || 'Client verification failed');
+            }
+
+            this.upgradeConnection(req, socket);
+          });
+        } else {
+          this.upgradeConnection(req, socket);
+        }
+      });
+    }
 
     let nativeOptions: number = 0;
     if (this.options.perMessageDeflate) {
@@ -60,10 +63,8 @@ export class WebSocketServer {
     this.serverGroup = native.server.group.create(nativeOptions, this.options.maxPayload || DEFAULT_PAYLOAD_LIMIT);
     setupNative(this.serverGroup, 'server', this);
 
-    if (this.options.port) {
-      this.httpServer.listen(this.options.port, this.options.host, () => {
-        cb();
-      });
+    if (this.options.port && !this.options.noServer) {
+      this.httpServer.listen(this.options.port, this.options.host, cb);
     }
   }
 
@@ -86,6 +87,11 @@ export class WebSocketServer {
     this.onConnectionListener = listener;
   }
 
+  public emit(event: string, ...args: any[]): void {
+    // TODO: add proper event handlers logic
+    (this.onConnectionListener as any)(...args);
+  }
+
   public broadcast(message: string | Buffer, options?: { binary: boolean }): void {
     if (this.serverGroup) {
       native.server.group.broadcast(this.serverGroup, message, options && options.binary || false);
@@ -96,6 +102,11 @@ export class WebSocketServer {
     if (this.serverGroup) {
       native.server.group.startAutoPing(this.serverGroup, interval, appLevel ? APP_PING_CODE : null);
     }
+  }
+
+  public handleUpgrade(req: HTTP.IncomingMessage, socket: Socket, upgradeHead: any, cb: (ws: WebSocket) => void): void {
+    // this is used only with noServer: true
+    this.upgradeConnection(req, socket, cb);
   }
 
   public close(cb: () => void = noop): void {
@@ -119,11 +130,12 @@ export class WebSocketServer {
     return socket.end(`HTTP/1.1 ${code} ${message}\r\n\r\n`);
   }
 
-  private upgradeConnection(req: HTTP.IncomingMessage, socket: Socket): void {
+  private upgradeConnection(req: HTTP.IncomingMessage, socket: Socket, upgradeCb?: (ws: WebSocket) => void): void {
     const secKey: any = req.headers['sec-websocket-key'];
 
     if ((socket as any)._isNative) {
       if (this.serverGroup) {
+        this.upgradeCb = upgradeCb;
         this.upgradeReq = req;
         native.upgrade(this.serverGroup, (socket as any).external, secKey, req.headers['sec-websocket-extensions'], req.headers['sec-websocket-protocol']);
       }
@@ -137,6 +149,7 @@ export class WebSocketServer {
         const ticket: any = native.transfer(socketHandle.fd === -1 ? socketHandle : socketHandle.fd, sslState);
         socket.on('close', () => {
           if (this.serverGroup) {
+            this.upgradeCb = upgradeCb;
             this.upgradeReq = req;
             native.upgrade(this.serverGroup, ticket, secKey, req.headers['sec-websocket-extensions'], req.headers['sec-websocket-protocol']);
           }
