@@ -8,7 +8,7 @@
     "install": "npm run build-cpp",
     "build-cpp": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
     "build-ts": "npm run lint && tsc",
-    "clean": "rimraf dist/bindings",
+    "clean": "rimraf dist/bindings/*",
     "test": "mocha -r ts-node/register './tests/**/*.test.ts' --exit",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
