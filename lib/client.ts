@@ -24,7 +24,7 @@ export class WebSocket {
   private external: any;
   private socketType: string = 'client';
 
-  constructor(private url: string, private options: any = {}) {
+  constructor(public url: string, private options: any = {}) {
     if (!this.url && (this.options as any).external) {
       this.socketType = 'server';
       this.external = (this.options as any).external;

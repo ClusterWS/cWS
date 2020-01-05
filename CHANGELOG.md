@@ -1,3 +1,10 @@
+## Unreleased 1.0.0
+
+* Reexport `WebSocketServer` under `WebSocket.Server`
+* Remove `websocket.remoteAddress` as we can get it from `websocket._socket.remoteAddress`
+* Add `clients` handler on `WebSocketServer`
+* Change values of `OPEN` and `CLOSED` on `WebSocket` to 1 and 3 (make more standard compliant)
+
 ## Release 0.17.0
 
 * Remove support for SSL from Node.js 10+ (use proxy instead like nginx)
