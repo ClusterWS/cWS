@@ -1,7 +1,7 @@
 ## Unreleased 1.0.0
 
 * Reexport `WebSocketServer` under `WebSocket.Server`
-* Remove `websocket.remoteAddress` as we can get it from `websocket._socket.remoteAddress`
+* Remove `websocket.remoteAddress` as we can get it from `websocket._socket.remoteAddress` or `req.connection.remoteAddress`
 * Add `clients` handler on `WebSocketServer`
 * Change values of `OPEN` and `CLOSED` on `WebSocket` to 1 and 3 (make more standard compliant)
 
