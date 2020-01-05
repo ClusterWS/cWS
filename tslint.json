@@ -16,6 +16,7 @@
       "object-destructuring",
       "array-destructuring"
     ],
+    "no-string-literal": false,
     "object-literal-shorthand": true,
     "interface-over-type-literal": false,
     "no-unused-expression": false,

@@ -1,15 +1,16 @@
 {
   "name": "@clusterws/cws",
-  "version": "0.17.2",
+  "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "description": "ClusterWS cWS custom fork of uWebSockets 0.14",
+  "description": "cWS fork of uWebSockets 0.14",
   "scripts": {
-    "install": "npm run build-bindings",
-    "build-bindings": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
+    "install": "npm run build-cpp",
+    "build-cpp": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
+    "build-ts": "npm run lint && tsc",
+    "clean": "rimraf dist/",
     "test": "mocha -r ts-node/register './tests/**/*.test.ts' --exit",
-    "build": "ts-builder -c ./tsbuild.json",
-    "clean": "rimraf dist/"
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "engines": {
     "node": ">=8.12.0"
@@ -26,9 +27,11 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^10.7.0",
     "chai": "^4.2.0",
-    "mocha": "^6.2.2",
+    "mocha": "^7.0.0",
     "rimraf": "^3.0.0",
-    "ts-builder": "0.9.0",
-    "ts-node": "^8.5.4"
+    "ts-node": "^8.5.4",
+    "tslint": "^5.20.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "^3.7.4"
   }
 }

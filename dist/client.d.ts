@@ -1,0 +1,35 @@
+/// <reference types="node" />
+import { WebSocketServer } from './server';
+import { SocketAddress, ServerConfigs } from './index';
+export declare class WebSocket {
+    private url;
+    private options;
+    static OPEN: number;
+    static CLOSED: number;
+    static Server: new (options: ServerConfigs, cb?: () => void) => WebSocketServer;
+    OPEN: number;
+    CLOSED: number;
+    registeredEvents: any;
+    private external;
+    private socketType;
+    constructor(url: string, options?: any);
+    get readyState(): number;
+    get _socket(): SocketAddress;
+    set onopen(listener: any);
+    set onclose(listener: any);
+    set onerror(listener: any);
+    set onmessage(listener: any);
+    on(event: 'open', listener: () => void): void;
+    on(event: 'ping', listener: () => void): void;
+    on(event: 'pong', listener: () => void): void;
+    on(event: 'error', listener: (err: Error) => void): void;
+    on(event: 'message', listener: (message: string | any) => void): void;
+    on(event: 'close', listener: (code?: number, reason?: string) => void): void;
+    send(message: string | Buffer, options?: {
+        binary?: boolean;
+        compress?: boolean;
+    }, cb?: (err?: Error) => void): void;
+    ping(message?: string | Buffer): void;
+    close(code?: number, reason?: string): void;
+    terminate(): void;
+}

@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import { WebSocketServer, WebSocket } from '../dist';
+import { WebSocket } from '../dist';
 
 describe('Server & Client', () => {
   beforeEach((done: any) => {
-    this.wsServer = new WebSocketServer({ port: 3000 }, (): void => {
+    this.wsServer = new WebSocket.Server({ port: 3000 }, (): void => {
       done();
     });
   });
@@ -134,9 +134,9 @@ describe('Server & Client', () => {
     });
   });
 
-  it('remoteAddress should exist', (done: any) => {
+  it('_socket should exist', (done: any) => {
     this.wsServer.on('connection', (connection: WebSocket) => {
-      expect(connection.remoteAddress).to.exist;
+      expect(connection._socket).to.exist;
       this.wsServer.close();
       done();
     });
@@ -152,6 +152,7 @@ describe('Server & Client', () => {
     this.wsServer.on('connection', (connection: WebSocket) => {
       connected++;
       if (connected > 1) {
+        expect(this.wsServer.clients.length).to.be.eql(2);
         this.wsServer.broadcast(messageToSend);
       }
     });
