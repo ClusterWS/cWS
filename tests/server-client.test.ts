@@ -116,7 +116,7 @@ describe('Server & Client', () => {
   });
 
   it('Should send ping to client and receive pong', (done: any) => {
-    let clientGotPing = false;
+    let clientGotPing: boolean = false;
 
     this.wsServer.on('connection', (connection: WebSocket) => {
       connection.on('pong', () => {
@@ -148,7 +148,7 @@ describe('Server & Client', () => {
   it('Broadcast to all connected users', (done: any) => {
     let connected: number = 0;
     let firstReceived: boolean = false;
-    let messageToSend: string = 'Super cool message';
+    const messageToSend: string = 'Super cool message';
 
     this.wsServer.on('connection', (connection: WebSocket) => {
       connected++;
@@ -262,7 +262,7 @@ describe('Server & Client', () => {
   it('`verifyClient` allow to pass', (done: any) => {
     this.wsServer.close();
     this.wsServer = new WebSocket.Server({
-      port: 3000, verifyClient: (info: any, next: any) => {
+      port: 3000, verifyClient: (info: any, next: any): void => {
         expect(info.req).to.exist;
         expect(info.secure).to.exist;
 
@@ -282,7 +282,7 @@ describe('Server & Client', () => {
   it('`verifyClient` deny pass', (done: any) => {
     this.wsServer.close();
     this.wsServer = new WebSocket.Server({
-      port: 3000, verifyClient: (info: any, next: any) => {
+      port: 3000, verifyClient: (info: any, next: any): void => {
         expect(info.req).to.exist;
         expect(info.secure).to.exist;
 

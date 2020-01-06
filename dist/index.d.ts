@@ -9,8 +9,8 @@ export declare type SocketAddress = {
 };
 export declare type ConnectionInfo = {
     req: HTTP.IncomingMessage;
-    origin: string;
     secure: boolean;
+    origin?: string;
 };
 export declare type ServerConfigs = {
     path?: string;
