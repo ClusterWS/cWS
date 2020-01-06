@@ -11,7 +11,10 @@ class WebSocketServer {
         };
         let nativeOptions = 0;
         if (this.options.perMessageDeflate) {
-            nativeOptions |= this.options.perMessageDeflate.serverNoContextTakeover ? shared_1.PERMESSAGE_DEFLATE : shared_1.SLIDING_DEFLATE_WINDOW;
+            nativeOptions |= shared_1.PERMESSAGE_DEFLATE;
+            if (this.options.perMessageDeflate.serverNoContextTakeover === false) {
+                nativeOptions |= shared_1.SLIDING_DEFLATE_WINDOW;
+            }
         }
         this.serverGroup = shared_1.native.server.group.create(nativeOptions, this.options.maxPayload || shared_1.DEFAULT_PAYLOAD_LIMIT);
         shared_1.setupNative(this.serverGroup, 'server', this);

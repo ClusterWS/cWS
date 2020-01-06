@@ -260,7 +260,6 @@ public:
             cf = {ntohs(cf.code), src + 2, length - 2, };
 
             if(!isValidUtf8((unsigned char *) cf.message, cf.length)){
-               // this actually should be an error
               return {};
             }
 
@@ -270,14 +269,10 @@ public:
                   cf.code != 1005 && 
                   cf.code != 1006) 
               || (cf.code >= 3000 && cf.code <= 4999))) {
-                // this actually should be an error
               return {};
             }
-        } else {
-            // if code is not proveded we closed with default 1000
-            cf = {1000};
         }
-
+        
         return cf;
     }
 

@@ -23,7 +23,7 @@ export type ServerConfigs = {
   noDelay?: boolean,
   noServer?: boolean,
   maxPayload?: number,
-  perMessageDeflate?: { serverNoContextTakeover: boolean },
+  perMessageDeflate?: boolean | { serverNoContextTakeover: boolean },
   verifyClient?: (info: ConnectionInfo, next: VerifyClientNext) => void
 };
 

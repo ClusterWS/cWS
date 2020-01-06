@@ -22,8 +22,13 @@ export class WebSocketServer {
     let nativeOptions: number = 0;
     if (this.options.perMessageDeflate) {
       // tslint:disable-next-line
-      nativeOptions |= this.options.perMessageDeflate.serverNoContextTakeover ? PERMESSAGE_DEFLATE : SLIDING_DEFLATE_WINDOW;
+      nativeOptions |= PERMESSAGE_DEFLATE;
+      if ((this.options.perMessageDeflate as { serverNoContextTakeover: boolean }).serverNoContextTakeover === false) {
+        // tslint:disable-next-line
+        nativeOptions |= SLIDING_DEFLATE_WINDOW;
+      }
     }
+
     this.serverGroup = native.server.group.create(nativeOptions, this.options.maxPayload || DEFAULT_PAYLOAD_LIMIT);
     setupNative(this.serverGroup, 'server', this);
 

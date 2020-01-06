@@ -5,6 +5,7 @@
 * Add `clients` getter to `WebSocketServer`
 * Change values of `OPEN` and `CLOSED` on `WebSocket` to 1 and 3 respectively (make this standard compliant)
 * Do not emit `listening` event (user can implement this logic using callback)
+* Many bug fixes
 
 ## Release 0.17.0
 

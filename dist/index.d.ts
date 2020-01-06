@@ -20,7 +20,7 @@ export declare type ServerConfigs = {
     noDelay?: boolean;
     noServer?: boolean;
     maxPayload?: number;
-    perMessageDeflate?: {
+    perMessageDeflate?: boolean | {
         serverNoContextTakeover: boolean;
     };
     verifyClient?: (info: ConnectionInfo, next: VerifyClientNext) => void;
