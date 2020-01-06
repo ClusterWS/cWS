@@ -11,8 +11,8 @@ export type SocketAddress = {
 
 export type ConnectionInfo = {
   req: HTTP.IncomingMessage,
-  origin: string,
   secure: boolean
+  origin?: string,
 };
 
 export type ServerConfigs = {
