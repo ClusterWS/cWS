@@ -181,6 +181,11 @@ Event on `error` is triggered when server has some issues and `noServer` is `fal
 wsServer.on('error', (err) => { })
 ```
 
+Event on `close` is triggered after you call `wsServer.close()` function, if `cb` is provided both `cb` and on `close` listener will be triggered:
+```js
+wsServer.on('close', () => { })
+```
+
 To get all connected clients use `clients` getter:
 ```js
 wsServer.clients;

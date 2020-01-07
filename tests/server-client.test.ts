@@ -302,7 +302,6 @@ describe('Server & Client', () => {
     const socket: WebSocket = new WebSocket('ws://localhost:3000');
   });
 
-
   it('Should trigger on `close` event at the server', (done: any) => {
     this.wsServer.on('connection', (connection: WebSocket) => { });
     this.wsServer.on('close', () => {
