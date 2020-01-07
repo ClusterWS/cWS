@@ -1,10 +1,10 @@
 ## Released 1.1.0
 
 **Improvement**
-* Added support for on `close` event in the server
+* Added support for on `close` event on the `WebSocketServer`
 
 **Fixes**
-* Listener validation prints warning if listener is not supported
+* Validation prints warning if listener is not supported
 
 ## Released 1.0.0
 
