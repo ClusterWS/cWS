@@ -31,5 +31,5 @@ cl /I targets/node-%v72%/include/node /I targets/node-%v72%/deps/uv/include /I t
 cl /I targets/node-%v79%/include/node /I targets/node-%v79%/deps/uv/include /I targets/node-%v79%/deps/v8/include /I targets/node-%v79%/deps/openssl/openssl/include /I targets/node-%v79%/deps/zlib /EHsc /Ox /LD /Fedist/bindings/cws_win32_79.node src/*.cpp targets/node-%v79%/node.lib
 
 del ".\*.obj"
-del ".\dist\*.exp"
-del ".\dist\*.lib"
+del ".\dist\bindings\*.exp"
+del ".\dist\bindings\*.lib"
