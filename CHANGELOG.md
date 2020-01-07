@@ -1,4 +1,4 @@
-## Unreleased 1.0.0
+## Released 1.0.0
 
 This is quite a big release with some important changes, improvement and fixes including but not limited to:
 
