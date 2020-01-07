@@ -1,15 +1,19 @@
 .vscode/
 
 lib/
-test/
+tests/
 build/
 targets/
 excludes/
 node_modules/
+examples/
+
+.travis.yml
+.gitignore
 
 make.bat
 Makefile
-.gitignore
 build_log.txt
 package-lock.json
+tsconfig.json
 tslint.json

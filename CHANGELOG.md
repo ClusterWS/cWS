@@ -1,11 +1,24 @@
 ## Unreleased 1.0.0
 
-* Reexport `WebSocketServer` under `WebSocket.Server`
-* Remove `websocket.remoteAddress` as we can get it from `websocket._socket.remoteAddress` or `req.connection.remoteAddress`)
-* Add `clients` getter to `WebSocketServer`
-* Change values of `OPEN` and `CLOSED` on `WebSocket` to 1 and 3 respectively (make this standard compliant)
-* Do not emit `listening` event (user can implement this logic using callback)
-* Many bug fixes
+This is quite a big release with some important changes, improvement and fixes including but not limited to:
+
+**Improvement**
+* Added `noServer` config
+* Added `clients` getter to `WebSocketServer`
+* Added `handleUpgrade` similar to `ws` module
+* Changed values of `OPEN` and `CLOSED` on `WebSocket` to `1` and `3` respectively
+* Reexported `WebSocketServer` under `WebSocket.Server`
+
+**Fixes**
+* Fixed `perMessageDeflate` configuration
+* Fixed close code on fuzzing
+
+**Removed**
+* Removed `global.cws` config
+* Removed `websocket.remoteAddress` as can get data from `websocket._socket.remoteAddress` or `req.connection.remoteAddress`
+* No more `listening` event emitted from `WebSocketServer` (can be implemented using callback)
+
+Many other fixes and improvements...
 
 ## Release 0.17.0
 

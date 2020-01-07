@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "description": "cWS fork of uWebSockets 0.14",
+  "description": "cWS - fast C++ WebSocket implementation for Node.js",
   "scripts": {
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "test": "mocha -r ts-node/register './tests/**/*.test.ts' --exit",
@@ -19,9 +19,14 @@
     "tiny",
     "websocket",
     "clusterws",
+    "socket",
     "cws"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ClusterWS/cWS"
+  },
   "devDependencies": {
     "@types/chai": "^4.2.1",
     "@types/mocha": "^5.2.7",
