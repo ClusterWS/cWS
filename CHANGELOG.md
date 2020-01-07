@@ -1,3 +1,11 @@
+## Released 1.1.0
+
+**Improvement**
+* Added support for on `close` event in the server
+
+**Fixes**
+* Listener validation prints warning if listener is not supported
+
 ## Released 1.0.0
 
 This is quite a big release with some important changes, improvement and fixes including but not limited to:

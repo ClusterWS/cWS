@@ -6,8 +6,9 @@ class WebSocketServer {
     constructor(options, cb = shared_1.noop) {
         this.options = options;
         this.registeredEvents = {
+            close: shared_1.noop,
             error: shared_1.noop,
-            connection: shared_1.noop
+            connection: shared_1.noop,
         };
         let nativeOptions = 0;
         if (this.options.perMessageDeflate) {
@@ -77,7 +78,10 @@ class WebSocketServer {
         if (typeof listener !== 'function') {
             throw new Error(`Could not set listener for '${event}' event, listener must be a function`);
         }
-        if (this.registeredEvents[event] !== shared_1.noop) {
+        else if (this.registeredEvents[event] === undefined) {
+            console.warn(`WebSocket Server does not support '${event}' listener`);
+        }
+        else if (this.registeredEvents[event] !== shared_1.noop) {
             throw new Error(`Can not set '${event}' event listener twice`);
         }
         this.registeredEvents[event] = listener;
@@ -113,7 +117,10 @@ class WebSocketServer {
             shared_1.native.server.group.close(this.serverGroup);
             this.serverGroup = null;
         }
-        setTimeout(() => cb(), 0);
+        setTimeout(() => {
+            this.registeredEvents['close']();
+            cb();
+        }, 0);
     }
     abortConnection(socket, code, message) {
         return socket.end(`HTTP/1.1 ${code} ${message}\r\n\r\n`);

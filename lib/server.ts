@@ -10,8 +10,9 @@ export class WebSocketServer {
   public upgradeCb: (ws: WebSocket) => void;
   public upgradeReq: HTTP.IncomingMessage;
   public registeredEvents: any = {
+    close: noop,
     error: noop,
-    connection: noop
+    connection: noop,
   };
 
   private httpServer: HTTP.Server | HTTPS.Server;
@@ -104,9 +105,9 @@ export class WebSocketServer {
   public on(event: string, listener: (...args: any[]) => void): void {
     if (typeof listener !== 'function') {
       throw new Error(`Could not set listener for '${event}' event, listener must be a function`);
-    }
-
-    if (this.registeredEvents[event] !== noop) {
+    } else if (this.registeredEvents[event] === undefined) {
+      console.warn(`WebSocket Server does not support '${event}' listener`);
+    } else if (this.registeredEvents[event] !== noop) {
       throw new Error(`Can not set '${event}' event listener twice`);
     }
 
@@ -151,7 +152,10 @@ export class WebSocketServer {
       native.server.group.close(this.serverGroup);
       this.serverGroup = null;
     }
-    setTimeout(() => cb(), 0);
+    setTimeout(() => {
+      this.registeredEvents['close']();
+      cb();
+    }, 0);
   }
 
   private abortConnection(socket: Socket, code: number, message: string): void {
