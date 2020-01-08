@@ -51,14 +51,15 @@ class WebSocket {
         this.on('message', listener);
     }
     on(event, listener) {
+        if (this.registeredEvents[event] === undefined) {
+            console.log(`Attempt to set unsupported event listener '${event}'`);
+            return;
+        }
         if (typeof listener !== 'function') {
-            throw new Error(`Could not set listener for '${event}' event, listener must be a function`);
+            throw new Error(`Listener for '${event}' event must be a function`);
         }
-        else if (this.registeredEvents[event] === undefined) {
-            console.warn(`WebSocket Client does not support '${event}' listener`);
-        }
-        else if (this.registeredEvents[event] !== shared_1.noop) {
-            throw new Error(`Can not set '${event}' event listener twice`);
+        if (this.registeredEvents[event] !== shared_1.noop) {
+            throw new Error(`Can not set listener for '${event}' event twice`);
         }
         this.registeredEvents[event] = listener;
     }
