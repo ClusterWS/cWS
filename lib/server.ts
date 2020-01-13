@@ -17,7 +17,7 @@ export class WebSocketServer {
 
   private httpServer: HTTP.Server | HTTPS.Server;
   private serverGroup: any;
-  private onUpgradeRequest: any;
+  private onUpgradeRequest: (req: HTTP.IncomingMessage, socket: Socket) => void;
 
   constructor(private options: ServerConfigs, cb: () => void = noop) {
     let nativeOptions: number = 0;
