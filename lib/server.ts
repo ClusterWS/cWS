@@ -100,8 +100,8 @@ export class WebSocketServer {
   }
 
   public on(event: 'error', listener: (err: Error) => void): void;
-  public on(event: 'connection', listener: (socket: WebSocket) => void): void;
   public on(event: 'connection', listener: (socket: WebSocket, req: HTTP.IncomingMessage) => void): void;
+  public on(event: 'connection', listener: (socket: WebSocket) => void): void;
   public on(event: string, listener: (...args: any[]) => void): void {
     if (this.registeredEvents[event] === undefined) {
       console.log(`Attempt to set unsupported event listener '${event}'`);

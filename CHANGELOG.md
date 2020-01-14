@@ -1,3 +1,8 @@
+## Released 1.1.2
+
+**Fixes**
+* Fix typings for on `connection` event
+
 ## Released 1.1.0
 
 **Improvement**
