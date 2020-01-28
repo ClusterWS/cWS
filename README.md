@@ -91,10 +91,13 @@ To send message use `send` function:
 // send accepts string or binary
 // will automatically identify type
 socket.send(msg);
-// will overwrite/specify message type to string
+
+// will overwrite/specify message type to string (does not transform data to specified type)
 socket.send(msg, { binary: false });
-// will overwrite/specify message type to binary
+
+// will overwrite/specify message type to binary (does not transform data to specified type)
 socket.send(msg, { binary: true });
+
 // will call callback after message sent or errored
 socket.send(msg, null, (err) => { });
 ```
@@ -201,6 +204,7 @@ To send message to all connected clients use `broadcast` method:
 ```js
 // broadcast string
 wsServer.broadcast(message);
+
 // broadcast binary
 wsServer.broadcast(message, { binary: true });
 ```
