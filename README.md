@@ -14,6 +14,8 @@
    <a href="https://travis-ci.org/ClusterWS/cWS"><img src="https://travis-ci.org/ClusterWS/cWS.svg?branch=master" alt="travis build" height="22"></a>
 </p>
 
+If you appreciate my work consider becoming a [Patron on Patreon](https://www.patreon.com/clusterws) or supporting me through [PayPal](https://www.paypal.me/goriunov)
+
 ## Important Notes
 
 * [CHANGELOG.md](./CHANGELOG.md) mostly includes braking changes
@@ -279,6 +281,3 @@ socket.onmessage = function (message) {
     // process with your logic
 }
 ```
-
-## Support Development
-[PayPal](https://www.paypal.me/goriunov) [Patreon](https://www.patreon.com/clusterws)
