@@ -1,4 +1,3 @@
-
 const { parse } = require('url');
 const { WebSocket } = require('../dist');
 const { createServer } = require('http');
