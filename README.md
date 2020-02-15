@@ -14,6 +14,8 @@
    <a href="https://travis-ci.org/ClusterWS/cWS"><img src="https://travis-ci.org/ClusterWS/cWS.svg?branch=master" alt="travis build" height="22"></a>
 </p>
 
+If you appreciate my work consider becoming a [Patron on Patreon](https://www.patreon.com/clusterws) or supporting me through [PayPal](https://www.paypal.me/goriunov)
+
 ## Important Notes
 
 * [CHANGELOG.md](./CHANGELOG.md) mostly includes braking changes
@@ -91,10 +93,13 @@ To send message use `send` function:
 // send accepts string or binary
 // will automatically identify type
 socket.send(msg);
-// will overwrite/specify message type to string
+
+// will overwrite/specify message type to string (does not transform data to specified type)
 socket.send(msg, { binary: false });
-// will overwrite/specify message type to binary
+
+// will overwrite/specify message type to binary (does not transform data to specified type)
 socket.send(msg, { binary: true });
+
 // will call callback after message sent or errored
 socket.send(msg, null, (err) => { });
 ```
@@ -201,6 +206,7 @@ To send message to all connected clients use `broadcast` method:
 ```js
 // broadcast string
 wsServer.broadcast(message);
+
 // broadcast binary
 wsServer.broadcast(message, { binary: true });
 ```
@@ -275,6 +281,3 @@ socket.onmessage = function (message) {
     // process with your logic
 }
 ```
-
-## Support Development
-[PayPal](https://www.paypal.me/goriunov) [Patreon](https://www.patreon.com/clusterws)
