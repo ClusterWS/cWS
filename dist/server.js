@@ -57,10 +57,10 @@ class WebSocketServer {
                 this.upgradeConnection(req, socket);
             }
         }));
-        this.httpServer.on('error', (err) => {
-            this.registeredEvents['error'](err);
-        });
         if (this.options.port && !this.options.server) {
+            this.httpServer.on('error', (err) => {
+                this.registeredEvents['error'](err);
+            });
             this.httpServer.listen(this.options.port, this.options.host, cb);
         }
     }

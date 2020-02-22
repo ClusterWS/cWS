@@ -79,11 +79,15 @@ export class WebSocketServer {
       }
     }));
 
-    this.httpServer.on('error', (err: Error) => {
-      this.registeredEvents['error'](err);
-    });
-
     if (this.options.port && !this.options.server) {
+      this.httpServer.on('error', (err: Error) => {
+        // listen on http server error only if server has been
+        // created by cws, in case if server passed from the
+        // user than user is responsible for listening for 'error' event
+        // on passed http server
+        this.registeredEvents['error'](err);
+      });
+
       this.httpServer.listen(this.options.port, this.options.host, cb);
     }
   }
@@ -157,6 +161,7 @@ export class WebSocketServer {
       native.server.group.close(this.serverGroup);
       this.serverGroup = null;
     }
+
     setTimeout(() => {
       this.registeredEvents['close']();
       cb();

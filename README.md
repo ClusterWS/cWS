@@ -183,6 +183,9 @@ wsServer.on('connection', (ws, req) => {})
 
 Event on `error` is triggered when server has some issues and `noServer` is `false:`
 ```js
+// on error event will NOT include httpServer errors IF
+// server was passed under server parameter { server: httpServer },
+// you can register on 'error' listener directly on passed server
 wsServer.on('error', (err) => { })
 ```
 

@@ -1,3 +1,8 @@
+## Released 1.2.0
+
+**Improvement**
+* Do not register httpServer on `error` event if server has been passed from the user
+
 ## Released 1.1.2
 
 **Fixes**
