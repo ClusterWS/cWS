@@ -44,7 +44,7 @@ const { WebSocket } = require('@clusterws/cws');
 
 Connect to WebSocket server:
 ```js
-const socket = new WebSocket('ws://url:port');
+const socket = new WebSocket(/* ws server endpoint **/);
 ```
 
 Event on `open` is triggered when server accepts connection and this connection is ready to perform other actions:
