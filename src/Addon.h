@@ -5,6 +5,30 @@
 #include <uv.h>
 #include <cstring>
 
+#if NODE_MAJOR_VERSION>=10
+#define NODE_WANT_INTERNALS 1
+
+#include <base_object.h>
+#include <tls_wrap.h>
+
+using BaseObject = node::BaseObject;
+using TLSWrap = node::TLSWrap;
+class TLSWrapSSLGetter : public node::TLSWrap {
+public:
+    void setSSL(const v8::FunctionCallbackInfo<v8::Value> &info){
+        v8::Isolate* isolate = info.GetIsolate();
+        if (!ssl_){
+            info.GetReturnValue().Set(v8::Null(isolate));
+            return;
+        }
+        SSL* ptr = ssl_.get();
+        v8::Local<v8::External> ext = v8::External::New(isolate, ptr);
+        info.GetReturnValue().Set(ext);
+    }
+};
+ #undef NODE_WANT_INTERNALS
+#endif
+
 using namespace std;
 using namespace v8;
 
@@ -538,15 +562,13 @@ void getSSLContext(const FunctionCallbackInfo<Value> &args) {
     Local<Context> context = isolate->GetCurrentContext();
     Local<Object> obj = args[0]->ToObject(context).ToLocalChecked();
 
-    // SSL support has been removed for version 10+
-    // use some thing like ngix in front for ssl 
     #if NODE_MAJOR_VERSION < 10
       Local<Value> ext = obj->Get(String::NewFromUtf8(isolate, "_external"));
       args.GetReturnValue().Set(ext);
-    // #else
-    //   TLSWrapSSLGetter* tw;
-    //   ASSIGN_OR_RETURN_UNWRAP(&tw, obj);
-    //   tw->setSSL(args);
+    #else
+      TLSWrapSSLGetter* tw;
+      ASSIGN_OR_RETURN_UNWRAP(&tw, obj);
+      tw->setSSL(args);
     #endif
 }
 

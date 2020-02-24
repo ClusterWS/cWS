@@ -41,7 +41,7 @@ export class WebSocketServer {
       this.options.path = `/${this.options.path}`;
     }
 
-    this.httpServer = this.options.server || HTTP.createServer((_: any, res: HTTP.ServerResponse) => {
+    this.httpServer = this.options.server || HTTP.createServer((_: any, res: HTTP.ServerResponse): void => {
       const body: string = HTTP.STATUS_CODES[426];
       res.writeHead(426, {
         'Content-Length': body.length,
@@ -51,7 +51,7 @@ export class WebSocketServer {
     });
 
     this.httpServer.on('upgrade', this.onUpgradeRequest = ((req: HTTP.IncomingMessage, socket: Socket): void => {
-      socket.on('error', () => {
+      socket.on('error', (): void => {
         // this is how `ws` handles socket error
         socket.destroy();
       });
@@ -67,7 +67,7 @@ export class WebSocketServer {
           req
         };
 
-        this.options.verifyClient(info, (verified?: boolean, code?: number, message?: string) => {
+        this.options.verifyClient(info, (verified?: boolean, code?: number, message?: string): void => {
           if (!verified) {
             return this.abortConnection(socket, code || 401, message || 'Client verification failed');
           }
@@ -80,7 +80,7 @@ export class WebSocketServer {
     }));
 
     if (this.options.port && !this.options.server) {
-      this.httpServer.on('error', (err: Error) => {
+      this.httpServer.on('error', (err: Error): void => {
         // listen on http server error only if server has been
         // created by cws, in case if server passed from the
         // user than user is responsible for listening for 'error' event
@@ -162,7 +162,7 @@ export class WebSocketServer {
       this.serverGroup = null;
     }
 
-    setTimeout(() => {
+    setTimeout((): void => {
       this.registeredEvents['close']();
       cb();
     }, 0);
@@ -183,13 +183,14 @@ export class WebSocketServer {
       }
     } else {
       const socketAsAny: any = socket as any;
-      const sslState: any = socketAsAny.ssl ? native.getSSLContext(socketAsAny.ssl) : null;
       const socketHandle: any = socketAsAny.ssl ? socketAsAny._parent._handle : socketAsAny._handle;
 
       if (socketHandle && secKey && secKey.length === 24) {
+        const sslState: any = socketAsAny.ssl ? native.getSSLContext(socketAsAny.ssl) : null;
+
         socket.setNoDelay(this.options.noDelay === false ? false : true);
         const ticket: any = native.transfer(socketHandle.fd === -1 ? socketHandle : socketHandle.fd, sslState);
-        socket.on('close', () => {
+        socket.on('close', (): void => {
           if (this.serverGroup) {
             this.upgradeCb = cb;
             this.upgradeReq = req;
