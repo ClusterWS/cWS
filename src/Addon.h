@@ -43,7 +43,7 @@ public:
 // Fix windows not resolved symbol issue
 #if defined(_MSC_VER)
   #if NODE_MAJOR_VERSION>10
-    NO_RETURN void node::Assert(const node::AssertionInfo& info) {
+    [[noreturn]] void node::Assert(const node::AssertionInfo& info) {
       char name[1024];
       char title[1024] = "Node.js";
       uv_get_process_title(title, sizeof(title));
@@ -53,7 +53,7 @@ public:
       ABORT_NO_BACKTRACE();
     }
   #else
-    NO_RETURN void node::Assert(const char* const (*args)[4]) {
+    [[noreturn]] void node::Assert(const char* const (*args)[4]) {
       auto filename = (*args)[0];
       auto linenum = (*args)[1];
       auto message = (*args)[2];
