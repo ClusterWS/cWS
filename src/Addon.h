@@ -8,8 +8,21 @@
 #if NODE_MAJOR_VERSION>=10
 #define NODE_WANT_INTERNALS 1
 
-#include <base_object.h>
-#include <tls_wrap.h>
+#if NODE_MAJOR_VERSION==10
+  #include "headers/10/tls_wrap.h"
+#endif
+
+#if NODE_MAJOR_VERSION==11
+  #include "headers/11/tls_wrap.h"
+#endif
+
+#if NODE_MAJOR_VERSION==12
+  #include "headers/12/tls_wrap.h"
+#endif
+
+#if NODE_MAJOR_VERSION==13
+  #include "headers/13/tls_wrap.h"
+#endif
 
 using BaseObject = node::BaseObject;
 using TLSWrap = node::TLSWrap;
