@@ -1,3 +1,8 @@
+## Released 1.3.0
+
+**Improvement**
+* Add SSL support to node 10,11,12,13 (outstanding issue with node 13.9.0 use 13.8.0 instead)
+
 ## Released 1.2.0
 
 **Improvement**

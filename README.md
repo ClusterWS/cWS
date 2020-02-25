@@ -22,8 +22,7 @@ If you appreciate my work consider becoming a [Patron on Patreon](https://www.pa
 
 * This repository is a fork of [uWebSockets v0.14](https://github.com/uNetworking/uWebSockets/tree/v0.14) therefore has two licence [MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE).
 
-* CWS has issue with ssl on Node 13.9.0 (use Node 13.8.0 till that is fixed)
-
+* CWS has issue with ssl on Node 13.9.0 (use Node 13.8.0 till that issue is fixed)
 
 ## Documentation
 For some examples check [./examples](https://github.com/ClusterWS/cWS/tree/master/examples) dir.
@@ -254,7 +253,7 @@ server.on('upgrade', (request, socket, head) => {
 **For more information check typings (`*.d.ts`) files in [dist](https://github.com/ClusterWS/cWS/blob/master/dist) folder**
 
 ### Secure WebSocket
-You can use `wss://` with `cws` by passing https server to `cws` and passing `secureProtocol` to https options:
+You can use `wss://` with `cws` by providing `https` server to `cws` with `secureProtocol` in https options:
 
 ```js
 const { readFileSync } = require('fs');
