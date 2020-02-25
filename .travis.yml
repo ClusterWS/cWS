@@ -9,7 +9,7 @@ node_js:
   - "10"
   - "11"
   - "12"
-  - "13"
+  - "13.8.0"
 install: npm install --ignore-scripts
 before_script:
   - npm run build-ts
