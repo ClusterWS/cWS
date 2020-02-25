@@ -276,6 +276,8 @@ server.listen(port, () => {
 })
 ```
 
+**For more detail example check [examples](https://github.com/ClusterWS/cWS/blob/master/examples) folder**
+
 ### Handle App Level Ping In Browser (example)
 Handling custom App level `ping`, `pong` from the client side which does not have `onping` and `onpong` listeners available such as browsers.
 
