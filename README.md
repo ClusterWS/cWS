@@ -22,7 +22,8 @@ If you appreciate my work consider becoming a [Patron on Patreon](https://www.pa
 
 * This repository is a fork of [uWebSockets v0.14](https://github.com/uNetworking/uWebSockets/tree/v0.14) therefore has two licence [MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE).
 
-* From release 0.17 SSL support has been removed for Node.js 10+ please use proxy like nginx if you require secure connection (more work will be done later).
+* CWS has issue with ssl on Node 13.9.0 (use Node 13.8.0 till that is fixed)
+
 
 ## Documentation
 For some examples check [./examples](https://github.com/ClusterWS/cWS/tree/master/examples) dir.
@@ -251,6 +252,30 @@ server.on('upgrade', (request, socket, head) => {
 ```
 
 **For more information check typings (`*.d.ts`) files in [dist](https://github.com/ClusterWS/cWS/blob/master/dist) folder**
+
+### Secure WebSocket
+You can use `wss://` with `cws` by passing https server to `cws` and passing `secureProtocol` to https options:
+
+```js
+const { readFileSync } = require('fs');
+const { createServer }  = require('https');
+const { WebSocket, secureProtocol  } = require('@clusterws/cws');
+
+const options = {
+  key: readFileSync(/** path to key */),
+  cert: readFileSync(/** path to certificate */),
+  // ...other options
+  secureProtocol
+};
+
+const server = createServer(options);
+const wsServer = new WebSocket.Server({ server });
+// your secure ws is ready (do your usual things)
+
+server.listen(port, () => {
+  console.log('Server is running');
+})
+```
 
 ### Handle App Level Ping In Browser (example)
 Handling custom App level `ping`, `pong` from the client side which does not have `onping` and `onpong` listeners available such as browsers.

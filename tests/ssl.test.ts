@@ -7,8 +7,8 @@ describe('SSL Server & Client', (): void => {
   it('Should accept connection correctly and send/receive message', (done: any): void => {
     const sendMessage: string = 'Hello world';
     const options: any = {
-      key: readFileSync('./tests/serts/key.pem'),
-      cert: readFileSync('./tests/serts/certificate.pem'),
+      key: readFileSync('./tests/certs/key.pem'),
+      cert: readFileSync('./tests/certs/certificate.pem'),
       secureProtocol
     };
 
