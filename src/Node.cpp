@@ -61,8 +61,6 @@ Node::Node(int recvLength, int prePadding, int postPadding, bool useDefaultLoop)
     #else
         // If we're compiling against OpenSSL 1.1.0, use TLS instead of SSLv23
         nodeData->clientContext = SSL_CTX_new(TLS_method());
-        SSL_CTX_set_min_proto_version(nodeData->clientContext, TLS1_VERSION);
-        SSL_CTX_set_max_proto_version(nodeData->clientContext, TLS1_2_VERSION);
     #endif
 }
 
