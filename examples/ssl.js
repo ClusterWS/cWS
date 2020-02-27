@@ -1,7 +1,7 @@
 /// Simple example of using ssl with cws (you main need to adjust imports and key, cert files based on your env)
+const { WebSocket } = require('../dist');
 const { readFileSync } = require('fs');
 const { createServer } = require('https');
-const { WebSocket, secureProtocol } = require('../dist');
 
 const htmlFile = `
 <html>
@@ -21,8 +21,7 @@ const htmlFile = `
 
 const options = {
   key: readFileSync('./tests/certs/key.pem'),
-  cert: readFileSync('./tests/certs/certificate.pem'),
-  secureProtocol
+  cert: readFileSync('./tests/certs/certificate.pem')
 };
 
 const server = createServer(options, (req, res) => {

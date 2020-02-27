@@ -27,7 +27,5 @@ export type ServerConfigs = {
   verifyClient?: (info: ConnectionInfo, next: VerifyClientNext) => void
 };
 
-export const secureProtocol: string = 'TLSv1_2_method';
-
 export { WebSocket } from './client';
 export { WebSocketServer } from './server';

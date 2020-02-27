@@ -25,6 +25,5 @@ export declare type ServerConfigs = {
     };
     verifyClient?: (info: ConnectionInfo, next: VerifyClientNext) => void;
 };
-export declare const secureProtocol: string;
 export { WebSocket } from './client';
 export { WebSocketServer } from './server';

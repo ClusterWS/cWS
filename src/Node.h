@@ -122,6 +122,7 @@ public:
 
         socket->setCb(connect_cb<C>);
         socket->start(loop, socket, socket->setPoll(UV_WRITABLE));
+
         return socket;
     }
 
