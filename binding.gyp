@@ -9,7 +9,7 @@
                 'src/Group.cpp',
                 'src/Networking.cpp',
                 'src/Hub.cpp',
-                'src/Node.cpp',
+                'src/cSNode.cpp',
                 'src/WebSocket.cpp',
                 'src/HTTPSocket.cpp',
                 'src/Socket.cpp'

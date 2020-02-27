@@ -2,7 +2,7 @@
 #define HUB_CWS_H
 
 #include "Group.h"
-#include "Node.h"
+#include "cSNode.h"
 #include <string>
 #include <zlib.h>
 #include <mutex>

@@ -1,5 +1,5 @@
 #include <node.h>
-#include "Node.h"
+#include "cSNode.h"
 
 namespace cS {
 
