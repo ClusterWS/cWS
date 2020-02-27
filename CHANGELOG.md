@@ -1,3 +1,8 @@
+## Released 1.3.1
+
+**Improvement**
+* Remove `secureProtocol` from required options on ssl
+
 ## Released 1.3.0
 
 **Improvement**
