@@ -1,14 +1,15 @@
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import { createServer } from 'https';
-import { WebSocket } from '../dist';
+import { WebSocket, secureProtocol } from '../dist';
 
 describe('SSL Server & Client', (): void => {
   it('Should accept connection correctly and send/receive message', (done: any): void => {
     const sendMessage: string = 'Hello world';
     const options: any = {
       key: readFileSync('./tests/certs/key.pem'),
-      cert: readFileSync('./tests/certs/certificate.pem')
+      cert: readFileSync('./tests/certs/certificate.pem'),
+      secureProtocol
     };
 
     const server: any = createServer(options);

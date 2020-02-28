@@ -52,14 +52,14 @@ class WebSocket {
     }
     on(event, listener) {
         if (this.registeredEvents[event] === undefined) {
-            console.log(`Attempt to set unsupported event listener '${event}'`);
+            console.warn(`cWS does not support '${event}' event`);
             return;
         }
         if (typeof listener !== 'function') {
             throw new Error(`Listener for '${event}' event must be a function`);
         }
         if (this.registeredEvents[event] !== shared_1.noop) {
-            throw new Error(`Can not set listener for '${event}' event twice`);
+            console.warn(`cWS does not support multiple listeners for the same event. Old listener for '${event}' event will be overwritten`);
         }
         this.registeredEvents[event] = listener;
     }

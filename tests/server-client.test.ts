@@ -207,11 +207,6 @@ describe('Server & Client', () => {
 
   it('Correctly validate listener', (done: any) => {
     expect(() => {
-      this.wsServer.on('connection', (connection: WebSocket) => { /** */ });
-      this.wsServer.on('connection', (connection: WebSocket) => { /** */ });
-    }).to.throw(`Can not set listener for 'connection' event twice`);
-
-    expect(() => {
       this.wsServer.on('connection', '');
     }).to.throw(`Listener for 'connection' event must be a function`);
 
@@ -229,11 +224,6 @@ describe('Server & Client', () => {
       socket.on('open', '');
     }).to.throw(`Listener for 'open' event must be a function`);
 
-    expect(() => {
-      const socket: any = new WebSocket('ws://localhost:3000');
-      socket.on('open', () => { /** */ });
-      socket.on('open', () => { /** */ });
-    }).to.throw(`Can not set listener for 'open' event twice`);
 
     expect(() => {
       let socket: any = new WebSocket('ws://localhost:3000');

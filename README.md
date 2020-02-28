@@ -253,16 +253,17 @@ server.on('upgrade', (request, socket, head) => {
 **For more information check typings (`*.d.ts`) files in [dist](https://github.com/ClusterWS/cWS/blob/master/dist) folder**
 
 ### Secure WebSocket
-You can use `wss://` with `cws` by providing `https` server to `cws`:
+You can use `wss://` with `cws` by providing `https` server to `cws` and setting `secureProtocol` on https options:
 
 ```js
 const { readFileSync } = require('fs');
 const { createServer }  = require('https');
-const { WebSocket  } = require('@clusterws/cws');
+const { WebSocket, secureProtocol  } = require('@clusterws/cws');
 
 const options = {
   key: readFileSync(/** path to key */),
   cert: readFileSync(/** path to certificate */),
+  secureProtocol
   // ...other Node HTTPS options
 };
 

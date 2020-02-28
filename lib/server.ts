@@ -108,7 +108,7 @@ export class WebSocketServer {
   public on(event: 'connection', listener: (socket: WebSocket) => void): void;
   public on(event: string, listener: (...args: any[]) => void): void {
     if (this.registeredEvents[event] === undefined) {
-      console.log(`Attempt to set unsupported event listener '${event}'`);
+      console.warn(`cWS does not support '${event}' event`);
       return;
     }
 
@@ -117,7 +117,7 @@ export class WebSocketServer {
     }
 
     if (this.registeredEvents[event] !== noop) {
-      throw new Error(`Can not set listener for '${event}' event twice`);
+      console.warn(`cWS does not support multiple listeners for the same event. Old listener for '${event}' event will be overwritten`);
     }
 
     this.registeredEvents[event] = listener;
