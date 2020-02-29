@@ -1,3 +1,9 @@
+## Released 1.4.0
+
+**Changes**
+* Return `secureProtocol` to docs (stick with tls 1.2)
+* Downgrade multiple listeners error to warning (allow listeners overwrite)
+
 ## Released 1.3.1
 
 **Improvement**
