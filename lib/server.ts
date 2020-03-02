@@ -197,9 +197,11 @@ export class WebSocketServer {
             native.upgrade(this.serverGroup, ticket, secKey, req.headers['sec-websocket-extensions'], req.headers['sec-websocket-protocol']);
           }
         });
-      }
 
-      socket.destroy();
+        socket.destroy();
+      } else {
+        return this.abortConnection(socket, 400, 'Bad Request');
+      }
     }
   }
 }
