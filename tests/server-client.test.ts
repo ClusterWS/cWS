@@ -125,7 +125,7 @@ async function createWSServer(ssl: boolean, server?: Server | HttpsServer): Prom
             },
             withCodeAndReason: {
               code: 3001,
-              reason: ''
+              reason: 'Custom Reason'
             },
             default: {
               code: 1000,
@@ -156,6 +156,71 @@ async function createWSServer(ssl: boolean, server?: Server | HttpsServer): Prom
 
               connection.on('open', (): void => {
                 connection.send(key);
+              });
+            }));
+          }
+
+          Promise.all(allPassed).then((): void => {
+            wsServer.close((): void => {
+              done();
+            });
+          });
+        });
+    });
+
+
+    it('Should close connection with correct code & reason (Client)', (done: () => void): void => {
+      createWSServer(isSSL)
+        .then((wsServer: WebSocketServer): void => {
+          const conditions: any = {
+            withCode: {
+              code: 3455,
+              reason: ''
+            },
+            withCodeAndReason: {
+              code: 3455,
+              reason: 'Custom Reason'
+            },
+            default: {
+              code: 1000,
+              reason: ''
+            }
+          };
+
+          wsServer.on('connection', (socket: WebSocket): void => {
+            let expectedCode: number = conditions.default.code;
+            let expectedReason: string = conditions.default.reason;
+
+            socket.on('message', (msg: string): void => {
+              if (msg) {
+                expectedCode = JSON.parse(msg).code;
+                expectedReason = JSON.parse(msg).reason;
+              }
+            });
+
+            socket.on('close', (code?: number, reason?: string): void => {
+              expect(code).to.eql(expectedCode);
+              expect(reason).to.eql(expectedReason);
+            });
+          });
+
+          const allPassed: Promise<any>[] = [];
+          for (const key in conditions) {
+            allPassed.push(new Promise((res: any): void => {
+              const condition: any = conditions[key];
+              const connection: WebSocket = new WebSocket(connectionUrl);
+
+              connection.on('close', (code?: number, reason?: string): void => {
+                setTimeout((): void => res(), 10);
+              });
+
+              connection.on('open', (): void => {
+                if (key === 'default') {
+                  return connection.close();
+                }
+
+                connection.send(JSON.stringify(condition));
+                setTimeout((): void => connection.close(condition.code, condition.reason), 10);
               });
             }));
           }
