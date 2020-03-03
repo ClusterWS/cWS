@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { createServer, Server } from 'http';
 import { createServer as createServerHttps, Server as HttpsServer } from 'https';
 
-import { WebSocket, WebSocketServer, secureProtocol } from '../dist';
+import { WebSocket, WebSocketServer, secureProtocol } from '../lib';
 
 const serverPort: number = 3000;
 const secureServerPort: number = 3001;
