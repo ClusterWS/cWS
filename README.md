@@ -1,31 +1,41 @@
 <h1 align="center">ClusterWS/cWS</h1>
-<h6 align="center">Fast C++ WebSocket implementation for Node.js</h6>
+<h6 align="center">Fast WebSocket implementation for Node.js</h6>
 
-<p align="center">
+<!-- <p align="center">
  <img src="https://cdn.rawgit.com/goriunov/159120ca6a883d8d4e75543ec395d361/raw/d22028ecc726d7d3cc30a2a85cc7cc454b0afada/clusterws.svg" width="450">
-</p>
+</p> -->
 
-<p align="center">
+<!-- <p align="center">
+  <i>Fast WebSocket implementation for Node.js</i>
   <i>Fork of uWebSockets v0.14 with some tweaks in C++ code and complete rewrite from JavaScript to TypeScript. Original software is available in <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets v0.14</a> repository.</i>
-</p>
+</p> -->
 
 <p align="center">
   <a href="https://badge.fury.io/js/%40clusterws%2Fcws"><img src="https://badge.fury.io/js/%40clusterws%2Fcws.svg" alt="npm version" height="22"></a>
    <a href="https://travis-ci.org/ClusterWS/cWS"><img src="https://travis-ci.org/ClusterWS/cWS.svg?branch=master" alt="travis build" height="22"></a>
 </p>
 
-If you appreciate my work consider becoming a [Patron on Patreon](https://www.patreon.com/clusterws) or supporting me through [PayPal](https://www.paypal.me/goriunov)
 
 ## Important Notes
 
-* [CHANGELOG.md](./CHANGELOG.md) mostly includes braking changes
-
-* This repository is a fork of [uWebSockets v0.14](https://github.com/uNetworking/uWebSockets/tree/v0.14) therefore has two licence [MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE).
-
-* CWS has issue with ssl on Node 13.9.0 (use Node 13.8.0 till that issue is fixed)
+* This repository is a fork of [uWebSockets v0.14](https://github.com/uNetworking/uWebSockets/tree/v0.14) therefore has two licence [MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE)
+* You can support me through [Patreon](https://www.patreon.com/clusterws) and [PayPal](https://www.paypal.me/goriunov)
+* If you use Node 13 cWS has issue with [Secure WebSocket](#user-content-secure-websocket) on Node 13.9 and Node 13.10 (use Node 13.8 till that issue is fixed)
 
 ## Documentation
-For some examples check [./examples](https://github.com/ClusterWS/cWS/tree/master/examples) dir.
+
+#### Useful links
+
+* [Examples](./examples)
+* [Changelog](./CHANGELOG.md)
+
+#### Table of Contents
+
+* [Installation](#user-content-installation)
+* [Websocket Client](#user-content-websocket-client)
+* [Websocket Server](#user-content-websocket-server)
+* [Secure WebSocket](#user-content-secure-websocket)
+* [Handle App Level Ping In Browser (example)](#user-content-handle-app-level-ping-in-browser-example)
 
 ### Installation
 

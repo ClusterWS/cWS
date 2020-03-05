@@ -21,3 +21,5 @@ script:
   - npm run clean
   - npm run build-cpp
   - npm test
+  - npm install codecov -g
+  - codecov -f coverage/coverage-final.json

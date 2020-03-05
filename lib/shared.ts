@@ -14,7 +14,7 @@ export const DEFAULT_PAYLOAD_LIMIT: number = 16777216;
 
 export const native: any = ((): NodeRequire => {
   try {
-    return require(`./bindings/cws_${process.platform}_${process.versions.modules}`);
+    return require(`../dist/bindings/cws_${process.platform}_${process.versions.modules}`);
   } catch (err) {
     err.message = err.message + ` check './node_modules/@clusterws/cws/build_log.txt' for post install build logs`;
     throw err;

@@ -5,8 +5,8 @@
   "types": "./dist/index.d.ts",
   "description": "cWS - fast C++ WebSocket implementation for Node.js",
   "scripts": {
-    "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "test": "mocha -r ts-node/register './tests/**/*.test.ts' --exit",
+    "lint": "tslint -c tslint.json 'lib/**/*.ts'",
+    "test": "nyc mocha './tests/**/*.test.ts' --exit",
     "clean": "rimraf dist/bindings/*",
     "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
     "build-ts": "rimraf dist/*.js && rimraf dist/*.ts && npm run lint && tsc",
@@ -35,8 +35,27 @@
     "mocha": "^7.0.1",
     "rimraf": "^3.0.2",
     "ts-node": "^8.6.2",
+    "nyc": "^15.0.0",
     "tslint": "^6.0.0",
     "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.8.2"
+  },
+  "nyc": {
+    "all": true,
+    "temp-directory": "./node_modules/.cache/nyc_output",
+    "include": [
+      "lib/**/*.ts",
+      "tests/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "json",
+      "html"
+    ]
   }
 }
