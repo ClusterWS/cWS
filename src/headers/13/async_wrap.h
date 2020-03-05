@@ -134,6 +134,13 @@ class AsyncWrap : public BaseObject {
   static void GetAsyncId(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void PushAsyncIds(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void PopAsyncIds(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // Those necessary for Node 13.9+
+  #if NODE_MINOR_VERSION >= 9 
+    static void PushAsyncContext(const v8::FunctionCallbackInfo<v8::Value>& args);
+    static void PopAsyncContext(const v8::FunctionCallbackInfo<v8::Value>& args);
+  #endif
+
   static void AsyncReset(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GetProviderType(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void QueueDestroyAsyncId(
@@ -201,19 +208,29 @@ class AsyncWrap : public BaseObject {
 
   bool IsDoneInitializing() const override;
 
+  // This necessary for Node 13.9+
+  #if NODE_MINOR_VERSION >= 9 
+    v8::Local<v8::Object> GetResource();
+  #endif
+
  private:
   friend class PromiseWrap;
 
-  AsyncWrap(Environment* env,
-            v8::Local<v8::Object> promise,
-            ProviderType provider,
-            double execution_async_id,
-            bool silent);
-  ProviderType provider_type_ = PROVIDER_NONE;
-  bool init_hook_ran_ = false;
-  // Because the values may be Reset(), cannot be made const.
-  double async_id_ = kInvalidAsyncId;
-  double trigger_async_id_;
+    AsyncWrap(Environment* env,
+              v8::Local<v8::Object> promise,
+              ProviderType provider,
+              double execution_async_id,
+              bool silent);
+    ProviderType provider_type_ = PROVIDER_NONE;
+    bool init_hook_ran_ = false;
+    // Because the values may be Reset(), cannot be made const.
+    double async_id_ = kInvalidAsyncId;
+    double trigger_async_id_;
+
+    // This necessary for Node 13.9+
+    #if NODE_MINOR_VERSION >= 9 
+      v8::Global<v8::Object> resource_;
+    #endif
 };
 
 }  // namespace node
