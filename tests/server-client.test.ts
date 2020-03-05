@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { connect } from 'net';
 import { readFileSync } from 'fs';
+import { connect as tlsConnect } from 'tls';
 import { createServer, Server } from 'http';
 import { createServer as createServerHttps, Server as HttpsServer } from 'https';
 
@@ -226,6 +227,62 @@ async function createWSServer(ssl: boolean, server?: Server | HttpsServer): Prom
           }
 
           Promise.all(allPassed).then((): void => {
+            wsServer.close((): void => {
+              done();
+            });
+          });
+        });
+    });
+
+    it('Should "broadcast" to all connected users', (done: () => void): void => {
+      createWSServer(isSSL)
+        .then((wsServer: WebSocketServer): void => {
+          let clientsReceivedMessage: number = 0;
+          const messageToBroadcast: string = 'Super message';
+
+          setTimeout((): void => {
+            wsServer.broadcast(messageToBroadcast);
+            setTimeout((): void => {
+              expect(clientsReceivedMessage).to.be.eql(2);
+              wsServer.close((): void => {
+                done();
+              });
+            }, 10);
+          }, 50);
+
+          const connection1: WebSocket = new WebSocket(connectionUrl);
+          const connection2: WebSocket = new WebSocket(connectionUrl);
+
+          connection1.on('message', (msg: string): void => {
+            expect(msg).to.be.eql(messageToBroadcast);
+            clientsReceivedMessage++;
+          });
+
+          connection2.on('message', (msg: string): void => {
+            expect(msg).to.be.eql(messageToBroadcast);
+            clientsReceivedMessage++;
+          });
+        });
+    });
+
+    it('Should abort request on invalid Sec-WebSocket-Key header', (done: () => void): void => {
+      createWSServer(isSSL)
+        .then((wsServer: WebSocketServer): void => {
+          const host: string = connectionUrl.replace('//', '').split(':')[1];
+          const port: number = parseInt(connectionUrl.replace('//', '').split(':')[2], 10);
+          const connectMethod: any = isSSL ? tlsConnect : connect;
+
+          let response: string = '';
+          const connection: any = connectMethod(port, host, { rejectUnauthorized: false }, (): void => {
+            connection.write(`GET / HTTP/1.0\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-Websocket-Key: invalid\r\nSec-Websocket-Version: 13\r\n\r\n`);
+          });
+
+          connection.on('data', (data: Buffer): void => {
+            response += data.toString();
+          });
+
+          connection.on('close', (): void => {
+            expect(response).to.be.eql('HTTP/1.1 400 Bad Request\r\n\r\n');
             wsServer.close((): void => {
               done();
             });
