@@ -1,3 +1,9 @@
+## Released 1.5.0
+
+**Changes**
+* Fix SSL support on Node 13.9+ https://github.com/ClusterWS/cWS/pull/37
+* Abort connection on invalid Sec-WebSocket-Key header https://github.com/ClusterWS/cWS/pull/35
+
 ## Released 1.4.0
 
 **Changes**
