@@ -20,7 +20,6 @@
 
 * This repository is a fork of [uWebSockets v0.14](https://github.com/uNetworking/uWebSockets/tree/v0.14) therefore has two licence [MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE)
 * You can support me through [Patreon](https://www.patreon.com/clusterws) and [PayPal](https://www.paypal.me/goriunov)
-* If you use Node 13 cWS has issue with [Secure WebSocket](#user-content-secure-websocket) on Node 13.9 and Node 13.10 (use Node 13.8 till that issue is fixed)
 
 ## Documentation
 
