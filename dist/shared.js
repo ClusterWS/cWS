@@ -54,13 +54,7 @@ function setupNative(group, type, wsServer) {
     exports.native[type].group.onDisconnection(group, (newExternal, code, message, webSocket) => {
         webSocket.external = null;
         process.nextTick(() => {
-            if (!code) {
-                webSocket.registeredEvents['error']({
-                    message: 'cWs invalid status code or invalid UTF-8 sequence',
-                    stack: 'cWs invalid status code or invalid UTF-8 sequence'
-                });
-            }
-            webSocket.registeredEvents['close'](code || 1006, message || '');
+            webSocket.registeredEvents['close'](code || 1005, message || '');
         });
         exports.native.clearUserData(newExternal);
     });

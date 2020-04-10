@@ -68,15 +68,7 @@ export function setupNative(group: any, type: string, wsServer?: WebSocketServer
     (webSocket as any).external = null;
 
     process.nextTick((): void => {
-      if (!code) {
-        // if no code provided it is 100% error in parsing or in code
-        webSocket.registeredEvents['error']({
-          message: 'cWs invalid status code or invalid UTF-8 sequence',
-          stack: 'cWs invalid status code or invalid UTF-8 sequence'
-        });
-      }
-
-      webSocket.registeredEvents['close'](code || 1006, message || '');
+      webSocket.registeredEvents['close'](code || 1005, message || '');
     });
 
     native.clearUserData(newExternal);

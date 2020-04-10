@@ -1,3 +1,11 @@
+## Released 1.6.0
+
+**Changes**
+* If no close code provided from client return `1005` (similar to ws.js module)
+
+**Bugs**
+* Fix [invalid UTF-8 sequence bug](https://github.com/ClusterWS/cWS/issues/39)
+
 ## Released 1.5.0
 
 **Changes**
