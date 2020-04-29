@@ -7,6 +7,7 @@ VER_64 := v10.18.0
 VER_67 := v11.15.0
 VER_72 := v12.14.0
 VER_79 := v13.10.1
+VER_83 := v14.1.0
 
 # this is temporary support for Node 13.8 and lower (will be removed when more Node versions come)
 VER_79_8 := v13.8.0
@@ -19,6 +20,7 @@ default:
 	NODE=targets/node-$(VER_67) ABI=67 make `(uname -s)`
 	NODE=targets/node-$(VER_72) ABI=72 make `(uname -s)`
 	NODE=targets/node-$(VER_79) ABI=79 make `(uname -s)`
+	NODE=targets/node-$(VER_83) ABI=83 make `(uname -s)`
 	# this is temporary support for Node 13.8 and lower (will be removed when more Node versions come)
 	NODE=targets/node-$(VER_79_8) ABI=79_8 make `(uname -s)`
 	for f in dist/bindings/*.node; do chmod +x $$f; done
@@ -30,6 +32,7 @@ targets:
 	curl https://nodejs.org/dist/$(VER_67)/node-$(VER_67)-headers.tar.gz | tar xz -C targets
 	curl https://nodejs.org/dist/$(VER_72)/node-$(VER_72)-headers.tar.gz | tar xz -C targets
 	curl https://nodejs.org/dist/$(VER_79)/node-$(VER_79)-headers.tar.gz | tar xz -C targets
+	curl https://nodejs.org/dist/$(VER_83)/node-$(VER_83)-headers.tar.gz | tar xz -C targets
 	
 	# this is temporary support for Node 13.8 and lower (will be removed when more Node versions come)
 	curl https://nodejs.org/dist/$(VER_79_8)/node-$(VER_79_8)-headers.tar.gz | tar xz -C targets

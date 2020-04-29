@@ -24,6 +24,10 @@
   #include "headers/13/tls_wrap.h"
 #endif
 
+#if NODE_MAJOR_VERSION==14
+  #include "headers/14/tls_wrap.h"
+#endif
+
 using BaseObject = node::BaseObject;
 using TLSWrap = node::TLSWrap;
 class TLSWrapSSLGetter : public node::TLSWrap {
