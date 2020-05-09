@@ -82,11 +82,15 @@ typedef enum {
   napi_date_expected,
   napi_arraybuffer_expected,
   napi_detachable_arraybuffer_expected,
+  napi_would_deadlock
 } napi_status;
 // Note: when adding a new enum value to `napi_status`, please also update
-// `const int last_status` in `napi_get_last_error_info()' definition,
-// in file js_native_api_v8.cc. Please also update the definition of
-// `napi_status` in doc/api/n-api.md to reflect the newly added value(s).
+//   * `const int last_status` in the definition of `napi_get_last_error_info()'
+//     in file js_native_api_v8.cc.
+//   * `const char* error_messages[]` in file js_native_api_v8.cc with a brief
+//     message explaining the error.
+//   * the definition of `napi_status` in doc/api/n-api.md to reflect the newly
+//     added value(s).
 
 typedef napi_value (*napi_callback)(napi_env env,
                                     napi_callback_info info);
@@ -115,7 +119,7 @@ typedef struct {
   napi_status error_code;
 } napi_extended_error_info;
 
-#ifdef NAPI_EXPERIMENTAL
+#if NAPI_VERSION >= 6
 typedef enum {
   napi_key_include_prototypes,
   napi_key_own_only
@@ -134,6 +138,6 @@ typedef enum {
   napi_key_keep_numbers,
   napi_key_numbers_to_strings
 } napi_key_conversion;
-#endif
+#endif  // NAPI_VERSION >= 6
 
 #endif  // SRC_JS_NATIVE_API_TYPES_H_

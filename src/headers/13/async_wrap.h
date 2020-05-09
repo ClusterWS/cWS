@@ -68,7 +68,9 @@ namespace node {
   V(TTYWRAP)                                                                  \
   V(UDPSENDWRAP)                                                              \
   V(UDPWRAP)                                                                  \
+  V(SIGINTWATCHDOG)                                                           \
   V(WORKER)                                                                   \
+  V(WORKERHEAPSNAPSHOT)                                                       \
   V(WRITEWRAP)                                                                \
   V(ZLIB)
 
@@ -132,15 +134,8 @@ class AsyncWrap : public BaseObject {
                          void* priv);
 
   static void GetAsyncId(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void PushAsyncIds(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void PopAsyncIds(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Those necessary for Node 13.9+
-  #if NODE_MINOR_VERSION >= 9 
-    static void PushAsyncContext(const v8::FunctionCallbackInfo<v8::Value>& args);
-    static void PopAsyncContext(const v8::FunctionCallbackInfo<v8::Value>& args);
-  #endif
-
+  static void PushAsyncContext(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void PopAsyncContext(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void AsyncReset(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GetProviderType(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void QueueDestroyAsyncId(
@@ -175,9 +170,6 @@ class AsyncWrap : public BaseObject {
                   double execution_async_id = kInvalidAsyncId,
                   bool silent = false);
 
-  void AsyncReset(double execution_async_id = kInvalidAsyncId,
-                  bool silent = false);
-
   // Only call these within a valid HandleScope.
   v8::MaybeLocal<v8::Value> MakeCallback(const v8::Local<v8::Function> cb,
                                          int argc,
@@ -207,30 +199,22 @@ class AsyncWrap : public BaseObject {
                                         v8::Local<v8::Object> obj);
 
   bool IsDoneInitializing() const override;
-
-  // This necessary for Node 13.9+
-  #if NODE_MINOR_VERSION >= 9 
-    v8::Local<v8::Object> GetResource();
-  #endif
+  v8::Local<v8::Object> GetResource();
 
  private:
   friend class PromiseWrap;
 
-    AsyncWrap(Environment* env,
-              v8::Local<v8::Object> promise,
-              ProviderType provider,
-              double execution_async_id,
-              bool silent);
-    ProviderType provider_type_ = PROVIDER_NONE;
-    bool init_hook_ran_ = false;
-    // Because the values may be Reset(), cannot be made const.
-    double async_id_ = kInvalidAsyncId;
-    double trigger_async_id_;
-
-    // This necessary for Node 13.9+
-    #if NODE_MINOR_VERSION >= 9 
-      v8::Global<v8::Object> resource_;
-    #endif
+  AsyncWrap(Environment* env,
+            v8::Local<v8::Object> promise,
+            ProviderType provider,
+            double execution_async_id,
+            bool silent);
+  ProviderType provider_type_ = PROVIDER_NONE;
+  bool init_hook_ran_ = false;
+  // Because the values may be Reset(), cannot be made const.
+  double async_id_ = kInvalidAsyncId;
+  double trigger_async_id_;
+  v8::Global<v8::Object> resource_;
 };
 
 }  // namespace node

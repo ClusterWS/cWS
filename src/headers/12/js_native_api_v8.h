@@ -8,6 +8,49 @@
 
 static napi_status napi_clear_last_error(napi_env env);
 
+namespace v8impl {
+
+class RefTracker {
+ public:
+  RefTracker() {}
+  virtual ~RefTracker() {}
+  virtual void Finalize(bool isEnvTeardown) {}
+
+  typedef RefTracker RefList;
+
+  inline void Link(RefList* list) {
+    prev_ = list;
+    next_ = list->next_;
+    if (next_ != nullptr) {
+      next_->prev_ = this;
+    }
+    list->next_ = this;
+  }
+
+  inline void Unlink() {
+    if (prev_ != nullptr) {
+      prev_->next_ = next_;
+    }
+    if (next_ != nullptr) {
+      next_->prev_ = prev_;
+    }
+    prev_ = nullptr;
+    next_ = nullptr;
+  }
+
+  static void FinalizeAll(RefList* list) {
+    while (list->next_ != nullptr) {
+      list->next_->Finalize(true);
+    }
+  }
+
+ private:
+  RefList* next_ = nullptr;
+  RefList* prev_ = nullptr;
+};
+
+}  // end of namespace v8impl
+
 struct napi_env__ {
   explicit napi_env__(v8::Local<v8::Context> context)
       : isolate(context->GetIsolate()),
@@ -15,11 +58,13 @@ struct napi_env__ {
     CHECK_EQ(isolate, context->GetIsolate());
   }
   virtual ~napi_env__() {
-    if (instance_data.finalize_cb != nullptr) {
-      CallIntoModuleThrow([&](napi_env env) {
-        instance_data.finalize_cb(env, instance_data.data, instance_data.hint);
-      });
-    }
+    // First we must finalize those references that have `napi_finalizer`
+    // callbacks. The reason is that addons might store other references which
+    // they delete during their `napi_finalizer` callbacks. If we deleted such
+    // references here first, they would be doubly deleted when the
+    // `napi_finalizer` deleted them subsequently.
+    v8impl::RefTracker::FinalizeAll(&finalizing_reflist);
+    v8impl::RefTracker::FinalizeAll(&reflist);
   }
   v8::Isolate* const isolate;  // Shortcut for context()->GetIsolate()
   v8impl::Persistent<v8::Context> context_persistent;
@@ -32,6 +77,10 @@ struct napi_env__ {
   inline void Unref() { if ( --refs == 0) delete this; }
 
   virtual bool can_call_into_js() const { return true; }
+  virtual v8::Maybe<bool> mark_arraybuffer_as_untransferable(
+      v8::Local<v8::ArrayBuffer> ab) const {
+    return v8::Just(true);
+  }
 
   template <typename T, typename U>
   void CallIntoModule(T&& call, U&& handle_exception) {
@@ -55,15 +104,17 @@ struct napi_env__ {
   }
 
   v8impl::Persistent<v8::Value> last_exception;
+
+  // We store references in two different lists, depending on whether they have
+  // `napi_finalizer` callbacks, because we must first finalize the ones that
+  // have such a callback. See `~napi_env__()` above for details.
+  v8impl::RefTracker::RefList reflist;
+  v8impl::RefTracker::RefList finalizing_reflist;
   napi_extended_error_info last_error;
   int open_handle_scopes = 0;
   int open_callback_scopes = 0;
   int refs = 1;
-  struct {
-    void* data = nullptr;
-    void* hint = nullptr;
-    napi_finalize finalize_cb = nullptr;
-  } instance_data;
+  void* instance_data = nullptr;
 };
 
 static inline napi_status napi_clear_last_error(napi_env env) {
@@ -169,26 +220,43 @@ inline v8::Local<v8::Value> V8LocalValueFromJsValue(napi_value v) {
 
 // Adapter for napi_finalize callbacks.
 class Finalizer {
+ public:
+  // Some Finalizers are run during shutdown when the napi_env is destroyed,
+  // and some need to keep an explicit reference to the napi_env because they
+  // are run independently.
+  enum EnvReferenceMode {
+    kNoEnvReference,
+    kKeepEnvReference
+  };
+
  protected:
   Finalizer(napi_env env,
             napi_finalize finalize_callback,
             void* finalize_data,
-            void* finalize_hint)
+            void* finalize_hint,
+            EnvReferenceMode refmode = kNoEnvReference)
     : _env(env),
       _finalize_callback(finalize_callback),
       _finalize_data(finalize_data),
-      _finalize_hint(finalize_hint) {
+      _finalize_hint(finalize_hint),
+      _has_env_reference(refmode == kKeepEnvReference) {
+    if (_has_env_reference)
+      _env->Ref();
   }
 
-  ~Finalizer() = default;
+  ~Finalizer() {
+    if (_has_env_reference)
+      _env->Unref();
+  }
 
  public:
   static Finalizer* New(napi_env env,
                         napi_finalize finalize_callback = nullptr,
                         void* finalize_data = nullptr,
-                        void* finalize_hint = nullptr) {
+                        void* finalize_hint = nullptr,
+                        EnvReferenceMode refmode = kNoEnvReference) {
     return new Finalizer(
-      env, finalize_callback, finalize_data, finalize_hint);
+        env, finalize_callback, finalize_data, finalize_hint, refmode);
   }
 
   static void Delete(Finalizer* finalizer) {
@@ -201,6 +269,7 @@ class Finalizer {
   void* _finalize_data;
   void* _finalize_hint;
   bool _finalize_ran = false;
+  bool _has_env_reference = false;
 };
 
 class TryCatch : public v8::TryCatch {

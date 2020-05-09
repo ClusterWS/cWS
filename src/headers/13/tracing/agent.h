@@ -3,8 +3,8 @@
 
 #include "libplatform/v8-tracing.h"
 #include "uv.h"
-#include "../util.h"
-#include "../node_mutex.h"
+#include "util.h"
+#include "node_mutex.h"
 
 #include <list>
 #include <set>

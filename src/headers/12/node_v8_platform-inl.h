@@ -21,12 +21,12 @@ class NodeTraceStateObserver
     : public v8::TracingController::TraceStateObserver {
  public:
   inline void OnTraceEnabled() override {
-    char name_buffer[512];
-    if (uv_get_process_title(name_buffer, sizeof(name_buffer)) == 0) {
+    std::string title = GetProcessTitle("");
+    if (!title.empty()) {
       // Only emit the metadata event if the title can be retrieved
       // successfully. Ignore it otherwise.
       TRACE_EVENT_METADATA1(
-          "__metadata", "process_name", "name", TRACE_STR_COPY(name_buffer));
+          "__metadata", "process_name", "name", TRACE_STR_COPY(title.c_str()));
     }
     TRACE_EVENT_METADATA1("__metadata",
                           "version",
@@ -113,10 +113,6 @@ struct V8Platform {
     platform_->DrainTasks(isolate);
   }
 
-  inline void CancelVMTasks(v8::Isolate* isolate) {
-    platform_->CancelPendingDelayedTasks(isolate);
-  }
-
   inline void StartTracingAgent() {
     // Attach a new NodeTraceWriter only if this function hasn't been called
     // before.
@@ -150,7 +146,6 @@ struct V8Platform {
   inline void Initialize(int thread_pool_size) {}
   inline void Dispose() {}
   inline void DrainVMTasks(v8::Isolate* isolate) {}
-  inline void CancelVMTasks(v8::Isolate* isolate) {}
   inline void StartTracingAgent() {
     if (!per_process::cli_options->trace_event_categories.empty()) {
       fprintf(stderr,

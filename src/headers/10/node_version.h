@@ -23,13 +23,13 @@
 #define SRC_NODE_VERSION_H_
 
 #define NODE_MAJOR_VERSION 10
-#define NODE_MINOR_VERSION 16
-#define NODE_PATCH_VERSION 3
+#define NODE_MINOR_VERSION 20
+#define NODE_PATCH_VERSION 2
 
 #define NODE_VERSION_IS_LTS 1
 #define NODE_VERSION_LTS_CODENAME "Dubnium"
 
-#define NODE_VERSION_IS_RELEASE 1
+#define NODE_VERSION_IS_RELEASE 0
 
 #ifndef NODE_STRINGIFY
 #define NODE_STRINGIFY(n) NODE_STRINGIFY_HELPER(n)
@@ -113,7 +113,8 @@
  */
 #define NODE_MODULE_VERSION 64
 
-// the NAPI_VERSION provided by this version of the runtime
-#define NAPI_VERSION  4
+// The NAPI_VERSION provided by this version of the runtime. This is the version
+// which the Node binary being built supports.
+#define NAPI_VERSION  6
 
 #endif  // SRC_NODE_VERSION_H_

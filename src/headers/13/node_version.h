@@ -23,13 +23,13 @@
 #define SRC_NODE_VERSION_H_
 
 #define NODE_MAJOR_VERSION 13
-#define NODE_MINOR_VERSION 7
-#define NODE_PATCH_VERSION 0
+#define NODE_MINOR_VERSION 14
+#define NODE_PATCH_VERSION 1
 
 #define NODE_VERSION_IS_LTS 0
 #define NODE_VERSION_LTS_CODENAME ""
 
-#define NODE_VERSION_IS_RELEASE 1
+#define NODE_VERSION_IS_RELEASE 0
 
 #ifndef NODE_STRINGIFY
 #define NODE_STRINGIFY(n) NODE_STRINGIFY_HELPER(n)
@@ -93,6 +93,6 @@
 
 // The NAPI_VERSION provided by this version of the runtime. This is the version
 // which the Node binary being built supports.
-#define NAPI_VERSION  5
+#define NAPI_VERSION  6
 
 #endif  // SRC_NODE_VERSION_H_

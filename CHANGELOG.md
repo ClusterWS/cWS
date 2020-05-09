@@ -1,3 +1,10 @@
+## Released 2.0.0
+
+**Changes**
+* Drop support for Node 8,9,11
+* Fix issues with latest Node 12
+* Add "Supported Node Versions" section in README
+
 ## Released 1.6.0
 
 **Changes**

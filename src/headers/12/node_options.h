@@ -100,10 +100,13 @@ class DebugOptions : public Options {
 class EnvironmentOptions : public Options {
  public:
   bool abort_on_uncaught_exception = false;
-  bool experimental_exports = false;
+  bool enable_source_maps = false;
+  bool experimental_json_modules = false;
   bool experimental_modules = false;
+  std::string experimental_specifier_resolution;
   std::string es_module_specifier_resolution;
   bool experimental_wasm_modules = false;
+  bool experimental_import_meta_resolve = false;
   std::string module_type;
   std::string experimental_policy;
   std::string experimental_policy_integrity;
@@ -118,6 +121,7 @@ class EnvironmentOptions : public Options {
   bool no_deprecation = false;
   bool no_force_async_hooks_checks = false;
   bool no_warnings = false;
+  bool force_context_aware = false;
   bool pending_deprecation = false;
   bool preserve_symlinks = false;
   bool preserve_symlinks_main = false;
@@ -135,10 +139,13 @@ class EnvironmentOptions : public Options {
   bool heap_prof = false;
 #endif  // HAVE_INSPECTOR
   std::string redirect_warnings;
+  bool test_udp_no_try_send = false;
   bool throw_deprecation = false;
   bool trace_deprecation = false;
+  bool trace_exit = false;
   bool trace_sync_io = false;
   bool trace_tls = false;
+  bool trace_uncaught = false;
   bool trace_warnings = false;
   std::string unhandled_rejections;
   std::string userland_loader;
@@ -148,9 +155,12 @@ class EnvironmentOptions : public Options {
 #ifdef NODE_REPORT
   bool experimental_report = false;
 #endif  //  NODE_REPORT
+  bool experimental_wasi = false;
   std::string eval_string;
   bool print_eval = false;
   bool force_repl = false;
+
+  bool insecure_http_parser = false;
 
   bool tls_min_v1_0 = false;
   bool tls_min_v1_1 = false;
@@ -158,13 +168,15 @@ class EnvironmentOptions : public Options {
   bool tls_min_v1_3 = false;
   bool tls_max_v1_2 = false;
   bool tls_max_v1_3 = false;
+  std::string tls_keylog;
 
   std::vector<std::string> preload_modules;
 
   std::vector<std::string> user_argv;
 
-  inline DebugOptions* get_debug_options();
-  inline const DebugOptions& debug_options() const;
+  inline DebugOptions* get_debug_options() { return &debug_options_; }
+  inline const DebugOptions& debug_options() const { return debug_options_; }
+
   void CheckOptions(std::vector<std::string>* errors) override;
 
  private:
@@ -243,11 +255,7 @@ namespace options_parser {
 HostPort SplitHostPort(const std::string& arg,
     std::vector<std::string>* errors);
 void GetOptions(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-enum OptionEnvvarSettings {
-  kAllowedInEnvironment,
-  kDisallowedInEnvironment
-};
+std::string GetBashCompletion();
 
 enum OptionType {
   kNoOp,
@@ -431,6 +439,7 @@ class OptionsParser {
   friend class OptionsParser;
 
   friend void GetOptions(const v8::FunctionCallbackInfo<v8::Value>& args);
+  friend std::string GetBashCompletion();
 };
 
 using StringVector = std::vector<std::string>;
@@ -448,6 +457,13 @@ extern Mutex cli_options_mutex;
 extern std::shared_ptr<PerProcessOptions> cli_options;
 
 }  // namespace per_process
+
+void HandleEnvOptions(std::shared_ptr<EnvironmentOptions> env_options);
+void HandleEnvOptions(std::shared_ptr<EnvironmentOptions> env_options,
+                      std::function<std::string(const char*)> opt_getter);
+
+std::vector<std::string> ParseNodeOptionsEnvVar(
+    const std::string& node_options, std::vector<std::string>* errors);
 }  // namespace node
 
 #endif  // defined(NODE_WANT_INTERNALS) && NODE_WANT_INTERNALS

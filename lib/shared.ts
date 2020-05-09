@@ -14,13 +14,6 @@ export const DEFAULT_PAYLOAD_LIMIT: number = 16777216;
 
 export const native: any = ((): NodeRequire => {
   try {
-    const [major, minor]: string[] = process.version.replace('v', '').split('.');
-
-    if (Number(major) === 13 && Number(minor) < 9) {
-      // temporary fix for node 13.8 and lower
-      return require(`../dist/bindings/cws_${process.platform}_${process.versions.modules}_8`);
-    }
-
     return require(`../dist/bindings/cws_${process.platform}_${process.versions.modules}`);
   } catch (err) {
     err.message = err.message + ` check './node_modules/@clusterws/cws/build_log.txt' for post install build logs`;

@@ -81,6 +81,10 @@ const uint32_t kOnExecute = 4;
 // Any more fields than this will be flushed into JS
 const size_t kMaxHeaderFieldsCount = 32;
 
+inline bool IsOWS(char c) {
+  return c == ' ' || c == '\t';
+}
+
 // helper class for the Parser
 struct StringPtr {
   StringPtr() {
@@ -140,10 +144,19 @@ struct StringPtr {
 
 
   Local<String> ToString(Environment* env) const {
-    if (str_)
+    if (size_ != 0)
       return OneByteString(env->isolate(), str_, size_);
     else
       return String::Empty(env->isolate());
+  }
+
+
+  // Strip trailing OWS (SPC or HTAB) from string.
+  Local<String> ToTrimmedString(Environment* env) {
+    while (size_ > 0 && IsOWS(str_[size_ - 1])) {
+      size_--;
+    }
+    return ToString(env);
   }
 
 
@@ -321,10 +334,14 @@ class Parser : public AsyncWrap, public StreamListener {
 
     argv[A_UPGRADE] = Boolean::New(env()->isolate(), parser_.upgrade);
 
-    AsyncCallbackScope callback_scope(env());
-
-    MaybeLocal<Value> head_response =
-        MakeCallback(cb.As<Function>(), arraysize(argv), argv);
+    MaybeLocal<Value> head_response;
+    {
+      InternalCallbackScope callback_scope(
+          this, InternalCallbackScope::kSkipTaskQueues);
+      head_response = cb.As<Function>()->Call(
+          env()->context(), object(), arraysize(argv), argv);
+      if (head_response.IsEmpty()) callback_scope.MarkAsFailed();
+    }
 
     int64_t val;
 
@@ -392,9 +409,13 @@ class Parser : public AsyncWrap, public StreamListener {
     if (!cb->IsFunction())
       return 0;
 
-    AsyncCallbackScope callback_scope(env());
-
-    MaybeLocal<Value> r = MakeCallback(cb.As<Function>(), 0, nullptr);
+    MaybeLocal<Value> r;
+    {
+      InternalCallbackScope callback_scope(
+          this, InternalCallbackScope::kSkipTaskQueues);
+      r = cb.As<Function>()->Call(env()->context(), object(), 0, nullptr);
+      if (r.IsEmpty()) callback_scope.MarkAsFailed();
+    }
 
     if (r.IsEmpty()) {
       got_exception_ = true;
@@ -495,6 +516,7 @@ class Parser : public AsyncWrap, public StreamListener {
 
   static void Initialize(const FunctionCallbackInfo<Value>& args) {
     Environment* env = Environment::GetCurrent(args);
+    bool lenient = args[2]->IsTrue();
 
     CHECK(args[0]->IsInt32());
     CHECK(args[1]->IsObject());
@@ -515,7 +537,7 @@ class Parser : public AsyncWrap, public StreamListener {
 
     parser->set_provider_type(provider);
     parser->AsyncReset(args[1].As<Object>());
-    parser->Init(type);
+    parser->Init(type, lenient);
   }
 
   template <bool should_pause>
@@ -600,7 +622,7 @@ class Parser : public AsyncWrap, public StreamListener {
     // Once we’re done here, either indicate that the HTTP parser buffer
     // is free for re-use, or free() the data if it didn’t come from there
     // in the first place.
-    OnScopeLeave on_scope_leave([&]() {
+    auto on_scope_leave = OnScopeLeave([&]() {
       if (buf.base == env()->http_parser_buffer())
         env()->set_http_parser_buffer_in_use(false);
       else
@@ -765,7 +787,7 @@ class Parser : public AsyncWrap, public StreamListener {
 
     for (size_t i = 0; i < num_values_; ++i) {
       headers_v[i * 2] = fields_[i].ToString(env());
-      headers_v[i * 2 + 1] = values_[i].ToString(env());
+      headers_v[i * 2 + 1] = values_[i].ToTrimmedString(env());
     }
 
     return Array::New(env()->isolate(), headers_v, num_values_ * 2);
@@ -799,12 +821,14 @@ class Parser : public AsyncWrap, public StreamListener {
   }
 
 
-  void Init(parser_type_t type) {
+  void Init(parser_type_t type, bool lenient) {
 #ifdef NODE_EXPERIMENTAL_HTTP
     llhttp_init(&parser_, type, &settings);
+    llhttp_set_lenient(&parser_, lenient);
     header_nread_ = 0;
 #else  /* !NODE_EXPERIMENTAL_HTTP */
     http_parser_init(&parser_, type);
+    parser_.lenient_http_headers = lenient;
 #endif  /* NODE_EXPERIMENTAL_HTTP */
     url_.Reset();
     status_message_.Reset();

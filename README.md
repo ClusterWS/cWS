@@ -1,15 +1,6 @@
 <h1 align="center">ClusterWS/cWS</h1>
 <h6 align="center">Fast WebSocket implementation for Node.js</h6>
 
-<!-- <p align="center">
- <img src="https://cdn.rawgit.com/goriunov/159120ca6a883d8d4e75543ec395d361/raw/d22028ecc726d7d3cc30a2a85cc7cc454b0afada/clusterws.svg" width="450">
-</p> -->
-
-<!-- <p align="center">
-  <i>Fast WebSocket implementation for Node.js</i>
-  <i>Fork of uWebSockets v0.14 with some tweaks in C++ code and complete rewrite from JavaScript to TypeScript. Original software is available in <a href="https://github.com/uNetworking/uWebSockets/tree/v0.14">uWebSockets v0.14</a> repository.</i>
-</p> -->
-
 <p align="center">
   <a href="https://badge.fury.io/js/%40clusterws%2Fcws"><img src="https://badge.fury.io/js/%40clusterws%2Fcws.svg" alt="npm version" height="22"></a>
    <a href="https://travis-ci.org/ClusterWS/cWS"><img src="https://travis-ci.org/ClusterWS/cWS.svg?branch=master" alt="travis build" height="22"></a>
@@ -21,6 +12,13 @@
 * This repository is a fork of [uWebSockets v0.14](https://github.com/uNetworking/uWebSockets/tree/v0.14) therefore has two licence [MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE)
 * Consider using latest [uWebSockets](https://github.com/uNetworking/uWebSockets.js) version instead
 * You can support me through [Patreon](https://www.patreon.com/clusterws) and [PayPal](https://www.paypal.me/goriunov)
+
+## Supported Node Versions
+
+|  CWS Version | Node 10  | Node 11 | Node 12          |  Node 13  | Node 14 |
+|--------------|----------|---------|------------------|-----------|---------|
+| 2.0.0        | >=10.0   |    X    | >=12.16          | >=13.9    |   X     |
+| 1.6.0        | >=10.0   | >=11.0  | >=12.0 & <12.16  | >=13.9    |   X     |
 
 ## Documentation
 
