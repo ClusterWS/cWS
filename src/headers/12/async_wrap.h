@@ -33,7 +33,9 @@ namespace node {
 
 #define NODE_ASYNC_NON_CRYPTO_PROVIDER_TYPES(V)                               \
   V(NONE)                                                                     \
+  V(DIRHANDLE)                                                                \
   V(DNSCHANNEL)                                                               \
+  V(ELDHISTOGRAM)                                                             \
   V(FILEHANDLE)                                                               \
   V(FILEHANDLECLOSEREQ)                                                       \
   V(FSEVENTWRAP)                                                              \
@@ -160,14 +162,10 @@ class AsyncWrap : public BaseObject {
   inline ProviderType set_provider_type(ProviderType provider);
 
   inline double get_async_id() const;
-
   inline double get_trigger_async_id() const;
 
   void AsyncReset(v8::Local<v8::Object> resource,
                   double execution_async_id = kInvalidAsyncId,
-                  bool silent = false);
-
-  void AsyncReset(double execution_async_id = kInvalidAsyncId,
                   bool silent = false);
 
   // Only call these within a valid HandleScope.
@@ -197,18 +195,6 @@ class AsyncWrap : public BaseObject {
   v8::Local<v8::Object> GetOwner();
   static v8::Local<v8::Object> GetOwner(Environment* env,
                                         v8::Local<v8::Object> obj);
-
-  // This is a simplified version of InternalCallbackScope that only runs
-  // the `before` and `after` hooks. Only use it when not actually calling
-  // back into JS; otherwise, use InternalCallbackScope.
-  class AsyncScope {
-   public:
-    explicit inline AsyncScope(AsyncWrap* wrap);
-    ~AsyncScope();
-
-   private:
-    AsyncWrap* wrap_ = nullptr;
-  };
 
   bool IsDoneInitializing() const override;
 

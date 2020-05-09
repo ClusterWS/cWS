@@ -11,10 +11,6 @@ exports.SLIDING_DEFLATE_WINDOW = 16;
 exports.DEFAULT_PAYLOAD_LIMIT = 16777216;
 exports.native = (() => {
     try {
-        const [major, minor] = process.version.replace('v', '').split('.');
-        if (Number(major) === 13 && Number(minor) < 9) {
-            return require(`../dist/bindings/cws_${process.platform}_${process.versions.modules}_8`);
-        }
         return require(`../dist/bindings/cws_${process.platform}_${process.versions.modules}`);
     }
     catch (err) {

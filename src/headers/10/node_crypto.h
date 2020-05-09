@@ -267,6 +267,7 @@ class SSLWrap {
                                          int* copy);
 #endif
   static int NewSessionCallback(SSL* s, SSL_SESSION* sess);
+  static void KeylogCallback(const SSL* s, const char* line);
   static void OnClientHello(void* arg,
                             const ClientHelloParser::ClientHello& hello);
 
@@ -516,7 +517,17 @@ class Sign : public SignBase {
  public:
   static void Initialize(Environment* env, v8::Local<v8::Object> target);
 
-  std::pair<Error, MallocedBuffer<unsigned char>> SignFinal(
+  struct SignResult {
+    Error error;
+    MallocedBuffer<unsigned char> signature;
+
+    explicit SignResult(
+        Error err,
+        MallocedBuffer<unsigned char>&& sig = MallocedBuffer<unsigned char>())
+      : error(err), signature(std::move(sig)) {}
+  };
+
+  SignResult SignFinal(
       const char* key_pem,
       int key_pem_len,
       const char* passphrase,

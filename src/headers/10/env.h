@@ -108,7 +108,6 @@ struct PackageConfig {
   V(contextify_context_private_symbol, "node:contextify:context")             \
   V(contextify_global_private_symbol, "node:contextify:global")               \
   V(decorated_private_symbol, "node:decorated")                               \
-  V(napi_env, "node:napi:env")                                                \
   V(napi_wrapper, "node:napi:wrapper")                                        \
   V(sab_lifetimepartner_symbol, "node:sharedArrayBufferLifetimePartner")      \
 
@@ -226,6 +225,7 @@ struct PackageConfig {
   V(onhandshakedone_string, "onhandshakedone")                                \
   V(onhandshakestart_string, "onhandshakestart")                              \
   V(onheaders_string, "onheaders")                                            \
+  V(onkeylog_string, "onkeylog")                                              \
   V(onmessage_string, "onmessage")                                            \
   V(onnewsession_string, "onnewsession")                                      \
   V(onocspresponse_string, "onocspresponse")                                  \

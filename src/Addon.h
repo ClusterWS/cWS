@@ -12,10 +12,6 @@
   #include "headers/10/tls_wrap.h"
 #endif
 
-#if NODE_MAJOR_VERSION==11
-  #include "headers/11/tls_wrap.h"
-#endif
-
 #if NODE_MAJOR_VERSION==12
   #include "headers/12/tls_wrap.h"
 #endif
