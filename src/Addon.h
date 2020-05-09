@@ -18,6 +18,7 @@
 
 #if NODE_MAJOR_VERSION==13
   #include "headers/13/tls_wrap.h"
+  #include "headers/13/base_object-inl.h"
 #endif
 
 using BaseObject = node::BaseObject;
