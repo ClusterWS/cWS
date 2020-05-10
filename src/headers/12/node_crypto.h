@@ -35,6 +35,10 @@
 
 #include <openssl/err.h>
 #include <openssl/ssl.h>
+#include <openssl/bn.h>
+#include <openssl/dh.h>
+#include <openssl/ec.h>
+#include <openssl/rsa.h>
 
 namespace node {
 namespace crypto {
@@ -72,6 +76,7 @@ using ECGroupPointer = DeleteFnPtr<EC_GROUP, EC_GROUP_free>;
 using ECPointPointer = DeleteFnPtr<EC_POINT, EC_POINT_free>;
 using ECKeyPointer = DeleteFnPtr<EC_KEY, EC_KEY_free>;
 using DHPointer = DeleteFnPtr<DH, DH_free>;
+using ECDSASigPointer = DeleteFnPtr<ECDSA_SIG, ECDSA_SIG_free>;
 
 extern int VerifyCallback(int preverify_ok, X509_STORE_CTX* ctx);
 
@@ -79,13 +84,13 @@ extern void UseExtraCaCerts(const std::string& file);
 
 void InitCryptoOnce();
 
-class SecureContext : public BaseObject {
+class SecureContext final : public BaseObject {
  public:
-  ~SecureContext() override {
-    Reset();
-  }
+  ~SecureContext() override;
 
   static void Initialize(Environment* env, v8::Local<v8::Object> target);
+
+  SSL_CTX* operator*() const { return ctx_.get(); }
 
   // TODO(joyeecheung): track the memory used by OpenSSL types
   SET_NO_MEMORY_INFO()
@@ -97,6 +102,7 @@ class SecureContext : public BaseObject {
   X509Pointer issuer_;
 #ifndef OPENSSL_NO_ENGINE
   bool client_cert_engine_provided_ = false;
+  std::unique_ptr<ENGINE, std::function<void(ENGINE*)>> private_key_engine_;
 #endif  // !OPENSSL_NO_ENGINE
 
   static const int kMaxSessionSize = 10 * 1024;
@@ -119,12 +125,16 @@ class SecureContext : public BaseObject {
   static void New(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void Init(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void SetKey(const v8::FunctionCallbackInfo<v8::Value>& args);
+#ifndef OPENSSL_NO_ENGINE
+  static void SetEngineKey(const v8::FunctionCallbackInfo<v8::Value>& args);
+#endif  // !OPENSSL_NO_ENGINE
   static void SetCert(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void AddCACert(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void AddCRL(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void AddRootCerts(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void SetCipherSuites(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void SetCiphers(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void SetSigalgs(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void SetECDHCurve(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void SetDHParam(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void SetOptions(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -167,20 +177,8 @@ class SecureContext : public BaseObject {
                                          HMAC_CTX* hctx,
                                          int enc);
 
-  SecureContext(Environment* env, v8::Local<v8::Object> wrap)
-      : BaseObject(env, wrap) {
-    MakeWeak();
-    env->isolate()->AdjustAmountOfExternalAllocatedMemory(kExternalSize);
-  }
-
-  inline void Reset() {
-    if (ctx_ != nullptr) {
-      env()->isolate()->AdjustAmountOfExternalAllocatedMemory(-kExternalSize);
-    }
-    ctx_.reset();
-    cert_.reset();
-    issuer_.reset();
-  }
+  SecureContext(Environment* env, v8::Local<v8::Object> wrap);
+  void Reset();
 };
 
 // SSLWrap implicitly depends on the inheriting class' handle having an
@@ -250,6 +248,7 @@ class SSLWrap {
   static void IsSessionReused(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void VerifyError(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GetCipher(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void GetSharedSigalgs(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void EndParser(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void CertCbDone(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void Renegotiate(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -320,6 +319,13 @@ class ByteSource {
   const char* get() const;
   size_t size() const;
 
+  inline operator bool() const {
+    return data_ != nullptr;
+  }
+
+  static ByteSource Allocated(char* data, size_t size);
+  static ByteSource Foreign(const char* data, size_t size);
+
   static ByteSource FromStringOrBuffer(Environment* env,
                                        v8::Local<v8::Value> value);
 
@@ -344,9 +350,6 @@ class ByteSource {
   size_t size_ = 0;
 
   ByteSource(const char* data, char* allocated_data, size_t size);
-
-  static ByteSource Allocated(char* data, size_t size);
-  static ByteSource Foreign(const char* data, size_t size);
 };
 
 enum PKEncodingType {
@@ -445,14 +448,7 @@ class KeyObject : public BaseObject {
   v8::MaybeLocal<v8::Value> ExportPrivateKey(
       const PrivateKeyEncodingConfig& config) const;
 
-  KeyObject(Environment* env,
-            v8::Local<v8::Object> wrap,
-            KeyType key_type)
-      : BaseObject(env, wrap),
-        key_type_(key_type),
-        symmetric_key_(nullptr, nullptr) {
-    MakeWeak();
-  }
+  KeyObject(Environment* env, v8::Local<v8::Object> wrap, KeyType key_type);
 
  private:
   const KeyType key_type_;
@@ -526,17 +522,7 @@ class CipherBase : public BaseObject {
   static void SetAuthTag(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void SetAAD(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  CipherBase(Environment* env,
-             v8::Local<v8::Object> wrap,
-             CipherKind kind)
-      : BaseObject(env, wrap),
-        ctx_(nullptr),
-        kind_(kind),
-        auth_tag_state_(kAuthTagUnknown),
-        auth_tag_len_(kNoAuthTagLength),
-        pending_auth_failed_(false) {
-    MakeWeak();
-  }
+  CipherBase(Environment* env, v8::Local<v8::Object> wrap, CipherKind kind);
 
  private:
   DeleteFnPtr<EVP_CIPHER_CTX, EVP_CIPHER_CTX_free> ctx_;
@@ -566,18 +552,16 @@ class Hmac : public BaseObject {
   static void HmacUpdate(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void HmacDigest(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  Hmac(Environment* env, v8::Local<v8::Object> wrap)
-      : BaseObject(env, wrap),
-        ctx_(nullptr) {
-    MakeWeak();
-  }
+  Hmac(Environment* env, v8::Local<v8::Object> wrap);
 
  private:
   DeleteFnPtr<HMAC_CTX, HMAC_CTX_free> ctx_;
 };
 
-class Hash : public BaseObject {
+class Hash final : public BaseObject {
  public:
+  ~Hash() override;
+
   static void Initialize(Environment* env, v8::Local<v8::Object> target);
 
   // TODO(joyeecheung): track the memory used by OpenSSL types
@@ -585,7 +569,7 @@ class Hash : public BaseObject {
   SET_MEMORY_INFO_NAME(Hash)
   SET_SELF_SIZE(Hash)
 
-  bool HashInit(const char* hash_type, v8::Maybe<unsigned int> xof_md_len);
+  bool HashInit(const EVP_MD* md, v8::Maybe<unsigned int> xof_md_len);
   bool HashUpdate(const char* data, int len);
 
  protected:
@@ -593,18 +577,7 @@ class Hash : public BaseObject {
   static void HashUpdate(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void HashDigest(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  Hash(Environment* env, v8::Local<v8::Object> wrap)
-      : BaseObject(env, wrap),
-        mdctx_(nullptr),
-        has_md_(false),
-        md_value_(nullptr) {
-    MakeWeak();
-  }
-
-  ~Hash() override {
-    if (md_value_ != nullptr)
-      OPENSSL_clear_free(md_value_, md_len_);
-  }
+  Hash(Environment* env, v8::Local<v8::Object> wrap);
 
  private:
   EVPMDPointer mdctx_;
@@ -622,12 +595,11 @@ class SignBase : public BaseObject {
     kSignNotInitialised,
     kSignUpdate,
     kSignPrivateKey,
-    kSignPublicKey
+    kSignPublicKey,
+    kSignMalformedSignature
   } Error;
 
-  SignBase(Environment* env, v8::Local<v8::Object> wrap)
-      : BaseObject(env, wrap) {
-  }
+  SignBase(Environment* env, v8::Local<v8::Object> wrap);
 
   Error Init(const char* sign_type);
   Error Update(const char* data, int len);
@@ -641,6 +613,10 @@ class SignBase : public BaseObject {
   void CheckThrow(Error error);
 
   EVPMDPointer mdctx_;
+};
+
+enum DSASigEnc {
+  kSigEncDER, kSigEncP1363
 };
 
 class Sign : public SignBase {
@@ -660,7 +636,8 @@ class Sign : public SignBase {
   SignResult SignFinal(
       const ManagedEVPPKey& pkey,
       int padding,
-      const v8::Maybe<int>& saltlen);
+      const v8::Maybe<int>& saltlen,
+      DSASigEnc dsa_sig_enc);
 
  protected:
   static void New(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -668,9 +645,7 @@ class Sign : public SignBase {
   static void SignUpdate(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void SignFinal(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  Sign(Environment* env, v8::Local<v8::Object> wrap) : SignBase(env, wrap) {
-    MakeWeak();
-  }
+  Sign(Environment* env, v8::Local<v8::Object> wrap);
 };
 
 class Verify : public SignBase {
@@ -678,8 +653,7 @@ class Verify : public SignBase {
   static void Initialize(Environment* env, v8::Local<v8::Object> target);
 
   Error VerifyFinal(const ManagedEVPPKey& key,
-                    const char* sig,
-                    int siglen,
+                    const ByteSource& sig,
                     int padding,
                     const v8::Maybe<int>& saltlen,
                     bool* verify_result);
@@ -690,9 +664,7 @@ class Verify : public SignBase {
   static void VerifyUpdate(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void VerifyFinal(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  Verify(Environment* env, v8::Local<v8::Object> wrap) : SignBase(env, wrap) {
-    MakeWeak();
-  }
+  Verify(Environment* env, v8::Local<v8::Object> wrap);
 };
 
 class PublicKeyCipher {
@@ -714,6 +686,8 @@ class PublicKeyCipher {
                      const ManagedEVPPKey& pkey,
                      int padding,
                      const EVP_MD* digest,
+                     const void* oaep_label,
+                     size_t oaep_label_size,
                      const unsigned char* data,
                      int len,
                      AllocatedBuffer* out);
@@ -747,11 +721,7 @@ class DiffieHellman : public BaseObject {
   static void VerifyErrorGetter(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  DiffieHellman(Environment* env, v8::Local<v8::Object> wrap)
-      : BaseObject(env, wrap),
-        verifyError_(0) {
-    MakeWeak();
-  }
+  DiffieHellman(Environment* env, v8::Local<v8::Object> wrap);
 
   // TODO(joyeecheung): track the memory used by OpenSSL types
   SET_NO_MEMORY_INFO()
@@ -770,11 +740,9 @@ class DiffieHellman : public BaseObject {
   DHPointer dh_;
 };
 
-class ECDH : public BaseObject {
+class ECDH final : public BaseObject {
  public:
-  ~ECDH() override {
-    group_ = nullptr;
-  }
+  ~ECDH() override;
 
   static void Initialize(Environment* env, v8::Local<v8::Object> target);
   static ECPointPointer BufferToPoint(Environment* env,
@@ -787,13 +755,7 @@ class ECDH : public BaseObject {
   SET_SELF_SIZE(ECDH)
 
  protected:
-  ECDH(Environment* env, v8::Local<v8::Object> wrap, ECKeyPointer&& key)
-      : BaseObject(env, wrap),
-        key_(std::move(key)),
-        group_(EC_KEY_get0_group(key_.get())) {
-    MakeWeak();
-    CHECK_NOT_NULL(group_);
-  }
+  ECDH(Environment* env, v8::Local<v8::Object> wrap, ECKeyPointer&& key);
 
   static void New(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GenerateKeys(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -815,6 +777,17 @@ bool EntropySource(unsigned char* buffer, size_t length);
 void SetEngine(const v8::FunctionCallbackInfo<v8::Value>& args);
 #endif  // !OPENSSL_NO_ENGINE
 void InitCrypto(v8::Local<v8::Object> target);
+
+void ThrowCryptoError(Environment* env,
+                      unsigned long err,  // NOLINT(runtime/int)
+                      const char* message = nullptr);
+
+template <typename T>
+inline T* MallocOpenSSL(size_t count) {
+  void* mem = OPENSSL_malloc(MultiplyWithOverflowCheck(count, sizeof(T)));
+  CHECK_IMPLIES(mem == nullptr, count == 0);
+  return static_cast<T*>(mem);
+}
 
 }  // namespace crypto
 }  // namespace node

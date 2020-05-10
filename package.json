@@ -1,6 +1,6 @@
 {
   "name": "@clusterws/cws",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "description": "cWS - fast C++ WebSocket implementation for Node.js",
@@ -11,9 +11,6 @@
     "install": "node-gyp rebuild > build_log.txt 2>&1 || exit 0",
     "build-ts": "rimraf dist/*.js && rimraf dist/*.ts && npm run lint && tsc",
     "build-cpp": "node-gyp rebuild > build_log.txt 2>&1 || exit 0"
-  },
-  "engines": {
-    "node": ">=8.12.0"
   },
   "keywords": [
     "tiny",
