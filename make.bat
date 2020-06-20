@@ -20,7 +20,7 @@ if not exist targets (
 cl /I targets/node-%v64%/include/node /I targets/node-%v64%/deps/uv/include /I targets/node-%v64%/deps/v8/include /I targets/node-%v64%/deps/openssl/openssl/include /I targets/node-%v64%/deps/zlib /EHsc /Ox /LD /Fedist/bindings/cws_win32_64.node src/*.cpp targets/node-%v64%/node.lib
 cl /I targets/node-%v72%/include/node /I targets/node-%v72%/deps/uv/include /I targets/node-%v72%/deps/v8/include /I targets/node-%v72%/deps/openssl/openssl/include /I targets/node-%v72%/deps/zlib /EHsc /Ox /LD /Fedist/bindings/cws_win32_72.node src/*.cpp targets/node-%v72%/node.lib
 cl /I targets/node-%v79%/include/node /I targets/node-%v79%/deps/uv/include /I targets/node-%v79%/deps/v8/include /I targets/node-%v79%/deps/openssl/openssl/include /I targets/node-%v79%/deps/zlib /EHsc /Ox /LD /Fedist/bindings/cws_win32_79.node src/*.cpp targets/node-%v79%/node.lib
-cl /I targets/node-%v83%/include/node /I targets/node-%v83%/deps/uv/include /I targets/node-%v83%/deps/v8/include /I targets/node-%v83%/deps/openssl/openssl/include /I targets/node-%v83%/deps/zlib /EHsc /Ox /LD /Fedist/bindings/cws_win32_79.node src/*.cpp targets/node-%v83%/node.lib
+cl /I targets/node-%v83%/include/node /I targets/node-%v83%/deps/uv/include /I targets/node-%v83%/deps/v8/include /I targets/node-%v83%/deps/openssl/openssl/include /I targets/node-%v83%/deps/zlib /EHsc /Ox /LD /Fedist/bindings/cws_win32_83.node src/*.cpp targets/node-%v83%/node.lib
 
 del ".\*.obj"
 del ".\dist\bindings\*.exp"
