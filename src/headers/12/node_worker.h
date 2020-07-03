@@ -61,6 +61,7 @@ class Worker : public AsyncWrap {
   static void GetResourceLimits(
       const v8::FunctionCallbackInfo<v8::Value>& args);
   v8::Local<v8::Float64Array> GetResourceLimits(v8::Isolate* isolate) const;
+  static void TakeHeapSnapshot(const v8::FunctionCallbackInfo<v8::Value>& args);
 
  private:
   void CreateEnvMessagePort(Environment* env);
@@ -87,7 +88,6 @@ class Worker : public AsyncWrap {
   bool thread_joined_ = true;
   const char* custom_error_ = nullptr;
   std::string custom_error_str_;
-  bool loop_init_failed_ = false;
   int exit_code_ = 0;
   uint64_t thread_id_ = -1;
   uintptr_t stack_base_ = 0;

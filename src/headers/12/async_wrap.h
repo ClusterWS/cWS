@@ -68,7 +68,9 @@ namespace node {
   V(TTYWRAP)                                                                  \
   V(UDPSENDWRAP)                                                              \
   V(UDPWRAP)                                                                  \
+  V(SIGINTWATCHDOG)                                                           \
   V(WORKER)                                                                   \
+  V(WORKERHEAPSNAPSHOT)                                                       \
   V(WRITEWRAP)                                                                \
   V(ZLIB)
 
@@ -132,8 +134,8 @@ class AsyncWrap : public BaseObject {
                          void* priv);
 
   static void GetAsyncId(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void PushAsyncIds(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void PopAsyncIds(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void PushAsyncContext(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void PopAsyncContext(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void AsyncReset(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GetProviderType(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void QueueDestroyAsyncId(
@@ -150,7 +152,7 @@ class AsyncWrap : public BaseObject {
   static void EmitAfter(Environment* env, double async_id);
   static void EmitPromiseResolve(Environment* env, double async_id);
 
-  void EmitDestroy();
+  void EmitDestroy(bool from_gc = false);
 
   void EmitTraceEventBefore();
   static void EmitTraceEventAfter(ProviderType type, double async_id);
