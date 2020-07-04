@@ -13,7 +13,9 @@
 * Consider using latest [uWebSockets](https://github.com/uNetworking/uWebSockets.js) version instead
 * You can support me through [Patreon](https://www.patreon.com/clusterws) and [PayPal](https://www.paypal.me/goriunov)
 
-## Supported Node Versions
+## Supported Node Versions (SSL)
+
+This table is true if you run ssl directly with `cws` (`Node.js`). In case if you use proxy for example `nginx`, `cws` can be run on bigger coverage.
 
 |  CWS Version | Node 10  | Node 11 | Node 12          |  Node 13  | Node 14 |
 |--------------|----------|---------|------------------|-----------|---------|

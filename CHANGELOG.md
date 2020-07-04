@@ -1,3 +1,10 @@
+## Released 3.0.0
+
+**Changes**
+* Add support for Node 14 [#42](https://github.com/ClusterWS/cWS/pull/42) 
+* Rebuild Node 12 bindings from 12.8.2
+* Clarify `Supported Node Versions` in README
+
 ## Released 2.0.0
 
 **Changes**
