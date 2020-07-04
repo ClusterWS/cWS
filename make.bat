@@ -1,9 +1,10 @@
-call "%VS140COMNTOOLS%..\..\vc\vcvarsall.bat" amd64
+REM Fix this path !!!
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
 set v64=v10.20.1
-set v72=v12.16.3
+set v72=v12.18.2
 set v79=v13.14.0
-set v83=v14.2.0
+set v83=v14.5.0
 
 if not exist targets (
   mkdir targets

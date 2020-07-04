@@ -14,6 +14,7 @@
 
 #if NODE_MAJOR_VERSION==12
   #include "headers/12/tls_wrap.h"
+  #include "headers/12/base_object-inl.h"
 #endif
 
 #if NODE_MAJOR_VERSION==13

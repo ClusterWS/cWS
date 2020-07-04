@@ -215,6 +215,8 @@ class SSLWrap {
   inline bool is_awaiting_new_session() const { return awaiting_new_session_; }
   inline bool is_waiting_cert_cb() const { return cert_cb_ != nullptr; }
 
+  void MemoryInfo(MemoryTracker* tracker) const;
+
  protected:
   typedef void (*CertCb)(void* arg);
 
@@ -249,6 +251,8 @@ class SSLWrap {
   static void VerifyError(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GetCipher(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void GetSharedSigalgs(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void ExportKeyingMaterial(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
   static void EndParser(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void CertCbDone(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void Renegotiate(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -279,7 +283,6 @@ class SSLWrap {
 
   void DestroySSL();
   void WaitForCertCb(CertCb cb, void* arg);
-  void SetSNIContext(SecureContext* sc);
   int SetCACerts(SecureContext* sc);
 
   inline Environment* ssl_env() const {
@@ -301,7 +304,7 @@ class SSLWrap {
   ClientHelloParser hello_parser_;
 
   v8::Global<v8::ArrayBufferView> ocsp_response_;
-  v8::Global<v8::Value> sni_context_;
+  BaseObjectPtr<SecureContext> sni_context_;
 
   friend class SecureContext;
 };

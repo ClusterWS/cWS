@@ -55,7 +55,6 @@ class NativeModuleLoader;
 namespace per_process {
 extern Mutex env_var_mutex;
 extern uint64_t node_start_time;
-extern bool v8_is_profiling;
 }  // namespace per_process
 
 // Forward declaration
@@ -112,7 +111,7 @@ class NodeArrayBufferAllocator : public ArrayBufferAllocator {
   void* Allocate(size_t size) override;  // Defined in src/node.cc
   void* AllocateUninitialized(size_t size) override;
   void Free(void* data, size_t size) override;
-  virtual void* Reallocate(void* data, size_t old_size, size_t size);
+  void* Reallocate(void* data, size_t old_size, size_t size) override;
   virtual void RegisterPointer(void* data, size_t size) {
     total_mem_usage_.fetch_add(size, std::memory_order_relaxed);
   }
@@ -160,8 +159,7 @@ v8::MaybeLocal<v8::Object> New(Environment* env,
 // ArrayBuffer::Allocator().
 v8::MaybeLocal<v8::Object> New(Environment* env,
                                char* data,
-                               size_t length,
-                               bool uses_malloc);
+                               size_t length);
 // Creates a Buffer instance over an existing ArrayBuffer.
 v8::MaybeLocal<v8::Uint8Array> New(Environment* env,
                                    v8::Local<v8::ArrayBuffer> ab,
@@ -183,7 +181,7 @@ static v8::MaybeLocal<v8::Object> New(Environment* env,
   const size_t len_in_bytes = buf->length() * sizeof(buf->out()[0]);
 
   if (buf->IsAllocated())
-    ret = New(env, src, len_in_bytes, true);
+    ret = New(env, src, len_in_bytes);
   else if (!buf->IsInvalidated())
     ret = Copy(env, src, len_in_bytes);
 
@@ -243,9 +241,9 @@ class InternalCallbackScope {
 
 class DebugSealHandleScope {
  public:
-  explicit inline DebugSealHandleScope(v8::Isolate* isolate)
+  explicit inline DebugSealHandleScope(v8::Isolate* isolate = nullptr)
 #ifdef DEBUG
-    : actual_scope_(isolate)
+    : actual_scope_(isolate != nullptr ? isolate : v8::Isolate::GetCurrent())
 #endif
   {}
 
