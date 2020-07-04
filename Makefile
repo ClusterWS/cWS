@@ -2,9 +2,9 @@ CPP_SHARED := -DUSE_LIBUV -std=c++17 -O3 -I ./src -shared -fPIC ./src/Extensions
 CPP_OSX := -stdlib=libc++ -mmacosx-version-min=10.7 -undefined dynamic_lookup
 
 VER_64 := v10.20.1
-VER_72 := v12.16.3
+VER_72 := v12.18.2
 VER_79 := v13.14.0
-VER_83 := v14.2.0
+VER_83 := v14.5.0
 
 default:
 	make targets

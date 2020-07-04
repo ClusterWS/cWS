@@ -5,6 +5,7 @@
 
 #include "node.h"
 #include "aliased_buffer.h"
+#include "node_messaging.h"
 #include "stream_base.h"
 #include <iostream>
 
@@ -16,15 +17,17 @@ class FileHandleReadWrap;
 class BindingData : public BaseObject {
  public:
   explicit BindingData(Environment* env, v8::Local<v8::Object> wrap)
-    : BaseObject(env, wrap),
-      stats_field_array(env->isolate(), kFsStatsBufferLength),
-      stats_field_bigint_array(env->isolate(), kFsStatsBufferLength) {}
+      : BaseObject(env, wrap),
+        stats_field_array(env->isolate(), kFsStatsBufferLength),
+        stats_field_bigint_array(env->isolate(), kFsStatsBufferLength) {}
 
   AliasedFloat64Array stats_field_array;
   AliasedBigUint64Array stats_field_bigint_array;
 
   std::vector<BaseObjectPtr<FileHandleReadWrap>>
       file_handle_read_wrap_freelist;
+
+  static constexpr FastStringKey binding_data_name { "fs" };
 
   void MemoryInfo(MemoryTracker* tracker) const override;
   SET_SELF_SIZE(BindingData)
@@ -182,6 +185,7 @@ class FSReqAfterScope final {
  public:
   FSReqAfterScope(FSReqBase* wrap, uv_fs_t* req);
   ~FSReqAfterScope();
+  void Clear();
 
   bool Proceed();
 
@@ -193,7 +197,7 @@ class FSReqAfterScope final {
   FSReqAfterScope& operator=(const FSReqAfterScope&&) = delete;
 
  private:
-  FSReqBase* wrap_ = nullptr;
+  BaseObjectPtr<FSReqBase> wrap_;
   uv_fs_t* req_ = nullptr;
   v8::HandleScope handle_scope_;
   v8::Context::Scope context_scope_;
@@ -270,7 +274,28 @@ class FileHandle final : public AsyncWrap, public StreamBase {
   FileHandle(const FileHandle&&) = delete;
   FileHandle& operator=(const FileHandle&&) = delete;
 
+  TransferMode GetTransferMode() const override;
+  std::unique_ptr<worker::TransferData> TransferForMessaging() override;
+
  private:
+  class TransferData : public worker::TransferData {
+   public:
+    explicit TransferData(int fd);
+    ~TransferData();
+
+    BaseObjectPtr<BaseObject> Deserialize(
+        Environment* env,
+        v8::Local<v8::Context> context,
+        std::unique_ptr<worker::TransferData> self) override;
+
+    SET_NO_MEMORY_INFO()
+    SET_MEMORY_INFO_NAME(FileHandleTransferData)
+    SET_SELF_SIZE(TransferData)
+
+   private:
+    int fd_;
+  };
+
   FileHandle(BindingData* binding_data, v8::Local<v8::Object> obj, int fd);
 
   // Synchronous close that emits a warning
@@ -316,10 +341,10 @@ class FileHandle final : public AsyncWrap, public StreamBase {
   int fd_;
   bool closing_ = false;
   bool closed_ = false;
+  bool reading_ = false;
   int64_t read_offset_ = -1;
   int64_t read_length_ = -1;
 
-  bool reading_ = false;
   BaseObjectPtr<FileHandleReadWrap> current_read_;
 
   BaseObjectPtr<BindingData> binding_data_;

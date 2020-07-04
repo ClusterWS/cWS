@@ -31,8 +31,7 @@ NgHeaders<T>::NgHeaders(Environment* env, v8::Local<v8::Array> headers) {
                                  count_ * sizeof(nv_t) +
                                  header_string_len);
 
-  char* start = reinterpret_cast<char*>(
-      RoundUp(reinterpret_cast<uintptr_t>(*buf_), alignof(nv_t)));
+  char* start = AlignUp(buf_.out(), alignof(nv_t));
   char* header_contents = start + (count_ * sizeof(nv_t));
   nv_t* const nva = reinterpret_cast<nv_t*>(start);
 
@@ -74,6 +73,14 @@ size_t GetClientMaxHeaderPairs(size_t max_header_pairs) {
 size_t GetServerMaxHeaderPairs(size_t max_header_pairs) {
   static constexpr size_t min_header_pairs = 4;
   return std::max(max_header_pairs, min_header_pairs);
+}
+
+template <typename allocator_t>
+std::string NgHeaderBase<allocator_t>::ToString() const {
+  std::string ret = name();
+  ret += " = ";
+  ret += value();
+  return ret;
 }
 
 template <typename T>
@@ -130,6 +137,12 @@ NgHeader<T>::NgHeader(NgHeader<T>&& other) noexcept
   other.token_ = -1;
   other.flags_ = 0;
   other.env_ = nullptr;
+}
+
+template <typename T>
+void NgHeader<T>::MemoryInfo(MemoryTracker* tracker) const {
+  tracker->TrackField("name", name_);
+  tracker->TrackField("value", value_);
 }
 
 template <typename T>
