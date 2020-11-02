@@ -1,4 +1,4 @@
-<h1 align="center">ClusterWS/cWS</h1>
+<h1 align="center">(Deprecated) ClusterWS/cWS</h1>
 <h6 align="center">Fast WebSocket implementation for Node.js</h6>
 
 <p align="center">
@@ -8,6 +8,8 @@
 
 
 ## Important Notes
+
+* **This project has been deprecated consider using latest version of uWebSockets**
 
 * This repository is a fork of [uWebSockets v0.14](https://github.com/uNetworking/uWebSockets/tree/v0.14) therefore has two licence [MIT](https://github.com/ClusterWS/uWS/blob/master/LICENSE) and [ZLIB](https://github.com/ClusterWS/uWS/blob/master/src/LICENSE)
 * Consider using latest [uWebSockets](https://github.com/uNetworking/uWebSockets.js) version instead
